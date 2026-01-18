@@ -30,7 +30,6 @@ public class ChessMove {
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-
         return endPosition;
     }
 
@@ -41,7 +40,11 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-
         return promotionPiece;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s%s", startPosition, endPosition);
     }
 }
