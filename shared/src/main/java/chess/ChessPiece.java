@@ -72,9 +72,9 @@ public class ChessPiece {
 
         for (int i = 0; i <= 7; i++) {
             //checking whether there is piece or not
-            int arrayIndex = i + 1;
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn()+arrayIndex);
-            if(endPosition.getRow() <= 8 && endPosition.getColumn() <= 8){
+
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i);
+            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
@@ -89,10 +89,10 @@ public class ChessPiece {
         }
         // Going top left
         for (int i = 0; i <= 7; i++) {
-            int arrayIndex = i + 1;
+
             //checking whether there is piece or not
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn()-arrayIndex);
-            if(endPosition.getRow() <= 8 && endPosition.getColumn() <= 8){
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()-i);
+            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
@@ -108,10 +108,10 @@ public class ChessPiece {
 
         // right bottom
         for (int i = 0; i <= 7; i++) {
-            int arrayIndex = i + 1;
+
             //checking whether there is piece or not
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex , myPosition.getColumn()+arrayIndex );
-            if(endPosition.getRow() <= 8 && endPosition.getColumn() <= 8){
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-i , myPosition.getColumn()+i );
+            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
@@ -126,10 +126,10 @@ public class ChessPiece {
         }
        //  Left bottom
         for (int i = 0; i <= 7; i++) {
-            int arrayIndex = i + 1;
+
             //checking whether there is piece or not
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex, myPosition.getColumn()-arrayIndex);
-            if(endPosition.getRow() <= 8 && endPosition.getColumn() <= 8){
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i);
+            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
