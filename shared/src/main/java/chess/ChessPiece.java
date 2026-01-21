@@ -15,7 +15,7 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
     }
@@ -57,30 +57,36 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
         if (piece.getPieceType() == PieceType.BISHOP) {
             return moveBishop(board, myPosition);
-
-
         }
-
+        else if (piece.getPieceType() == PieceType.KING){
+            return moveKing(board, myPosition);
+        }
+        else if (piece.getPieceType() == PieceType.ROOK){
+            return moveRook(board, myPosition);
+        }
+        else if (piece.getPieceType() == PieceType.QUEEN){
+            return moveQueen(board, myPosition);
+        }
 
         return List.of();
     }
 
-    private Collection<ChessMove> moveBishop(ChessBoard board, ChessPosition myPosition) {
-
-        ArrayList<ChessMove> bishop = new ArrayList<>();
-        // Going to top right
-
+    private Collection<ChessMove> moveQueen(ChessBoard board, ChessPosition myPosition){
+        ArrayList<ChessMove> queen = new ArrayList<>();
         for (int i = 0; i <= 7; i++) {
             //checking whether there is piece or not
-
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i);
-            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
+            int arrayIndex = i + 1;
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn());
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
                 if (piece == null) {
-                    bishop.add(move);
-
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
                 }
                 // break if there is a piece
                 else break;
@@ -89,16 +95,19 @@ public class ChessPiece {
         }
         // Going top left
         for (int i = 0; i <= 7; i++) {
-
+            int arrayIndex = i+1;
             //checking whether there is piece or not
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()-i);
-            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex, myPosition.getColumn());
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
                 if (piece == null) {
-                    bishop.add(move);
-
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
                 }
                 // break if there is a piece
                 else break;
@@ -108,16 +117,335 @@ public class ChessPiece {
 
         // right bottom
         for (int i = 0; i <= 7; i++) {
-
+            int arrayIndex = i+1;
             //checking whether there is piece or not
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-i , myPosition.getColumn()+i );
-            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow() , myPosition.getColumn()+arrayIndex );
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        //  Left bottom
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        for (int i = 0; i <= 7; i++) {
+            //checking whether there is piece or not
+            int arrayIndex = i + 1;
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn()+arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        // Going top left
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn()-arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+
+        // right bottom
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex , myPosition.getColumn()+arrayIndex );
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    queen.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        //  Left bottom
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex, myPosition.getColumn()-arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    queen.add(move);
+
+                }
+                else if (piece.pieceColor != pieceColor){
+                    queen.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        return queen;
+    }
+
+
+    private Collection<ChessMove> moveRook(ChessBoard board, ChessPosition myPosition){
+        ArrayList<ChessMove> rook = new ArrayList<>();
+        // Going to top right
+
+        for (int i = 0; i <= 7; i++) {
+            //checking whether there is piece or not
+            int arrayIndex = i + 1;
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn());
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    rook.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    rook.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        // Going top left
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex, myPosition.getColumn());
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    rook.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    rook.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+
+        // right bottom
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow() , myPosition.getColumn()+arrayIndex );
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    rook.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    rook.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        //  Left bottom
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    rook.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    rook.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+
+        return rook;
+    }
+
+
+    private Collection<ChessMove> moveKing(ChessBoard board, ChessPosition myPosition){
+
+        ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
+        ChessPosition end_up = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn());
+        ChessPosition end_down = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn());
+        ChessPosition end_right = new ChessPosition(endPosition.getRow(),endPosition.getColumn()+1);
+        ChessPosition end_left = new ChessPosition(endPosition.getRow(),endPosition.getColumn()-1);
+        ChessPosition end_right_top = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn()+1);
+        ChessPosition end_right_bottom = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn()+1);
+        ChessPosition end_left_top = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn()-1);
+        ChessPosition end_left_bottom = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn()-1);
+
+            ArrayList<ChessMove> function = new ArrayList<>();
+
+            function.addAll(helperKing(board, myPosition,end_up));
+            function.addAll(helperKing(board, myPosition, end_down));
+            function.addAll(helperKing(board, myPosition, end_right));
+            function.addAll(helperKing(board, myPosition, end_left));
+            function.addAll(helperKing(board, myPosition, end_right_top));
+            function.addAll(helperKing(board, myPosition, end_right_bottom));
+            function.addAll(helperKing(board, myPosition, end_left_top));
+            function.addAll(helperKing(board, myPosition, end_left_bottom));
+
+
+
+
+        return function;
+    }
+    private ArrayList<ChessMove> helperKing(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition) {
+        ArrayList<ChessMove> king = new ArrayList<>();
+        if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
+            ChessPiece piece = board.getPiece(endPosition);
+
+
+            ChessMove move = new ChessMove(myPosition, endPosition, null);
+            if (piece == null) {
+                king.add(move);
+            }
+            else if (piece.pieceColor != pieceColor) {
+                king.add(move);
+            }
+        }
+        return king;
+    }
+
+    private Collection<ChessMove> moveBishop(ChessBoard board, ChessPosition myPosition) {
+
+        ArrayList<ChessMove> bishop = new ArrayList<>();
+        // Going to top right
+
+        for (int i = 0; i <= 7; i++) {
+            //checking whether there is piece or not
+            int arrayIndex = i + 1;
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn()+arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
                 if (piece == null) {
                     bishop.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    bishop.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
+        // Going top left
+        for (int i = 0; i <= 7; i++) {
+            int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()+arrayIndex, myPosition.getColumn()-arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    bishop.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    bishop.add(move);
+                    break;
+                }
+                // break if there is a piece
+                else break;
+            }
+            else break;
+        }
 
+        // right bottom
+        for (int i = 0; i <= 7; i++) {
+        int arrayIndex = i+1;
+            //checking whether there is piece or not
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex , myPosition.getColumn()+arrayIndex );
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
+                ChessPiece piece = board.getPiece(endPosition);
+                ChessMove move = new ChessMove(myPosition, endPosition, null);
+                // if not, move to the square
+                if (piece == null) {
+                    bishop.add(move);
+                }
+                else if (piece.pieceColor != pieceColor){
+                    bishop.add(move);
+                    break;
                 }
                 // break if there is a piece
                 else break;
@@ -126,16 +454,20 @@ public class ChessPiece {
         }
        //  Left bottom
         for (int i = 0; i <= 7; i++) {
-
+            int arrayIndex = i+1;
             //checking whether there is piece or not
-            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i);
-            if(endPosition.getRow() >=0 && endPosition.getRow() < 8 && endPosition.getColumn() >=0 && endPosition.getColumn() < 8){
+            ChessPosition endPosition = new ChessPosition(myPosition.getRow()-arrayIndex, myPosition.getColumn()-arrayIndex);
+            if(endPosition.getRow() >=1 && endPosition.getRow() <= 8 && endPosition.getColumn() >=1 && endPosition.getColumn() <= 8){
                 ChessPiece piece = board.getPiece(endPosition);
                 ChessMove move = new ChessMove(myPosition, endPosition, null);
                 // if not, move to the square
                 if (piece == null) {
                     bishop.add(move);
 
+                }
+                else if (piece.pieceColor != pieceColor){
+                    bishop.add(move);
+                    break;
                 }
                 // break if there is a piece
                 else break;
