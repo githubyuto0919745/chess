@@ -81,52 +81,91 @@ public class ChessPiece {
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
         // Black
         ChessPosition end_up = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn());
+        ChessPosition end_double_up = new ChessPosition(endPosition.getRow()+2,endPosition.getColumn());
         ChessPosition end_right_top = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn()+1);
         ChessPosition end_left_top = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn()-1);
         // White
         ChessPosition end_down = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn());
+        ChessPosition end_double_down = new ChessPosition(endPosition.getRow()-2,endPosition.getColumn());
         ChessPosition end_right_bottom = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn()+1);
         ChessPosition end_left_bottom = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn()-1);
 
         ArrayList<ChessMove> function = new ArrayList<>();
 
         if(pieceColor == ChessGame.TeamColor.WHITE){
-            if(myPosition.getRow() ==7) {
-                addPromotion(function, myPosition, end_up);
-                addPromotion(function, myPosition, end_right_top);
-                addPromotion(function, myPosition, end_left_top);
-            } else{
-            function.addAll(helper_forwardPawn(board, myPosition, end_up));
-            function.addAll(helper_getPawn(board, myPosition, end_right_top));
-            function.addAll(helper_getPawn(board, myPosition, end_left_top));
-        }
+            if(myPosition.getRow() == 2) {
 
-        }else if (pieceColor == ChessGame.TeamColor.BLACK) {
-            if(myPosition.getRow() == 2){
-                addPromotion(function, myPosition, end_down);
-                addPromotion(function, myPosition, end_right_bottom);
-                addPromotion(function, myPosition, end_left_bottom);
+                if (board.getPiece(end_up) == null) {
+                    function.addAll(helper_forwardPawn(board, myPosition, end_up));
+                    function.addAll(helper_forwardPawn(board, myPosition, end_double_up));
+                }
+                function.addAll(helper_getPawn(board, myPosition, end_right_top));
+                function.addAll(helper_getPawn(board, myPosition, end_left_top));
             }
             else {
-            function.addAll(helper_forwardPawn(board, myPosition, end_down));
-            function.addAll(helper_getPawn(board, myPosition, end_right_bottom));
-            function.addAll(helper_getPawn(board, myPosition, end_left_bottom));
-        }
+                if(end_up.getRow() ==8) {
+
+                if (board.getPiece(end_up) == null) {
+                    addPromotion(function, myPosition, end_up);
+                }
+                ChessPiece right = board.getPiece(end_right_top);
+                if (right != null && right.pieceColor != pieceColor) {
+                    addPromotion(function, myPosition, end_right_top);
+                }
+                ChessPiece left = board.getPiece(end_left_top);
+                if (left != null && left.pieceColor != pieceColor) {
+                    addPromotion(function, myPosition, end_left_top);
+                }}
 
 
+                else{
+                function.addAll(helper_forwardPawn(board, myPosition, end_up));
+                function.addAll(helper_getPawn(board, myPosition, end_right_top));
+                function.addAll(helper_getPawn(board, myPosition, end_left_top));
+            }}
 
+
+        }else if (pieceColor == ChessGame.TeamColor.BLACK) {
+            if(myPosition.getRow() == 7) {
+
+                if (board.getPiece(end_down) == null) {
+                    function.addAll(helper_forwardPawn(board, myPosition, end_down));
+                    function.addAll(helper_forwardPawn(board, myPosition, end_double_down));
+                }
+                function.addAll(helper_getPawn(board, myPosition, end_right_bottom));
+                function.addAll(helper_getPawn(board, myPosition, end_left_bottom));
+            } else {
+                if (end_down.getRow() == 1){
+                    if(board.getPiece(end_down) == null){
+                        addPromotion(function, myPosition, end_down);
+                    }
+                    ChessPiece right = board.getPiece(end_right_bottom);
+                    if(right != null&& right.pieceColor != pieceColor) {
+                        addPromotion(function, myPosition, end_right_bottom);
+                    }
+                    ChessPiece left = board.getPiece(end_left_bottom);
+                    if(left != null&& left.pieceColor != pieceColor) {
+                        addPromotion(function, myPosition, end_left_bottom);
+                    }
+                } else {
+                    function.addAll(helper_forwardPawn(board, myPosition, end_down));
+                    function.addAll(helper_getPawn(board, myPosition, end_right_bottom));
+                    function.addAll(helper_getPawn(board, myPosition, end_left_bottom));
+                }
+            }
         }
         return function;
     }
     private void addPromotion(List<ChessMove> function, ChessPosition start, ChessPosition end){
         if (end.getRow() >=1 && end.getRow() <=8&& end.getColumn() >=1 && end.getColumn() <=8){
-        function.add(promotion_pawn(start, end, PieceType.QUEEN));
-        function.add(promotion_pawn(start, end, PieceType.ROOK));
-        function.add(promotion_pawn(start, end, PieceType.BISHOP));
-        function.add(promotion_pawn(start, end, PieceType.KNIGHT));
-    }}
-    private ChessMove promotion_pawn(ChessPosition myPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
+                function.add(promotion_pawn(start, end, PieceType.QUEEN));
+                function.add(promotion_pawn(start, end, PieceType.ROOK));
+                function.add(promotion_pawn(start, end, PieceType.BISHOP));
+                function.add(promotion_pawn(start, end, PieceType.KNIGHT));
+        }
+    }
 
+    private ChessMove promotion_pawn(ChessPosition myPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
         return new ChessMove(myPosition, endPosition, promotionPiece);
     }
 
