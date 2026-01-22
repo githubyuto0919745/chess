@@ -114,14 +114,19 @@ public class ChessPiece {
                 if (board.getPiece(end_up) == null) {
                     addPromotion(function, myPosition, end_up);
                 }
-                ChessPiece right = board.getPiece(end_right_top);
+
+                    if (isOnBoard(end_right_top)) {
+                        ChessPiece right = board.getPiece(end_right_top);
                 if (right != null && right.pieceColor != pieceColor) {
                     addPromotion(function, myPosition, end_right_top);
-                }
+                }}
+
+                    if (isOnBoard(end_left_top)) {
                 ChessPiece left = board.getPiece(end_left_top);
                 if (left != null && left.pieceColor != pieceColor) {
                     addPromotion(function, myPosition, end_left_top);
                 }}
+                }
 
 
                 else{
@@ -145,14 +150,18 @@ public class ChessPiece {
                     if(board.getPiece(end_down) == null){
                         addPromotion(function, myPosition, end_down);
                     }
-                    ChessPiece right = board.getPiece(end_right_bottom);
+
+                    if (isOnBoard(end_right_bottom)) {
+                        ChessPiece right = board.getPiece(end_right_bottom);
                     if(right != null&& right.pieceColor != pieceColor) {
                         addPromotion(function, myPosition, end_right_bottom);
-                    }
+                    }}
+
+                    if (isOnBoard(end_left_bottom)) {
                     ChessPiece left = board.getPiece(end_left_bottom);
                     if(left != null&& left.pieceColor != pieceColor) {
                         addPromotion(function, myPosition, end_left_bottom);
-                    }
+                    }}
                 } else {
                     function.addAll(helper_forwardPawn(board, myPosition, end_down));
                     function.addAll(helper_getPawn(board, myPosition, end_right_bottom));
@@ -161,6 +170,11 @@ public class ChessPiece {
             }
         }
         return function;
+    }
+
+    private boolean isOnBoard(ChessPosition pos) {
+        return pos.getRow() >= 1 && pos.getRow() <= 8 &&
+                pos.getColumn() >= 1 && pos.getColumn() <= 8;
     }
     private void addPromotion(List<ChessMove> function, ChessPosition start, ChessPosition end){
         if (end.getRow() >=1 && end.getRow() <=8&& end.getColumn() >=1 && end.getColumn() <=8){
