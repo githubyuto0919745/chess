@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static java.awt.Color.BLACK;
+import static java.awt.Color.black;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -70,9 +73,69 @@ public class ChessPiece {
         else if(piece.getPieceType() == PieceType.KNIGHT){
             return moveKnight(board, myPosition);
         }
+        else if(piece.getPieceType()== PieceType.PAWN){
+            return movePawn(board, myPosition);
+        }
 
         return List.of();
     }
+
+    private Collection<ChessMove> movePawn(ChessBoard board, ChessPosition myPosition){
+        ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
+        // Black
+        ChessPosition end_up = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn());
+        ChessPosition end_right_top = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn()+1);
+        ChessPosition end_left_top = new ChessPosition(endPosition.getRow()+1,endPosition.getColumn()-1);
+        // White
+        ChessPosition end_down = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn());
+        ChessPosition end_right_bottom = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn()+1);
+        ChessPosition end_left_bottom = new ChessPosition(endPosition.getRow()-1,endPosition.getColumn()-1);
+
+
+        ArrayList<ChessMove> function = new ArrayList<>();
+
+
+
+
+        if(pieceColor == ChessGame.TeamColor.WHITE){
+            function.addAll(helper_forwardPawn(board, myPosition,end_up));
+
+            function.addAll(helper_getPawn(board, myPosition, end_right_top));
+            function.addAll(helper_getPawn(board, myPosition, end_left_top));
+        }else if (pieceColor == ChessGame.TeamColor.BLACK) {
+            function.addAll(helper_forwardPawn(board, myPosition, end_down));
+            function.addAll(helper_getPawn(board, myPosition, end_right_bottom));
+            function.addAll(helper_getPawn(board, myPosition, end_left_bottom));
+        }
+        return function;
+    }
+
+
+    private ArrayList<ChessMove> helper_forwardPawn(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition) {
+        ArrayList<ChessMove> pawn = new ArrayList<>();
+        if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
+            ChessPiece piece = board.getPiece(endPosition);
+            ChessMove move = new ChessMove(myPosition, endPosition, null);
+            if (piece == null) {
+                pawn.add(move);
+            }
+        }
+        return pawn;
+    }
+    private ArrayList<ChessMove> helper_getPawn(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition) {
+        ArrayList<ChessMove> pawn = new ArrayList<>();
+        if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
+            ChessPiece piece = board.getPiece(endPosition);
+            ChessMove move = new ChessMove(myPosition, endPosition, null);
+            if (piece.pieceColor != pieceColor) {
+                pawn.add(move);
+            }
+        }
+        return pawn;
+    }
+
+
+
 
     private Collection<ChessMove> moveKnight(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());

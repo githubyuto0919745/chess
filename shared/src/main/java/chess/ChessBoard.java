@@ -23,7 +23,6 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
 
         squares[position.getRow()-1][position.getColumn()-1] = piece;
-
     }
 
     /**
@@ -43,7 +42,17 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
-    public void resetBoard() {
+    public  void resetBoard() {
+//        boolean reset = true;
+//        ChessPiece piece = getPiece(myPosition);
+//
+//        if(reset == true){
+//            piece == null;
+//        }
+
+
 
     }
+
 }
+
