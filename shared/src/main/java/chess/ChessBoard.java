@@ -43,13 +43,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public  void resetBoard() {
-//        boolean reset = true;
-//        ChessPiece piece = getPiece(myPosition);
-//
-//        if(reset == true){
-//            piece == null;
-//        }
-
 
 
     }
