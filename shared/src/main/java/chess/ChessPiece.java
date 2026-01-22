@@ -56,6 +56,11 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
+
+        if (piece == null) {
+            return List.of();
+        }
+
         if (piece.getPieceType() == PieceType.BISHOP) {
             return moveBishop(board, myPosition);
         }
