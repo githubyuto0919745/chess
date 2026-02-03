@@ -1,9 +1,7 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -53,23 +51,30 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+    public boolean validMoves(ChessPosition startPosition) {
 //static method - modifier
 // instance method - not static/ you need the instance method to call the function/ this. means in the instance
         // early returning - make condition
         ChessPiece piece = board.getPiece(startPosition);
         if(piece ==  null){
-            return null;
+            return false;
         }
         return helpervalidMoves(piece, startPosition);
     }
 
-    private Collection<ChessMove> helpervalidMoves(ChessPiece piece, ChessPosition myPosition){
+    private boolean helpervalidMoves(ChessPiece piece, ChessPosition myPosition){
         Collection<ChessMove> candidateMove = piece.pieceMoves(board, myPosition);
-        ArrayList<ChessMove> validMove = new ArrayList<>();
+        boolean validMove = true;
 
         for(int i = 0; i < candidateMove.size(); i++){
-            if()
+            if(!isInCheck(TeamColor.BLACK)){
+                validMove = true;
+            }else if(!isInCheck(TeamColor.WHITE)){
+                validMove = true;
+            }
+            else{
+                validMove = false;
+            }
         }
         return validMove;
     }
@@ -92,14 +97,10 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition;
-        Collection<ChessMove> candidateMove;
-        ChessPiece piece;
 
         for(int row = 0; row < 8; row ++){
             for(int col = 0; col < 8; col ++){
-                ChessPosition myPosition = new ChessPosition (row, col);
-                piece = board.getPiece(myPosition);
-                candidateMove = piece.pieceMoves(board, myPosition);
+                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 if(piece !=null && piece.getTeamColor() == teamColor && piece.getPieceType()==ChessPiece.PieceType.KING){
                     kingPosition = new ChessPosition(row, col);
                     break;
@@ -107,16 +108,21 @@ public class ChessGame {
             }
         }
 
+        for(int row = 0; row < 8; row ++){
+            for(int col = 0; col < 8; col ++){
+                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                Collection <ChessMove> candidateMove = piece.pieceMoves(board,new ChessPosition(row, col) );
+                if (piece != null & piece.getTeamColor()!= teamColor) {
+                    for (int i = 0; i< candidateMove.size(); i++){
+                        if(candidateMove == kingPosition[i]){
+                            return true;
+                        }
 
-        for (int i = 0; i< candidateMove.size)
-        if (piece != null & piece.getTeamColor()!= teamColor && piece.getPieceType() != ChessPiece.PieceType.KING)
-        {
-
+                    }
+                }
+            }
         }
-
-
-
-        return kingPosition;
+        return true;
     }
 
     /**
