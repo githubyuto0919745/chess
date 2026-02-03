@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -60,11 +61,19 @@ public class ChessGame {
             return null;
         }
 
-        Collection<ChessMove> pieceMoves = piece.pieceMoves(board,startPosition);
-
 
 
         return null;
+    }
+
+    private Collection<ChessMove> helpervalidMoves(ChessPiece piece, ChessPosition myPosition){
+        Collection<ChessMove> candidateMove = piece.pieceMoves(board,myPosition);
+        ArrayList<ChessMove> validMove = new ArrayList<>();
+
+        for(int i = 0; i < candidateMove.size(); i++){
+
+        }
+        return validMove;
     }
 
     /**
