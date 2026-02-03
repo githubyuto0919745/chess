@@ -60,18 +60,15 @@ public class ChessGame {
         if(piece ==  null){
             return null;
         }
-
-
-
-        return null;
+        return helpervalidMoves(piece, startPosition);
     }
 
     private Collection<ChessMove> helpervalidMoves(ChessPiece piece, ChessPosition myPosition){
-        Collection<ChessMove> candidateMove = piece.pieceMoves(board,myPosition);
+        Collection<ChessMove> candidateMove = piece.pieceMoves(board, myPosition);
         ArrayList<ChessMove> validMove = new ArrayList<>();
 
         for(int i = 0; i < candidateMove.size(); i++){
-
+            if()
         }
         return validMove;
     }
@@ -93,7 +90,24 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition;
+
+        for(int row = 0; row < 8; row ++){
+            for(int col = 0; col < 8; col ++){
+                ChessPiece piece = board[row][col];
+
+                if(piece !=null && piece.getTeamColor() == teamColor && piece.getPieceType()==ChessPiece.PieceType.KING){
+                    kingPosition = new ChessPosition(row, col);
+                    break;
+                }else if{piece !=null && piece.getTeamColor() != teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
+                    kingPosition = new ChessPosition(row, col);
+                    break;
+                }else break;
+            }
+        }
+            if
+
+        return kingPosition;
     }
 
     /**
@@ -134,6 +148,24 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
