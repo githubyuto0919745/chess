@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -91,21 +92,29 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition;
+        Collection<ChessMove> candidateMove;
+        ChessPiece piece;
 
         for(int row = 0; row < 8; row ++){
             for(int col = 0; col < 8; col ++){
-                ChessPiece piece = board[row][col];
-
+                ChessPosition myPosition = new ChessPosition (row, col);
+                piece = board.getPiece(myPosition);
+                candidateMove = piece.pieceMoves(board, myPosition);
                 if(piece !=null && piece.getTeamColor() == teamColor && piece.getPieceType()==ChessPiece.PieceType.KING){
                     kingPosition = new ChessPosition(row, col);
                     break;
-                }else if{piece !=null && piece.getTeamColor() != teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
-                    kingPosition = new ChessPosition(row, col);
-                    break;
-                }else break;
+                }
             }
         }
-            if
+
+
+        for (int i = 0; i< candidateMove.size)
+        if (piece != null & piece.getTeamColor()!= teamColor && piece.getPieceType() != ChessPiece.PieceType.KING)
+        {
+
+        }
+
+
 
         return kingPosition;
     }
