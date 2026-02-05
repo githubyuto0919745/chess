@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -11,7 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame {
     ChessBoard board = new ChessBoard();
-    TeamColor team ;
+    TeamColor team = TeamColor.WHITE ;
     public ChessGame() {
 
     }
@@ -47,43 +48,37 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public boolean validMoves(ChessPosition startPosition) {
-//static method - modifier
-// instance method - not static/ you need the instance method to call the function/ this. means in the instance
-        // early returning - make condition
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+
         ChessPiece piece = board.getPiece(startPosition);
         if(piece ==  null){
-            return false;
+            return null;
         }
-        return helpervalidMoves(piece, startPosition);
-    }
-
-    private boolean helpervalidMoves(ChessPiece piece, ChessPosition myPosition){
-        Collection<ChessMove> candidateMove = piece.pieceMoves(board, myPosition);
+        Collection<ChessMove> candidateMove = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMove = new ArrayList<>();
 
         for (ChessMove move : candidateMove){
-
-            ChessPiece captured = board.getPiece(move.getEndPosition());
-
-            // move piece
-            board.addPiece(move.getEndPosition(), piece);
-            // Get rid of the piece
-            board.addPiece(myPosition,null);
-
-            boolean isChecked = isInCheck(team);
-
-            // undo
-            board.addPiece(myPosition,piece);
-            board.addPiece(move.getEndPosition(), captured);
-
-
-            if(!isChecked){
-                return true;
+            if (isValidMove(piece, startPosition, move)){
+                validMove.add(move);
             }
         }
-        return false;
+        return validMove;
+
     }
 
+    private boolean isValidMove(ChessPiece piece, ChessPosition myPosition, ChessMove move){
+        ChessPiece captured = board.getPiece(move.getEndPosition());
+        // move piece
+        board.addPiece(move.getEndPosition(), piece);
+        // Get rid of the piece
+        board.addPiece(myPosition,null);
+        boolean isChecked = isInCheck(team);
+        // undo
+        board.addPiece(myPosition,piece);
+        board.addPiece(move.getEndPosition(), captured);
+
+        return !isChecked;
+    }
     /**
      * Makes a move in a chess game
      *
@@ -115,7 +110,7 @@ public class ChessGame {
         for(int row = 0; row < 8; row ++){
             for(int col = 0; col < 8; col ++){
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
-                if (piece != null & piece.getTeamColor()!= teamColor) {
+                if (piece != null && piece.getTeamColor()!= teamColor) {
                     Collection <ChessMove> candidateMove = piece.pieceMoves(board,new ChessPosition(row, col) );
                     for (ChessMove move: candidateMove){
                         if(move.getEndPosition().equals(kingPosition)){
@@ -150,13 +145,34 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+    private Collection<ChessMove> validmoveTeam(TeamColor teamColor){
+        Collection<ChessMove> validmoveteam = new ArrayList<>();
+
+        for(int row = 0; row < 8; row ++){
+            for(int col = 0; col < 8; col ++){
+                ChessPosition position = new ChessPosition(row,col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getTeamColor()!= teamColor) {
+                    Collection<ChessMove> pieceMove = validMoves(position);
+
+                    if(pieceMove !=null){
+                        validmoveteam.addAll(pieceMove);
+                    }
+                }
+            }
+        }
+
+        return validmoveteam;
+    }
+
     /**
      * Sets this game's chessboard with a given board
      *
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
