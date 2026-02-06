@@ -67,7 +67,21 @@ public class ChessGame {
     }
 
     private boolean isValidMove(ChessPiece piece, ChessPosition myPosition, ChessMove move) {
+        Collection<ChessMove> moves = piece.pieceMoves(board, myPosition);
+        boolean valid = false;
+
+        for (ChessMove m : moves){
+            if (m.getEndPosition().equals(move.getEndPosition())){
+                valid = true;
+                break;
+            }
+        }
+        if(!valid) return false;
+
         ChessPiece captured = board.getPiece(move.getEndPosition());
+        if(captured != null && captured.getTeamColor() == piece.getTeamColor()){
+            return false;
+        }
         // move piece
         board.addPiece(move.getEndPosition(), piece);
         // Get rid of the piece
