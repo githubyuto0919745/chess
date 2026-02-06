@@ -50,8 +50,8 @@ public class ChessBoard {
      */
 
     public void clearBoard(){
-        for (int row =1;  row < 8; row++){
-            for (int col = 1; col < 8; col++){
+        for (int row = 0;  row < 8; row++){
+            for (int col = 0; col < 8; col++){
                 squares[row][col] = null;
             }
         }
