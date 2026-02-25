@@ -11,14 +11,21 @@ import java.util.Map;
 
 public class Server {
     ArrayList<User> users = new ArrayList<>();
-    private Context ctx;
-    User user = ctx.bodyAsClass(User.class);
     private final Javalin javalin;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        javalin.post("/user", this::handler);
+        javalin.post("/user", this::registerHandler);
+        javalin.post("/session", this::loginHandler);
+    }
+
+    private void registerHandler(Context ctx){
+        User user = ctx.bodyAsClass(User.class);
+        users.add(user);
+        ctx.json("registered");
+    }
+    private void loginHandler(Context ctx){
 
     }
 
@@ -26,14 +33,8 @@ public class Server {
         javalin.start(desiredPort);
         return javalin.port();
     }
-    private void handler(Context ctx){
-        users.add(user);
-        list(ctx);
-    }
-    private void list(Context ctx){
-        String jsonFormat = new Gson().toJson(Map.of("username", users));
-        ctx.json(jsonFormat);
-    }
+
+
 
     public void stop() {
         javalin.stop();
