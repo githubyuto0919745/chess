@@ -10,13 +10,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Server {
-    ArrayList<String> users = new ArrayList<>();
+    ArrayList<User> users = new ArrayList<>();
+    private Context ctx;
+    User user = ctx.bodyAsClass(User.class);
     private final Javalin javalin;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        javalin.post("/user/{username}", this::handler);
+        javalin.post("/user", this::handler);
 
     }
 
@@ -25,14 +27,8 @@ public class Server {
         return javalin.port();
     }
     private void handler(Context ctx){
-        String username;
-        String password;
-        String email;
-
-        String register = ctx.pathParam("username");
-        users.add(register);
+        users.add(user);
         list(ctx);
-
     }
     private void list(Context ctx){
         String jsonFormat = new Gson().toJson(Map.of("username", users));
