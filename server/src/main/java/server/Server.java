@@ -1,6 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.MemoryUserDataAccess;
+import dataaccess.UserDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Server {
-    ArrayList<User> users = new ArrayList<>();
+    UserDataAccess dataaccess = new MemoryUserDataAccess();
     private final Javalin javalin;
 
     public Server() {
@@ -21,8 +23,9 @@ public class Server {
     }
 
     private void registerHandler(Context ctx){
-        User user = ctx.bodyAsClass(User.class);
-        users.add(user);
+        User user = new Gson().fromJson(ctx.body(),User.class);
+        Service1 service = new Service1();
+        service.register(user);
         ctx.json("registered");
     }
     private void loginHandler(Context ctx){
