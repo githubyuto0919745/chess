@@ -18,5 +18,4 @@ public class UserDAO implements UserDataAccess{
     public UserData deleteUser(String username){
         return users.remove(username);
     }
-
 }

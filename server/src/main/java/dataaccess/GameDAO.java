@@ -1,25 +1,25 @@
 package dataaccess;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-
-public class GameDAO {
+import Record.GameData;
+public class GameDAO implements GameDataAccess {
     HashMap<String, GameData> games = new HashMap<>();
+
     private GameData getGame(String gameName){
         return games.get(gameName);
     }
     private GameData createGame(GameData game){
-        return games.put(game.getGameID(), game);
+        return games.put(game.gameName(), game);
     }
-    private GameData listUser(String gameName){
-        for(GameData game: games){
-            if(game.getGame().equal(gameName)){
-                return game;
-            }
-        }
-        return game;
+    private ArrayList<GameData> listUser(){
+        return new ArrayList<>(games.values());
     }
-    private GameData updateGame(GameData gameID){
+    private GameData updateGame(GameData game){
+        return games.put(game.gameName(), game);
+
 
     }
 

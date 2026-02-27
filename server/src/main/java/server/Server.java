@@ -18,11 +18,16 @@ public class Server {
         javalin.post("/session", this::loginHandler);
     }
 
-    private void registerHandler(Context ctx){
+    private void registerHandler(Context ctx) {
         UserData user = new Gson().fromJson(ctx.body(), UserData.class);
-        Service1 service = new Service1();
-        service.register(user);
+        AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
+
+        RegisterService registerservice = new RegisterService();
+        boolean register = registerservice.register(user, auth);
+
+        if(register){
         ctx.json("registered");
+        }
     }
     private void loginHandler(Context ctx){
 

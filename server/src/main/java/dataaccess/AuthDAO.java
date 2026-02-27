@@ -3,7 +3,7 @@ package dataaccess;
 import java.util.HashMap;
 import Record.AuthData;
 
-public class AuthDAO {
+public class AuthDAO implements AuthDataAccess {
     HashMap<String, AuthData> auths = new HashMap<>();
     public AuthDAO() {
     }
