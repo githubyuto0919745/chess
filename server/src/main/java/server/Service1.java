@@ -1,6 +1,5 @@
 package server;
 
-import dataaccess.MemoryUserDataAccess;
 import dataaccess.UserDataAccess;
 
 public class Service1 {

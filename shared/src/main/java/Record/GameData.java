@@ -29,4 +29,11 @@ public class GameData {
     public String getBlackusername(){
         return blackUsername;
     }
+    public String getGameName(){
+        return gameName;
+    }
+    public String getGame(){
+        return game;
+    }
+
 }
