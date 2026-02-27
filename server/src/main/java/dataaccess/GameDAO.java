@@ -8,16 +8,16 @@ import Record.GameData;
 public class GameDAO implements GameDataAccess {
     HashMap<String, GameData> games = new HashMap<>();
 
-    private GameData getGame(String gameName){
+    public GameData getGame(String gameName){
         return games.get(gameName);
     }
-    private GameData createGame(GameData game){
+    public GameData createGame(GameData game){
         return games.put(game.gameName(), game);
     }
-    private ArrayList<GameData> listUser(){
+    public ArrayList<GameData> listUser(){
         return new ArrayList<>(games.values());
     }
-    private GameData updateGame(GameData game){
+    public GameData updateGame(GameData game){
         return games.put(game.gameName(), game);
 
 

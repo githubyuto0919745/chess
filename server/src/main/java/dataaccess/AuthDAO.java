@@ -8,13 +8,13 @@ public class AuthDAO implements AuthDataAccess {
     public AuthDAO() {
     }
 
-    private AuthData getAuth(String authToken) {
+    public AuthData getAuth(String authToken) {
         return auths.get(authToken);
     }
-    private AuthData createAuth(AuthData auth){
+    public AuthData createAuth(AuthData auth){
         return auths.put(auth.authToken(), auth);
     }
-    private AuthData deleteAuth(String authToken){
+    public AuthData deleteAuth(String authToken){
         return auths.remove(authToken);
     }
 
