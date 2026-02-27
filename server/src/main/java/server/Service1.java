@@ -1,20 +1,22 @@
 package server;
 
+import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
+import Record.UserData;
 
 public class Service1 {
-    UserDataAccess UserData;
+    UserDataAccess userDataAccess;
     public Service1(){
-        UserData = new MemoryUserDataAccess();
+        userDataAccess = new UserDAO();
     }
-    public boolean register(User user){
-        if(user.username == null ||user.password == null){
+    public boolean register(UserData user){
+        if(user.username() == null ||user.password() == null){
 
         }else if(){
 
         }
         else{
-            createUser();
+            userDataAccess.createUser();
             createAuth();
         }
     }

@@ -5,6 +5,7 @@ import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
+import Record.*;
 
 public class Server {
     UserDataAccess dataaccess = new UserDAO();

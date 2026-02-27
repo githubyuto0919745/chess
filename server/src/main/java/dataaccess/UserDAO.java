@@ -1,7 +1,7 @@
 package dataaccess;
 
 import java.util.HashMap;
-
+import Record.UserData;
 
 public class UserDAO implements UserDataAccess{
     HashMap<String, UserData> users = new HashMap<>();
@@ -9,13 +9,14 @@ public class UserDAO implements UserDataAccess{
 
     }
 
-    private UserData getUser(String username){
+    public UserData getUser(String username){
         return users.get(username);
     }
-    private UserData createUser(UserData user){
-        return users.put(user.getUsername(), user);
+    public UserData createUser(UserData user){
+        return users.put(user.username(), user);
     }
-    private UserData deleteUser(String username){
+    public UserData deleteUser(String username){
         return users.remove(username);
     }
+
 }
