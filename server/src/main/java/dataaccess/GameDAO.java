@@ -6,21 +6,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import Record.GameData;
 public class GameDAO implements GameDataAccess {
-    HashMap<String, GameData> games = new HashMap<>();
+    HashMap<Integer, GameData> games = new HashMap<>();
 
-    public GameData getGame(String gameName){
-        return games.get(gameName);
+    public GameData getGame(int gameID){
+        return games.get(gameID);
     }
     public GameData createGame(GameData game){
-        return games.put(game.gameName(), game);
+        return games.put(game.gameID(), game);
     }
-    public ArrayList<GameData> listUser(){
-        return new ArrayList<>(games.values());
+    public Collection<GameData> listUser(){
+        return new ArrayList<GameData>(games.values());
     }
     public GameData updateGame(GameData game){
-        return games.put(game.gameName(), game);
-
-
+        return games.put(game.gameID(), game);
+    }
+    public GameData deleteGame(int gameID){
+        return games.remove(gameID);
     }
 
 }

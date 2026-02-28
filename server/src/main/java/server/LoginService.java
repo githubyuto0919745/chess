@@ -26,7 +26,7 @@ public class LoginService {
         if(!isValidPassword(user,user.password() )){
             throw new RuntimeException("Password is invalid");
         }
-        authDataAccess.createAuth(auth);
-        return auth;
+        return authDataAccess.createAuth(auth);
+
     }
 }

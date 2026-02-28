@@ -3,12 +3,12 @@ package server;
 import dataaccess.*;
 import Record.*;
 
-public class CreateGamesService {
+public class CreateGameService {
 
     UserDataAccess userDataAccess;
     AuthDataAccess authDataAccess;
     GameDataAccess gameDataAccess;
-    public CreateGamesService() {
+    public CreateGameService() {
 
         userDataAccess = new UserDAO();
         authDataAccess = new AuthDAO();
@@ -16,13 +16,13 @@ public class CreateGamesService {
     }
 
 
-    public GameData createGame(String authToken){
-        AuthData auth = AuthDataAccess.getAuth(authToken);
+    public GameData CreateGame(GameData game, String authToken){
+        AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){
             throw new RuntimeException("Unauthorized");
         }
-        GameDataAccess.createGame();
+        return gameDataAccess.createGame(game);
 
     }
 }

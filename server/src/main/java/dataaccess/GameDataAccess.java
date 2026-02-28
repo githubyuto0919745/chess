@@ -1,8 +1,13 @@
 package dataaccess;
 import Record.GameData;
+
+import java.util.Collection;
+
 public interface GameDataAccess {
-     GameData getGame(String gameName);
+     GameData getGame(int gameID);
      GameData createGame(GameData game);
-     GameData listUser();
+     Collection<GameData> listUser();
      GameData updateGame(GameData game);
+
+     GameData deleteGame(int gameID);
 }
