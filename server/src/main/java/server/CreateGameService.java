@@ -16,7 +16,7 @@ public class CreateGameService {
     }
 
 
-    public void CreateGame(GameData game, String authToken){
+    public void createGames(GameData game, String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){

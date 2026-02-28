@@ -16,7 +16,7 @@ public class ListGamesService {
     }
 
 
-    public void ListGame(String authToken){
+    public void listGame(String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){

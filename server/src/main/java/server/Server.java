@@ -29,39 +29,62 @@ public class Server {
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
         GameData game = new Gson().fromJson(ctx.body(), GameData.class);
 
-        clearservice.Clear(user, auth, game);
+        clearservice.clears(user, auth, game);
     }
     private void registerHandler(Context ctx) {
-        UserData user = new Gson().fromJson(ctx.body(), UserData.class);
-        AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
-
         RegisterService registerservice = new RegisterService();
-        registerservice.Register(user, auth);
+        UserData user = new Gson().fromJson(ctx.body(), UserData.class);
+        if(user == null || user.username()==null || user.password() == null) {
+            ErrorMessage error = new ErrorMessage("Error: bad request");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(400);
+            return;
+        }
+        try {
+            AuthData auth = new AuthData(user.username(), user.username()+"_token");
+            registerservice.register(user, auth);
+            ctx.result(new Gson().toJson(auth));
+            ctx.status(200);
+        }catch(RuntimeException e){
+            ErrorMessage error = new ErrorMessage("Error: already taken");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(403);
+        }
+
     }
     private void loginHandler(Context ctx){
         LoginService loginService = new LoginService();
         UserData user = new Gson().fromJson(ctx.body(), UserData.class);
-        AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
-
-        if(user == null){
-            ctx.status(401);
+        if(user == null || user.username()==null || user.password() == null){
+            ErrorMessage error = new ErrorMessage("Error: bad request");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(400);
             return;
         }
-        ctx.status(200);
-        loginService.Login(user.username(), auth);
+        AuthData auth = new AuthData( user.username(), user.username()+"_token");
+
+        try {
+            loginService.login(user.username(), user.password(), auth);
+            ctx.result(new Gson().toJson(auth));
+            ctx.status(200);
+        }catch(RuntimeException e){
+            ErrorMessage error = new ErrorMessage("Error: unauthorized");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(401);
+        }
     }
     private void logoutHandler(Context ctx){
         LogoutService logoutService = new LogoutService();
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
 
-        logoutService.Logout(auth.authToken());
+        logoutService.logout(auth.authToken());
     }
 
     private void listGameHandler(Context ctx){
         ListGamesService listgamesService = new ListGamesService();
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
 
-        listgamesService.ListGame(auth.authToken());
+        listgamesService.listGame(auth.authToken());
     }
 
     private void createGameHandler(Context ctx){
@@ -69,7 +92,7 @@ public class Server {
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
         GameData game = new Gson().fromJson(ctx.body(), GameData.class);
 
-        createGameService.CreateGame(game,auth.authToken());
+        createGameService.createGames(game,auth.authToken());
     }
 
     private void joinGameHandler(Context ctx){
@@ -77,7 +100,7 @@ public class Server {
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
         GameData game = new Gson().fromJson(ctx.body(), GameData.class);
 
-        joinGameService.JoinGame(auth.authToken(), game.gameID(), auth.username());
+        joinGameService.joinGame(auth.authToken(), game.gameID(), auth.username());
     }
 
 

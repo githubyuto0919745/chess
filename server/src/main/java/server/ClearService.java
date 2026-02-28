@@ -16,7 +16,7 @@ public class ClearService {
         gameDataAccess = new GameDAO();
     }
 
-    public void Clear(UserData user, AuthData auth, GameData game){
+    public void clears(UserData user, AuthData auth, GameData game){
 
 
         userDataAccess.clear();

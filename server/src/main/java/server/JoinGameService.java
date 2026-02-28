@@ -16,7 +16,7 @@ public class JoinGameService {
     }
 
 
-    public void JoinGame(String authToken, int gameID, String playerColor){
+    public void joinGame(String authToken, int gameID, String playerColor){
         AuthData auth = authDataAccess.getAuth(authToken);
         if(auth ==null){
             throw new RuntimeException("Unauthorized");

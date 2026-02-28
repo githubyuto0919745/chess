@@ -14,16 +14,16 @@ public class LoginService {
         authDataAccess = new AuthDAO();
     }
 
-    public boolean isValidPassword(UserData user, String storedPassword){
-        return user.password().equals(storedPassword);
+    public boolean isValidPassword(UserData user, String passwordRequest){
+        return user.password().equals(passwordRequest);
     }
-    public void Login(String username, AuthData auth){
+    public void login(String username, String password, AuthData auth){
         UserData user = userDataAccess.getUser(username);
 
         if(user == null){
             throw new RuntimeException("Not Found Username");
         }
-        if(!isValidPassword(user,user.password() )){
+        if(!isValidPassword(user,password )){
             throw new RuntimeException("Password is invalid");
         }
         authDataAccess.createAuth(auth);

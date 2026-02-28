@@ -15,7 +15,7 @@ public class LogoutService {
         authDataAccess = new AuthDAO();
     }
 
-    public void Logout(String authToken){
+    public void logout(String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){
