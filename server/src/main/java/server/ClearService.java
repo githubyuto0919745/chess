@@ -17,8 +17,10 @@ public class ClearService {
     }
 
     public void Clear(UserData user, AuthData auth, GameData game){
-        userDataAccess.deleteUser(user.username());
-        authDataAccess.deleteAuth(auth.authToken());
-        gameDataAccess.deleteGame(game.gameID());
+
+
+        userDataAccess.clear();
+        authDataAccess.clear();
+        gameDataAccess.clear();
     }
 }

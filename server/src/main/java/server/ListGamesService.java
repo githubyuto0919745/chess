@@ -3,8 +3,6 @@ package server;
 import dataaccess.*;
 import Record.*;
 
-import java.util.Collection;
-
 public class ListGamesService {
 
     UserDataAccess userDataAccess;
@@ -18,13 +16,13 @@ public class ListGamesService {
     }
 
 
-    public Collection<GameData> ListGame(String authToken){
+    public void ListGame(String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){
             throw new RuntimeException("Unauthorized");
         }
-        return  gameDataAccess.listUser();
+        gameDataAccess.listUser();
     }
 }
 

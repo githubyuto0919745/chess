@@ -17,7 +17,7 @@ public class LoginService {
     public boolean isValidPassword(UserData user, String storedPassword){
         return user.password().equals(storedPassword);
     }
-    public AuthData Login(String username, AuthData auth){
+    public void Login(String username, AuthData auth){
         UserData user = userDataAccess.getUser(username);
 
         if(user == null){
@@ -26,7 +26,7 @@ public class LoginService {
         if(!isValidPassword(user,user.password() )){
             throw new RuntimeException("Password is invalid");
         }
-        return authDataAccess.createAuth(auth);
+        authDataAccess.createAuth(auth);
 
     }
 }

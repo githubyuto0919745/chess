@@ -36,13 +36,18 @@ public class Server {
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
 
         RegisterService registerservice = new RegisterService();
-        registerservice.register(user, auth);
+        registerservice.Register(user, auth);
     }
     private void loginHandler(Context ctx){
         LoginService loginService = new LoginService();
         UserData user = new Gson().fromJson(ctx.body(), UserData.class);
         AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
 
+        if(user == null){
+            ctx.status(401);
+            return;
+        }
+        ctx.status(200);
         loginService.Login(user.username(), auth);
     }
     private void logoutHandler(Context ctx){

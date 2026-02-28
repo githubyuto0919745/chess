@@ -15,14 +15,13 @@ public class LogoutService {
         authDataAccess = new AuthDAO();
     }
 
-    public AuthData Logout(String authToken){
+    public void Logout(String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){
             throw new RuntimeException("Unauthorized");
         }
         authDataAccess.deleteAuth(authToken);
-        return auth;
     }
 
 }

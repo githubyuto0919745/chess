@@ -12,10 +12,10 @@ public class UserDAO implements UserDataAccess{
     public UserData getUser(String username){
         return users.get(username);
     }
-    public UserData createUser(UserData user){
-        return users.put(user.username(), user);
+    public void createUser(UserData user){
+        users.put(user.username(), user);
     }
-    public UserData deleteUser(String username){
-        return users.remove(username);
+    public void clear(){
+        users.clear();
     }
 }

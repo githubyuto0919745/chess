@@ -15,7 +15,7 @@ public class RegisterService {
         authDataAccess = new AuthDAO();
     }
 
-    public void register(UserData user, AuthData auth){
+    public void Register(UserData user, AuthData auth){
         // username already exist
         if(user.username() == null && user.password() == null && user.email()==null) {
             throw new RuntimeException("Already Taken Exception");

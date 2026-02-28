@@ -16,7 +16,7 @@ public class JoinGameService {
     }
 
 
-    public GameData JoinGame(String authToken, int gameID, String playerColor){
+    public void JoinGame(String authToken, int gameID, String playerColor){
         AuthData auth = authDataAccess.getAuth(authToken);
         if(auth ==null){
             throw new RuntimeException("Unauthorized");
@@ -57,6 +57,5 @@ public class JoinGameService {
         else{
             throw new RuntimeException("Invalid Color");
         }
-        return updatedGame;
     }
 }

@@ -16,13 +16,13 @@ public class CreateGameService {
     }
 
 
-    public GameData CreateGame(GameData game, String authToken){
+    public void CreateGame(GameData game, String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){
             throw new RuntimeException("Unauthorized");
         }
-        return gameDataAccess.createGame(game);
+        gameDataAccess.createGame(game);
 
     }
 }
