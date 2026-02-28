@@ -18,6 +18,9 @@ public class Server {
         javalin.post("/user", this::registerHandler);
         javalin.post("/session", this::loginHandler);
         javalin.delete("/session", this::logoutHandler);
+        javalin.get("/game", this::listGameHandler);
+        javalin.post("/game", this::createGameHandler);
+        javalin.put("/game", this::joinGameHandler);
     }
 
     private void clearHandler(Context ctx){
@@ -48,6 +51,30 @@ public class Server {
 
         logoutService.Logout(auth.authToken());
     }
+
+    private void listGameHandler(Context ctx){
+        ListGamesService listgamesService = new ListGamesService();
+        AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
+
+        listgamesService.ListGame(auth.authToken());
+    }
+
+    private void createGameHandler(Context ctx){
+        CreateGameService createGameService = new CreateGameService();
+        AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
+        GameData game = new Gson().fromJson(ctx.body(), GameData.class);
+
+        createGameService.CreateGame(game,auth.authToken());
+    }
+
+    private void joinGameHandler(Context ctx){
+        JoinGameService joinGameService = new JoinGameService();
+        AuthData auth = new Gson().fromJson(ctx.body(), AuthData.class);
+        GameData game = new Gson().fromJson(ctx.body(), GameData.class);
+
+        joinGameService.JoinGame(auth.authToken(), game.gameID(), auth.username());
+    }
+
 
 
     public int run(int desiredPort) {
