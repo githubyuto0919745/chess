@@ -5,6 +5,7 @@ import dataaccess.AuthDataAccess;
 import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
 import Record.*;
+import server.Exceptions.UnauthorizedException;
 
 public class LogoutService {
     UserDataAccess userDataAccess;
@@ -15,13 +16,13 @@ public class LogoutService {
         authDataAccess = new AuthDAO();
     }
 
-    public void logout(String authToken){
-        AuthData auth = authDataAccess.getAuth(authToken);
+    public void logout(String token){
+        AuthData auth = authDataAccess.getAuth(token);
 
         if(auth ==null){
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException();
         }
-        authDataAccess.deleteAuth(authToken);
+        authDataAccess.deleteAuth(token);
     }
 
 }

@@ -5,6 +5,8 @@ import dataaccess.AuthDataAccess;
 import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
 import Record.*;
+import server.Exceptions.BadRequestException;
+import server.Exceptions.UnauthorizedException;
 
 public class LoginService {
     UserDataAccess userDataAccess;
@@ -21,10 +23,10 @@ public class LoginService {
         UserData user = userDataAccess.getUser(username);
 
         if(user == null){
-            throw new RuntimeException("Not Found Username");
+            throw new UnauthorizedException();
         }
         if(!isValidPassword(user,password )){
-            throw new RuntimeException("Password is invalid");
+            throw new UnauthorizedException();
         }
         authDataAccess.createAuth(auth);
 

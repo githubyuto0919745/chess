@@ -4,7 +4,7 @@ import java.util.HashMap;
 import Record.UserData;
 
 public class UserDAO implements UserDataAccess{
-    private static final HashMap<String, UserData> users = new HashMap<>();
+    public static HashMap<String, UserData> users = new HashMap<>();
     public UserDAO() {
 
     }

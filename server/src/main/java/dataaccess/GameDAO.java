@@ -1,18 +1,20 @@
 package dataaccess;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import Record.GameData;
 public class GameDAO implements GameDataAccess {
-    HashMap<Integer, GameData> games = new HashMap<>();
+    public static HashMap<Integer, GameData> games = new HashMap<>();
 
     public GameData getGame(int gameID){
         return games.get(gameID);
     }
-    public void createGame(GameData game){
+    public GameData createGame(GameData game){
         games.put(game.gameID(), game);
+        return game;
     }
-    public void listUser(){
+    public Collection<GameData> listGame(){return games.values();
     }
     public void updateGame(GameData game){
         games.put(game.gameID(), game);

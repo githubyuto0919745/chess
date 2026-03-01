@@ -4,7 +4,7 @@ import java.util.HashMap;
 import Record.AuthData;
 
 public class AuthDAO implements AuthDataAccess {
-    HashMap<String, AuthData> auths = new HashMap<>();
+    public static HashMap<String, AuthData> auths = new HashMap<>();
     public AuthDAO() {
     }
 

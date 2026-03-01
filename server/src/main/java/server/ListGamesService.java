@@ -2,6 +2,9 @@ package server;
 
 import dataaccess.*;
 import Record.*;
+import server.Exceptions.UnauthorizedException;
+
+import java.util.Collection;
 
 public class ListGamesService {
 
@@ -16,13 +19,13 @@ public class ListGamesService {
     }
 
 
-    public void listGame(String authToken){
+    public Collection<GameData> listGames(String authToken){
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException();
         }
-        gameDataAccess.listUser();
+        return gameDataAccess.listGame();
     }
 }
 

@@ -2,6 +2,9 @@ package server;
 
 import dataaccess.*;
 import Record.*;
+import server.Exceptions.AlreadyTakenException;
+import server.Exceptions.BadRequestException;
+import server.Exceptions.UnauthorizedException;
 
 public class JoinGameService {
 
@@ -19,43 +22,45 @@ public class JoinGameService {
     public void joinGame(String authToken, int gameID, String playerColor){
         AuthData auth = authDataAccess.getAuth(authToken);
         if(auth ==null){
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException();
         }
 
         GameData game = gameDataAccess.getGame(gameID);
         if(game == null){
-            throw new RuntimeException("Game NOT Found");
+            throw new BadRequestException();
+        }
+        if(playerColor == null){
+            throw new BadRequestException();
         }
 
         GameData updatedGame;
-        if(playerColor.equals("WHITE")) {
+
+        if("WHITE".equals(playerColor)) {
             if(game.whiteUsername()!= null){
-                throw new RuntimeException(" White is already taken");
+                throw new AlreadyTakenException();
             }
             updatedGame = new GameData(
                     game.gameID(),
-                    game.blackUsername(),
                     auth.username(),
+                    game.blackUsername(),
                     game.gameName(),
                     game.game()
             );
-            gameDataAccess.updateGame(updatedGame);
-
-        }else if(playerColor.equals("BLACK")){
+        }else if("BLACK".equals(playerColor)){
             if(game.blackUsername()!=null){
-                throw new RuntimeException("Black is already taken");
+                throw new AlreadyTakenException();
             }
             updatedGame = new GameData(
                 game.gameID(),
-                auth.username(),
                 game.whiteUsername(),
+                auth.username(),
                 game.gameName(),
                 game.game()
                 );
-            gameDataAccess.updateGame(updatedGame);
         }
         else{
-            throw new RuntimeException("Invalid Color");
+            throw new BadRequestException();
         }
+        gameDataAccess.updateGame(updatedGame);
     }
 }
