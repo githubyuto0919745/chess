@@ -5,8 +5,8 @@ import dataaccess.AuthDataAccess;
 import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
 import Record.*;
-import server.Exceptions.BadRequestException;
 import server.Exceptions.UnauthorizedException;
+import java.util.UUID;
 
 public class LoginService {
     UserDataAccess userDataAccess;
@@ -16,19 +16,23 @@ public class LoginService {
         authDataAccess = new AuthDAO();
     }
 
+    public static String generateToken(){
+        return UUID.randomUUID().toString();
+    }
     public boolean isValidPassword(UserData user, String passwordRequest){
         return user.password().equals(passwordRequest);
     }
-    public void login(String username, String password, AuthData auth){
+    public AuthData login(String username, String password){
         UserData user = userDataAccess.getUser(username);
 
-        if(user == null){
+        if(user == null ){
             throw new UnauthorizedException();
         }
-        if(!isValidPassword(user,password )){
+        if(!isValidPassword(user,password)){
             throw new UnauthorizedException();
         }
+        AuthData auth = new AuthData(user.username(),generateToken());
         authDataAccess.createAuth(auth);
-
+        return auth;
     }
 }

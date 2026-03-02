@@ -8,6 +8,5 @@ public interface GameDataAccess {
      GameData createGame(GameData game);
      Collection<GameData> listGame();
      void updateGame(GameData game);
-
      void clear();
 }

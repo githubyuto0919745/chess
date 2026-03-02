@@ -29,18 +29,16 @@ public class CreateGameService {
             throw new BadRequestException();
         }
 
-        int newId = gameDataAccess.listGame().size() + 1;
-
         GameData newGame = new GameData(
-                newId,
+                0,
                 null,
                 null,
                 game.gameName(),
                 new ChessGame()
         );
 
-      gameDataAccess.createGame(newGame);
-      return newGame;
+      return gameDataAccess.createGame(newGame);
+
 
     }
 }

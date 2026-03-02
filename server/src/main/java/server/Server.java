@@ -33,7 +33,6 @@ public class Server {
         try {
             clearservice.clears();
             ctx.status(200);
-            ctx.json(new HashMap<>());
         } catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -51,18 +50,17 @@ public class Server {
             return;
         }
         try {
-            AuthData auth = new AuthData(user.username(), user.username()+"_token");
-            registerservice.register(user, auth);
+            AuthData auth = registerservice.register(user);
             ctx.result(new Gson().toJson(auth));
             ctx.status(200);
-        }catch(BadRequestException e){
-            ErrorMessage error = new ErrorMessage("Error: already taken");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(400);
         }catch(AlreadyTakenException e){
             ErrorMessage error = new ErrorMessage("Error: already taken");
             ctx.result(new Gson().toJson(error));
             ctx.status(403);
+        }catch(BadRequestException e){
+            ErrorMessage error = new ErrorMessage("Error: bad request");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(400);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -79,10 +77,8 @@ public class Server {
             ctx.status(400);
             return;
         }
-        AuthData auth = new AuthData( user.username(), user.username()+"_token");
-
         try {
-            loginService.login(user.username(), user.password(), auth);
+            AuthData auth = loginService.login(user.username(), user.password());
             ctx.result(new Gson().toJson(auth));
             ctx.status(200);
         }catch(UnauthorizedException e){
@@ -142,22 +138,23 @@ public class Server {
         if(game == null || game.gameName() == null){
             ErrorMessage error = new ErrorMessage("Error: bad request");
             ctx.result(new Gson().toJson(error));
-            ctx.status(401);
+            ctx.status(400);
+            return;
         }
         try {
 
-            GameData create = createGameService.createGames(game,token);
+            GameData created = createGameService.createGames(game,token);
             ctx.status(200);
-            ctx.json(create);
+            ctx.result(new Gson().toJson(created));
 
-        }catch(BadRequestException e){
-            ErrorMessage error = new ErrorMessage("Error: unauthorized");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(400);
         }catch(UnauthorizedException e){
             ErrorMessage error = new ErrorMessage("Error: unauthorized");
             ctx.result(new Gson().toJson(error));
             ctx.status(401);
+        }catch(BadRequestException e){
+            ErrorMessage error = new ErrorMessage("Error: bad request");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(400);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -170,7 +167,7 @@ public class Server {
         JoinGameRequest request = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
 
 
-        if(request == null || request.playerColor() == null){
+        if(request == null || request.playerColor() == null|| request.gameID() == null){
             ErrorMessage error = new ErrorMessage("Error: bad request");
             ctx.result(new Gson().toJson(error));
             ctx.status(400);
@@ -180,22 +177,21 @@ public class Server {
 
         try {
             joinGameService.joinGame(token,request.gameID(),request.playerColor());
-            ctx.result(new Gson().toJson(request.gameID()));
             ctx.status(200);
+        }catch(AlreadyTakenException e){
+            ErrorMessage error = new ErrorMessage("Error: already taken");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(403);
+
         }catch(UnauthorizedException e){
             ErrorMessage error = new ErrorMessage("Error: unauthorized");
             ctx.result(new Gson().toJson(error));
             ctx.status(401);
 
         }catch(BadRequestException e){
-            ErrorMessage error = new ErrorMessage("Error: unauthorized");
+            ErrorMessage error = new ErrorMessage("Error: bad request");
             ctx.result(new Gson().toJson(error));
             ctx.status(400);
-
-        }catch(AlreadyTakenException e){
-            ErrorMessage error = new ErrorMessage("Error: unauthorized");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(403);
 
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
