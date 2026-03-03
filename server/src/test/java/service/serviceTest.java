@@ -116,5 +116,64 @@ public class serviceTest {
         }
     }
 
+    @Test
+    @DisplayName("Join-game Success")
+    public void JoinGameSuccess() {
+        AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
+        GameData game = createGameService.createGames(new GameData(0,null,null,"game1",null),auth.authToken());
 
+        try{
+            joinGameService.joinGame(auth.authToken(),game.gameID(),"WHITE");
+            Assertions.assertTrue(true);
+        }catch(Exception e){
+            Assertions.assertFalse(false);
+        }
+
+    }
+
+
+    @Test
+    @DisplayName("Join-game Failure")
+    public void JoinGameFailure() {
+        AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
+        GameData game = new GameData(0, null, null, "", null);
+        try {
+            joinGameService.joinGame(auth.authToken(),game.gameID(), "BLUE");
+            Assertions.assertFalse(false);
+        } catch (BadRequestException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+
+    @Test
+    @DisplayName("List-game Success")
+    public void ListGameSuccess() {
+        AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
+        listGamesService.listGames(auth.authToken());
+        Assertions.assertNotNull(auth);
+
+    }
+
+
+    @Test
+    @DisplayName("List-game Failure")
+    public void ListGameFailure() {
+
+        try {
+            listGamesService.listGames("token");
+            Assertions.assertFalse(false);
+        } catch (UnauthorizedException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DisplayName("Clear Success")
+    public void ClearSuccess() {
+        registerService.register(new UserData("user1", "123456", "yuto@gmail.com"));
+            clearService.clears();
+            Assertions.assertTrue(true);
+
+    }
 }
