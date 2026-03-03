@@ -4,8 +4,8 @@ import dataaccess.AuthDAO;
 import dataaccess.AuthDataAccess;
 import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
-import Record.UserData;
-import Record.AuthData;
+import record.UserData;
+import record.AuthData;
 import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 

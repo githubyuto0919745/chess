@@ -1,7 +1,6 @@
 package server;
 
 import dataaccess.*;
-import Record.*;
 
 public class ClearService {
 

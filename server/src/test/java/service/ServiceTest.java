@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import server.*;
-import Record.*;
+import record.*;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;

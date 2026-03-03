@@ -1,5 +1,5 @@
 package dataaccess;
-import Record.UserData;
+import record.UserData;
 
 public interface UserDataAccess {
 

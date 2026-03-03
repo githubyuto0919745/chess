@@ -4,7 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.AuthDataAccess;
 import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
-import Record.*;
+import record.*;
 import server.exceptions.UnauthorizedException;
 import java.util.UUID;
 

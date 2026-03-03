@@ -1,5 +1,5 @@
 package dataaccess;
-import Record.AuthData;
+import record.AuthData;
 public interface AuthDataAccess {
 
    AuthData getAuth(String authToken);

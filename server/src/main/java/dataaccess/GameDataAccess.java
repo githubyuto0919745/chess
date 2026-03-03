@@ -1,5 +1,5 @@
 package dataaccess;
-import Record.GameData;
+import record.GameData;
 
 import java.util.Collection;
 

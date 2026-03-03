@@ -2,7 +2,7 @@ package server;
 
 import chess.ChessGame;
 import dataaccess.*;
-import Record.*;
+import record.*;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
 

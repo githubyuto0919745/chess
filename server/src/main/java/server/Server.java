@@ -3,7 +3,7 @@ package server;
 import com.google.gson.Gson;
 import io.javalin.*;
 import io.javalin.http.Context;
-import Record.*;
+import record.*;
 import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;

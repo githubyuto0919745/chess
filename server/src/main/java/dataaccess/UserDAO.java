@@ -1,7 +1,7 @@
 package dataaccess;
 
 import java.util.HashMap;
-import Record.UserData;
+import record.UserData;
 
 public class UserDAO implements UserDataAccess{
     public static HashMap<String, UserData> users = new HashMap<>();

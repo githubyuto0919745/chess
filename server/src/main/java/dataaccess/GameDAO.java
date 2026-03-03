@@ -3,7 +3,7 @@ package dataaccess;
 
 import java.util.Collection;
 import java.util.HashMap;
-import Record.GameData;
+import record.GameData;
 public class GameDAO implements GameDataAccess {
     public static HashMap<Integer, GameData> games = new HashMap<>();
     private static int nextID = 1;

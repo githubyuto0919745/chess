@@ -1,7 +1,7 @@
 package server;
 
 import dataaccess.*;
-import Record.*;
+import record.*;
 import server.exceptions.UnauthorizedException;
 
 import java.util.Collection;
