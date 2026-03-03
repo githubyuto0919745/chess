@@ -273,8 +273,8 @@ public class ChessPiece {
     private Collection<ChessMove> helperRook(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> rook = new ArrayList<>();
 
-        int dRightow = endPosition.getRow()- myPosition.getRow();
-        int d_col = endPosition.getColumn()- myPosition.getColumn();
+        int directRow = endPosition.getRow()- myPosition.getRow();
+        int directCol = endPosition.getColumn()- myPosition.getColumn();
 
         for(int i = 0; i<8; i++) {
             if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
@@ -290,7 +290,7 @@ public class ChessPiece {
                 else {
                     break;
                 }
-                endPosition = new ChessPosition(endPosition.getRow() + dRightow, endPosition.getColumn()+d_col);
+                endPosition = new ChessPosition(endPosition.getRow() + directRow, endPosition.getColumn()+directCol);
             }
             else break;
         }
@@ -352,8 +352,8 @@ public class ChessPiece {
     private Collection<ChessMove> helperQueen(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> queen = new ArrayList<>();
 
-        int direct_row = endPosition.getRow()- myPosition.getRow();
-        int direct_col = endPosition.getColumn()- myPosition.getColumn();
+        int directRow = endPosition.getRow()- myPosition.getRow();
+        int directCol = endPosition.getColumn()- myPosition.getColumn();
 
         for(int i = 0; i<8; i++) {
             if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
@@ -369,7 +369,7 @@ public class ChessPiece {
                 else {
                     break;
                 }
-                endPosition = new ChessPosition(endPosition.getRow() + direct_row, endPosition.getColumn()+direct_col);
+                endPosition = new ChessPosition(endPosition.getRow() + directRow, endPosition.getColumn()+directCol);
             }
             else break;
         }
@@ -383,14 +383,14 @@ public class ChessPiece {
     private Collection<ChessMove> movePawn(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
         // white
-        ChessPosition endUp_d = new ChessPosition(endPosition.getRow()+2, endPosition.getColumn());
+        ChessPosition endUpDouble = new ChessPosition(endPosition.getRow()+2, endPosition.getColumn());
         ChessPosition endUp = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn());
 
         ChessPosition endUpRight = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()+1);
         ChessPosition endUpLeft = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()-1);
 
         // black
-        ChessPosition endDown_d = new ChessPosition(endPosition.getRow()-2, endPosition.getColumn());
+        ChessPosition endDownDouble = new ChessPosition(endPosition.getRow()-2, endPosition.getColumn());
         ChessPosition endDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn());
         ChessPosition endDownRight = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()+1);
         ChessPosition endDownLeft = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()-1);
@@ -403,7 +403,7 @@ public class ChessPiece {
 
                 if(board.getPiece(endUp) == null){
                     function.addAll(helperPawn(board, myPosition, endUp, true));
-                    function.addAll(helperPawn(board, myPosition, endUp_d, true));
+                    function.addAll(helperPawn(board, myPosition, endUpDouble, true));
                 }
                 function.addAll(helperPawn(board, myPosition, endUpRight, false));
                 function.addAll(helperPawn(board, myPosition, endUpLeft, false));
@@ -444,7 +444,7 @@ public class ChessPiece {
 
                 if(board.getPiece(endDown) == null){
                     function.addAll(helperPawn(board, myPosition, endDown, true));
-                    function.addAll(helperPawn(board, myPosition, endDown_d, true));
+                    function.addAll(helperPawn(board, myPosition, endDownDouble, true));
                 }
                 function.addAll(helperPawn(board, myPosition, endDownRight, false));
                 function.addAll(helperPawn(board, myPosition, endDownLeft, false));
