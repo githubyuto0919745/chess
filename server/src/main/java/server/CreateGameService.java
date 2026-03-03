@@ -3,8 +3,8 @@ package server;
 import chess.ChessGame;
 import dataaccess.*;
 import Record.*;
-import server.Exceptions.BadRequestException;
-import server.Exceptions.UnauthorizedException;
+import server.exceptions.BadRequestException;
+import server.exceptions.UnauthorizedException;
 
 public class CreateGameService {
 

@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import io.javalin.*;
 import io.javalin.http.Context;
 import Record.*;
-import server.Exceptions.AlreadyTakenException;
-import server.Exceptions.BadRequestException;
-import server.Exceptions.UnauthorizedException;
+import server.exceptions.AlreadyTakenException;
+import server.exceptions.BadRequestException;
+import server.exceptions.UnauthorizedException;
 
 import java.util.HashMap;
 

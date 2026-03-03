@@ -2,9 +2,9 @@ package server;
 
 import dataaccess.*;
 import Record.*;
-import server.Exceptions.AlreadyTakenException;
-import server.Exceptions.BadRequestException;
-import server.Exceptions.UnauthorizedException;
+import server.exceptions.AlreadyTakenException;
+import server.exceptions.BadRequestException;
+import server.exceptions.UnauthorizedException;
 
 public class JoinGameService {
 

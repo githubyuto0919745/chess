@@ -5,7 +5,7 @@ import dataaccess.AuthDataAccess;
 import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
 import Record.*;
-import server.Exceptions.UnauthorizedException;
+import server.exceptions.UnauthorizedException;
 
 public class LogoutService {
     UserDataAccess userDataAccess;

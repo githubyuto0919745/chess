@@ -6,8 +6,8 @@ import dataaccess.UserDAO;
 import dataaccess.UserDataAccess;
 import Record.UserData;
 import Record.AuthData;
-import server.Exceptions.AlreadyTakenException;
-import server.Exceptions.BadRequestException;
+import server.exceptions.AlreadyTakenException;
+import server.exceptions.BadRequestException;
 
 import java.util.UUID;
 

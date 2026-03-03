@@ -2,16 +2,14 @@ package service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import server.*;
 import Record.*;
-import server.Exceptions.BadRequestException;
-import server.Exceptions.UnauthorizedException;
+import server.exceptions.BadRequestException;
+import server.exceptions.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
-import java.net.HttpURLConnection;
 
-public class serviceTest {
+public class ServiceTest {
     @BeforeEach
     public void setup() {
         clearService.clears();
@@ -26,7 +24,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Register Success")
-    public void RegisterSuccess() {
+    public void setRegisterSuccess() {
         AuthData auth = registerService.register(new UserData("register1", "123456", "yuto@gmail.com"));
         Assertions.assertNotNull(auth);
     }
@@ -34,7 +32,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Register Failure")
-    public void RegisterFailure() {
+    public void setRegisterFailure() {
         try {
             registerService.register(
                     new UserData("", "123456", "yuto@gmail.com")
@@ -47,7 +45,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Login Success")
-    public void LoginSuccess() {
+    public void setLoginSuccess() {
         registerService.register(
                 new UserData("user1","123456","yuto@gmail.com")
         );
@@ -59,7 +57,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Login Failure")
-    public void LoginFailure() {
+    public void setLoginFailure() {
         try {
             loginService.login("", "1234567"
             );
@@ -71,7 +69,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Logout Success")
-    public void LogoutSuccess() {
+    public void setLogoutSuccess() {
         AuthData auth = registerService.register(new UserData("logout1","123456","yuto@gmail.com"));
         logoutService.logout(auth.authToken());
         Assertions.assertNotNull(auth);
@@ -81,7 +79,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Logout Failure")
-    public void LogoutFailure() {
+    public void setLogoutFailure() {
         try {
             AuthData auth = registerService.register(new UserData("logout2","1234567","yuto@gmail.com"));
             logoutService.logout(auth.authToken());
@@ -94,7 +92,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Create-game Success")
-    public void CreateGameSuccess() {
+    public void setCreateGameSuccess() {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = new GameData(0,null,null,"game1",null);
         createGameService.createGames(game,auth.authToken());
@@ -105,7 +103,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Create-game Failure")
-    public void CreateGameFailure() {
+    public void setCreateGameFailure() {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = new GameData(0, null, null, "", null);
         try {
@@ -118,7 +116,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Join-game Success")
-    public void JoinGameSuccess() {
+    public void setJoinGameSuccess() {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = createGameService.createGames(new GameData(0,null,null,"game1",null),auth.authToken());
 
@@ -134,7 +132,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Join-game Failure")
-    public void JoinGameFailure() {
+    public void setJoinGameFailure() {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = new GameData(0, null, null, "", null);
         try {
@@ -148,7 +146,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("List-game Success")
-    public void ListGameSuccess() {
+    public void setListGameSuccess() {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         listGamesService.listGames(auth.authToken());
         Assertions.assertNotNull(auth);
@@ -158,7 +156,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("List-game Failure")
-    public void ListGameFailure() {
+    public void setListGameFailure() {
 
         try {
             listGamesService.listGames("token");
@@ -170,7 +168,7 @@ public class serviceTest {
 
     @Test
     @DisplayName("Clear Success")
-    public void ClearSuccess() {
+    public void setClearSuccess() {
         registerService.register(new UserData("user1", "123456", "yuto@gmail.com"));
             clearService.clears();
             Assertions.assertTrue(true);
