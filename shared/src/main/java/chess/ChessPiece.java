@@ -64,26 +64,18 @@ public class ChessPiece {
             case KNIGHT -> moveKnight(board,myPosition);
         };
     }
-
-
     private Collection<ChessMove> moveKnight(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
 
         ChessPosition endUpRight = new ChessPosition(endPosition.getRow()+2, endPosition.getColumn()+1);
         ChessPosition endUpLeft = new ChessPosition(endPosition.getRow()+2, endPosition.getColumn()-1);
-
         ChessPosition endRightUp = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()+2);
-
         ChessPosition endRightDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()+2);
         ChessPosition endLeftUp = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()-2);
-
         ChessPosition endLeftDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()-2);
         ChessPosition endDownRight = new ChessPosition(endPosition.getRow()-2, endPosition.getColumn()+1);
         ChessPosition endDownLeft = new ChessPosition(endPosition.getRow()-2, endPosition.getColumn()-1);
-
         ArrayList<ChessMove> function = new ArrayList<>();
-
-
         function.addAll(helperKnight(board, myPosition, endRightUp));
         function.addAll(helperKnight(board, myPosition, endUpRight));
         function.addAll(helperKnight(board, myPosition, endUpLeft));
@@ -92,15 +84,8 @@ public class ChessPiece {
         function.addAll(helperKnight(board, myPosition, endLeftDown));
         function.addAll(helperKnight(board, myPosition, endDownRight));
         function.addAll(helperKnight(board, myPosition, endDownLeft));
-
-
         return function;
     }
-
-
-
-
-
     private Collection<ChessMove> helperKnight(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> knight = new ArrayList<>();
 
@@ -112,44 +97,21 @@ public class ChessPiece {
             }
             if (piece != null && piece.pieceColor != pieceColor) {
                 knight.add(move);
-
             }
         }
-
-
         return knight;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
     private Collection<ChessMove> moveKing(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
-
         ChessPosition endUp = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn());
-
         ChessPosition endUpRight = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()+1);
         ChessPosition endUpLeft = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()-1);
-
         ChessPosition endRight = new ChessPosition(endPosition.getRow(), endPosition.getColumn()+1);
         ChessPosition endLeft = new ChessPosition(endPosition.getRow(), endPosition.getColumn()-1);
-
         ChessPosition endDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn());
         ChessPosition endDownRight = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()+1);
         ChessPosition endDownLeft = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()-1);
-
         ArrayList<ChessMove> function = new ArrayList<>();
-
-
         function.addAll(helperKing(board, myPosition, endUp));
         function.addAll(helperKing(board, myPosition, endUpRight));
         function.addAll(helperKing(board, myPosition, endUpLeft));
@@ -158,15 +120,8 @@ public class ChessPiece {
         function.addAll(helperKing(board, myPosition, endDown));
         function.addAll(helperKing(board, myPosition, endDownRight));
         function.addAll(helperKing(board, myPosition, endDownLeft));
-
-
         return function;
     }
-
-
-
-
-
     private Collection<ChessMove> helperKing(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> king = new ArrayList<>();
 
@@ -178,33 +133,10 @@ public class ChessPiece {
             }
             if (piece != null && piece.pieceColor != pieceColor) {
                 king.add(move);
-
             }
         }
-
-
         return king;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private Collection<ChessMove> moveBishop(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
         ChessPosition endUpRight = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()+1);
@@ -217,21 +149,12 @@ public class ChessPiece {
         function.addAll(helperBishop(board, myPosition, endUpLeft));
         function.addAll(helperBishop(board, myPosition, endDownRight));
         function.addAll(helperBishop(board, myPosition, endDownLeft));
-
-
         return function;
     }
-
-
-
-
-
     private Collection<ChessMove> helperBishop(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> bishop = new ArrayList<>();
-
         int directRow = endPosition.getRow()- myPosition.getRow();
         int directCol = endPosition.getColumn()- myPosition.getColumn();
-
         for(int i = 0; i<8; i++) {
             if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
                 ChessPiece piece = board.getPiece(endPosition);
@@ -252,9 +175,6 @@ public class ChessPiece {
         }
         return bishop;
     }
-
-
-
     private Collection<ChessMove> moveRook(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
 
@@ -262,7 +182,6 @@ public class ChessPiece {
         ChessPosition endRight = new ChessPosition(endPosition.getRow(), endPosition.getColumn()+1);
         ChessPosition endLeft = new ChessPosition(endPosition.getRow(), endPosition.getColumn()-1);
         ChessPosition endDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn());
-
         ArrayList<ChessMove> function = new ArrayList<>();
         function.addAll(helperRook(board, myPosition, endUp));
         function.addAll(helperRook(board, myPosition, endRight));
@@ -272,10 +191,8 @@ public class ChessPiece {
     }
     private Collection<ChessMove> helperRook(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> rook = new ArrayList<>();
-
         int directRow = endPosition.getRow()- myPosition.getRow();
         int directCol = endPosition.getColumn()- myPosition.getColumn();
-
         for(int i = 0; i<8; i++) {
             if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
                 ChessPiece piece = board.getPiece(endPosition);
@@ -296,42 +213,17 @@ public class ChessPiece {
         }
         return rook;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private Collection<ChessMove> moveQueen(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
-
         ChessPosition endUp = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn());
-
         ChessPosition endUpRight = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()+1);
         ChessPosition endUpLeft = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()-1);
-
         ChessPosition endRight = new ChessPosition(endPosition.getRow(), endPosition.getColumn()+1);
         ChessPosition endLeft = new ChessPosition(endPosition.getRow(), endPosition.getColumn()-1);
-
         ChessPosition endDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn());
         ChessPosition endDownRight = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()+1);
         ChessPosition endDownLeft = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()-1);
-
         ArrayList<ChessMove> function = new ArrayList<>();
-
-
         function.addAll(helperQueen(board, myPosition, endUp));
         function.addAll(helperQueen(board, myPosition, endUpRight));
         function.addAll(helperQueen(board, myPosition, endUpLeft));
@@ -340,21 +232,12 @@ public class ChessPiece {
         function.addAll(helperQueen(board, myPosition, endDown));
         function.addAll(helperQueen(board, myPosition, endDownRight));
         function.addAll(helperQueen(board, myPosition, endDownLeft));
-
-
         return function;
     }
-
-
-
-
-
     private Collection<ChessMove> helperQueen(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition){
         ArrayList<ChessMove> queen = new ArrayList<>();
-
         int directRow = endPosition.getRow()- myPosition.getRow();
         int directCol = endPosition.getColumn()- myPosition.getColumn();
-
         for(int i = 0; i<8; i++) {
             if (endPosition.getRow() >= 1 && endPosition.getRow() <= 8 && endPosition.getColumn() >= 1 && endPosition.getColumn() <= 8) {
                 ChessPiece piece = board.getPiece(endPosition);
@@ -375,20 +258,13 @@ public class ChessPiece {
         }
         return queen;
     }
-
-
-
-
-
     private Collection<ChessMove> movePawn(ChessBoard board, ChessPosition myPosition){
         ChessPosition endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
         // white
         ChessPosition endUpDouble = new ChessPosition(endPosition.getRow()+2, endPosition.getColumn());
         ChessPosition endUp = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn());
-
         ChessPosition endUpRight = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()+1);
         ChessPosition endUpLeft = new ChessPosition(endPosition.getRow()+1, endPosition.getColumn()-1);
-
         // black
         ChessPosition endDownDouble = new ChessPosition(endPosition.getRow()-2, endPosition.getColumn());
         ChessPosition endDown = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn());
@@ -396,7 +272,6 @@ public class ChessPiece {
         ChessPosition endDownLeft = new ChessPosition(endPosition.getRow()-1, endPosition.getColumn()-1);
 
         ArrayList<ChessMove> function = new ArrayList<>();
-
         if(pieceColor == ChessGame.TeamColor.WHITE){
 
             if(myPosition.getRow()==2){
@@ -433,11 +308,6 @@ public class ChessPiece {
                 }
             }
         }
-
-
-
-
-
         if(pieceColor == ChessGame.TeamColor.BLACK){
 
             if(myPosition.getRow()==7){
@@ -474,13 +344,8 @@ public class ChessPiece {
                 }
             }
         }
-
         return function;
     }
-
-
-
-
     private boolean isonBoard(ChessPosition pos){
         return pos.getRow()>=1 && pos.getRow()<=8 && pos.getColumn()>=1 && pos.getColumn()<=8;
     }
@@ -497,7 +362,6 @@ public class ChessPiece {
     }
     private Collection<ChessMove> helperPawn(ChessBoard board, ChessPosition myPosition, ChessPosition endPosition, boolean isEmpty){
         ArrayList<ChessMove> pawn = new ArrayList<>();
-
         if(endPosition.getRow()>=1 && endPosition.getRow()<=8 && endPosition.getColumn()>=1 && endPosition.getColumn()<=8){
             ChessPiece piece = board.getPiece(endPosition);
             ChessMove move = new ChessMove(myPosition, endPosition, null);
@@ -514,57 +378,6 @@ public class ChessPiece {
         }
         return pawn;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
