@@ -73,6 +73,7 @@ public class MySqlUserDAO implements UserDataAccess {
                 ps.setString(1,user.username());
                 ps.setString(2,user.password());
                 ps.setString(3, user.email());
+                ps.executeUpdate();
             }
         }catch( Exception e){
             throw new ResponseParseException("Unable",e);
@@ -81,6 +82,13 @@ public class MySqlUserDAO implements UserDataAccess {
 
     @Override
     public void clear() {
-
+        try (Connection connect = DatabaseManager.getConnection()){
+            var table = "DELETE FROM user";
+            try(PreparedStatement ps = connect.prepareStatement(table)){
+                ps.executeUpdate();
+            }
+        }catch( Exception e){
+            throw new ResponseParseException("Unable",e);
+        }
     }
 }
