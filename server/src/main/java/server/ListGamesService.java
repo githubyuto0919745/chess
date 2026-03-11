@@ -22,7 +22,7 @@ public class ListGamesService {
     }
 
 
-    public Collection<GameData> listGames(String authToken){
+    public Collection<GameData> listGames(String authToken) throws DataAccessException {
         AuthData auth = authDataAccess.getAuth(authToken);
 
         if(auth ==null){

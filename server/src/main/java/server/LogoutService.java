@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccessException;
 import dataaccess.memory.AuthDAO;
 import dataaccess.AuthDataAccess;
 import dataaccess.memory.UserDAO;
@@ -16,7 +17,7 @@ public class LogoutService {
         authDataAccess = new AuthDAO();
     }
 
-    public void logout(String token){
+    public void logout(String token) throws DataAccessException {
         AuthData auth = authDataAccess.getAuth(token);
 
         if(auth ==null){

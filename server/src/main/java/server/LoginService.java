@@ -4,6 +4,9 @@ import dataaccess.memory.AuthDAO;
 import dataaccess.AuthDataAccess;
 import dataaccess.memory.UserDAO;
 import dataaccess.UserDataAccess;
+import dataaccess.mysql.MySqlAuthDAO;
+import dataaccess.mysql.MySqlUserDAO;
+import org.mindrot.jbcrypt.BCrypt;
 import record.*;
 import server.exceptions.UnauthorizedException;
 import java.util.UUID;
@@ -16,11 +19,12 @@ public class LoginService {
         authDataAccess = new AuthDAO();
     }
 
+
     public static String generateToken(){
         return UUID.randomUUID().toString();
     }
     public boolean isValidPassword(UserData user, String passwordRequest){
-        return user.password().equals(passwordRequest);
+        return BCrypt.checkpw(passwordRequest, user.password());
     }
     public AuthData login(String username, String password){
         UserData user = userDataAccess.getUser(username);

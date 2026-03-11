@@ -4,6 +4,7 @@ import dataaccess.memory.AuthDAO;
 import dataaccess.AuthDataAccess;
 import dataaccess.memory.UserDAO;
 import dataaccess.UserDataAccess;
+import org.mindrot.jbcrypt.BCrypt;
 import record.UserData;
 import record.AuthData;
 import server.exceptions.AlreadyTakenException;
@@ -18,6 +19,11 @@ public class RegisterService {
         userDataAccess = new UserDAO();
         authDataAccess = new AuthDAO();
     }
+    public void storeUserPassword(String username, String clearPassword, String email){
+        String hashedPassword = BCrypt.hashpw(clearPassword, BCrypt.gensalt());
+        UserData user = new UserData(username, hashedPassword,email);
+        userDataAccess.createUser(user);
+    }
     public static String generateToken(){
         return UUID.randomUUID().toString();
     }
@@ -30,7 +36,7 @@ public class RegisterService {
             throw new BadRequestException();
         }else{
             AuthData auth = new AuthData(user.username(), generateToken());
-            userDataAccess.createUser(user);
+            storeUserPassword(user.username(), user.password(),user.email());
             authDataAccess.createAuth(auth);
             return auth;
         }
