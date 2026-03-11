@@ -24,6 +24,7 @@ public class MySqlGameDAO implements GameDataAccess {
             `gameName` VARCHAR(256) NOT NULL,
             `whiteUsername` VARCHAR(256) NOT NULL,
             `blackUsername` VARCHAR(256) NOT NULL,
+            `game` TEXT NOT NULL,
             FOREIGN KEY (whiteUsername) REFERENCES user(username),
             FOREIGN KEY (blackUsername) REFERENCES user(username),
             )
