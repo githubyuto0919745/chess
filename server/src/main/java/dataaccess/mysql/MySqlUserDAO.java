@@ -17,7 +17,7 @@ public class MySqlUserDAO implements UserDataAccess {
     public MySqlUserDAO() throws SQLException, DataAccessException {
         configureDatabase();
     }
-    private final String[] createUserTable = {
+    private final String[] createTable = {
             """
             CREATE TABLE IF NOT EXISTS user (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,7 +31,7 @@ public class MySqlUserDAO implements UserDataAccess {
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection connect = DatabaseManager.getConnection()){
-            for(String table : createUserTable){
+            for(String table : createTable){
                 try(var preparedStatement = connect.prepareStatement(table)){
                     preparedStatement.executeUpdate();
                 }

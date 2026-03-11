@@ -17,20 +17,20 @@ public class MySqlAuthDAO implements AuthDataAccess {
     public MySqlAuthDAO() throws DataAccessException {
         configureDatabase();
     }
-    private final String[] createAuthTable = {
+    private final String[] createTable = {
             """
             CREATE TABLE IF NOT EXISTS auth (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `authToken` VARCHAR(256) NOT NULL,
             `username` VARCHAR(256) NOT NULL,
-            FOREIGN KEY (username) REFERENCES user(username) ON DELETE CASCADE
+            FOREIGN KEY (username) REFERENCES user(username)
             )
             """
     };
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection connect = DatabaseManager.getConnection()){
-            for(String table : createAuthTable){
+            for(String table : createTable){
                 try(var preparedStatement = connect.prepareStatement(table)){
                     preparedStatement.executeUpdate();
                 }
@@ -66,7 +66,7 @@ public class MySqlAuthDAO implements AuthDataAccess {
     @Override
     public void createAuth(AuthData auth) {
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "INSERT INTO auth (username,authToken) VALUES (?,?,?)";
+            var table = "INSERT INTO auth (username,authToken) VALUES (?,?)";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 ps.setString(1,auth.username());
                 ps.setString(2,auth.authToken());
