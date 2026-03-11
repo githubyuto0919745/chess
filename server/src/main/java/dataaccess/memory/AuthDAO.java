@@ -1,6 +1,9 @@
-package dataaccess;
+package dataaccess.memory;
 
 import java.util.HashMap;
+
+import dataaccess.AuthDataAccess;
+import passoff.exception.ResponseParseException;
 import record.AuthData;
 
 public class AuthDAO implements AuthDataAccess {

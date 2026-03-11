@@ -1,9 +1,11 @@
-package dataaccess;
+package dataaccess.memory;
 
 import java.util.HashMap;
+
+import dataaccess.UserDataAccess;
 import record.UserData;
 
-public class UserDAO implements UserDataAccess{
+public class UserDAO implements UserDataAccess {
     public static HashMap<String, UserData> users = new HashMap<>();
     public UserDAO() {
 

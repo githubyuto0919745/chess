@@ -2,6 +2,9 @@ package server;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.memory.AuthDAO;
+import dataaccess.memory.GameDAO;
+import dataaccess.memory.UserDAO;
 import record.*;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;

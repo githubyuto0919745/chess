@@ -1,8 +1,8 @@
 package server;
 
-import dataaccess.AuthDAO;
+import dataaccess.memory.AuthDAO;
 import dataaccess.AuthDataAccess;
-import dataaccess.UserDAO;
+import dataaccess.memory.UserDAO;
 import dataaccess.UserDataAccess;
 import record.UserData;
 import record.AuthData;

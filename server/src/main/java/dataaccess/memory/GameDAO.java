@@ -1,8 +1,10 @@
-package dataaccess;
+package dataaccess.memory;
 
 
 import java.util.Collection;
 import java.util.HashMap;
+
+import dataaccess.GameDataAccess;
 import record.GameData;
 public class GameDAO implements GameDataAccess {
     public static HashMap<Integer, GameData> games = new HashMap<>();
