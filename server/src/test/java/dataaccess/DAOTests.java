@@ -190,6 +190,47 @@ public class DAOTests {
         Assertions.assertNotNull(games);
     }
 
+    @Test
+    @DisplayName("update Game Success")
+    public void updateGameSuccess() throws DataAccessException {
+        userDAO.createUser(new UserData("whiteUser", "2345", "white@gmail.com"));
+        userDAO.createUser(new UserData("blackUser", "1234", "black@gmail.com"));
 
+        GameData game = new GameData(null,  "whiteUser", "blackUser", "updateGame", new ChessGame());
+        game = gameDAO.createGame(game);
+
+        GameData updateGame = new GameData(game.gameID(),  "whiteUser", "blackUser", "updateGame", new ChessGame());
+        gameDAO.createGame(updateGame);
+
+
+        GameData check = gameDAO.getGame(game.gameID());
+        Assertions.assertNotNull(check);
+        Assertions.assertEquals("updateGame", check.gameName());
+
+    }
+    @Test
+    @DisplayName("update Game Failure")
+    public void updateGameFailure() throws DataAccessException {
+        try{
+            GameData game = new GameData(1111,  "whiteUser", "blackUser", "gameTest", new ChessGame());;
+            gameDAO.updateGame(game);
+            Assertions.assertFalse(false);
+        }catch(DataAccessException e){
+            Assertions.assertTrue(true);
+        }
+
+    }
+
+    @Test
+    @DisplayName("Clear Success")
+    public void setClearSuccess() throws DataAccessException {
+        new UserData("user1", "123456", "yuto@gmail.com");
+        userDAO.clear();
+        new AuthData("user1", "token1");
+        authDAO.clear();
+        new GameData(null,  "whiteUser", "blackUser", "updateGame", new ChessGame());
+        gameDAO.clear();
+        Assertions.assertTrue(true);
+    }
 
 }
