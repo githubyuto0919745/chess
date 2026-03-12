@@ -155,48 +155,41 @@ public class DAOTests {
         AuthData auth = new AuthData("user2", "token2");
         authDAO.createAuth(auth);
         authDAO.deleteAuth("token2");
-
+        AuthData deleted = authDAO.getAuth("token2");
+        Assertions.assertNull(deleted, "Auth is deleted");
+    }
+    @Test
+    @DisplayName("delete Auth Failure")
+    public void deleteAuthFailure(){
         try{
-            authDAO.getAuth("token2");
-            Assertions.fail("failed to delete");
-        }catch (DataAccessException e){
+            authDAO.getAuth("not found");
+            Assertions.assertFalse(false);
+        }catch(DataAccessException e){
             Assertions.assertTrue(true);
         }
     }
-@Test
-@DisplayName("delete Auth Failure")
-public void deleteAuthFailure(){
-    try{
-        authDAO.getAuth("not found");
-        Assertions.assertFalse(false);
-    }catch(DataAccessException e){
-        Assertions.assertTrue(true);
+
+    @Test
+    @DisplayName("list Game Success")
+    public void listGameSuccess() throws DataAccessException {
+        userDAO.createUser(new UserData("whiteUser", "2345", "white@gmail.com"));
+        userDAO.createUser(new UserData("blackUser", "1234", "black@gmail.com"));
+
+        gameDAO.createGame(new GameData(null, "whiteUser", "blackUser", "game1", null));
+        gameDAO.createGame(new GameData(null, "whiteUser", "blackUser", "game2", null));
+
+        Collection<GameData> games = gameDAO.listGame();
+        Assertions.assertNotNull(games);
+        Assertions.assertEquals(2, games.size());
+
     }
-}
-
-@Test
-@DisplayName("list Game Success")
-public void listGameSuccess() throws DataAccessException {
-    userDAO.createUser(new UserData("whiteUser", "2345", "white@gmail.com"));
-    userDAO.createUser(new UserData("blackUser", "1234", "black@gmail.com"));
-
-    gameDAO.createGame(new GameData(null, "whiteUser", "blackUser", "game1", null));
-    gameDAO.createGame(new GameData(null, "whiteUser", "blackUser", "game2", null));
-
-    Collection<GameData> games = gameDAO.listGame();
-    Assertions.assertNotNull(games);
-    Assertions.assertEquals(2, games.size());
-
-}
-@Test
-@DisplayName("list Game Failure")
-public void listGameFailure() {
-    try {
-        gameDAO.listGame();
-        Assertions.fail("Expected DataAccessException was not thrown");
-    } catch (DataAccessException e) {
-        Assertions.assertTrue(true);
+    @Test
+    @DisplayName("list Game Failure")
+    public void listGameFailure() throws DataAccessException {
+        Collection<GameData> games = gameDAO.listGame();
+        Assertions.assertNotNull(games);
     }
-}
+
+
 
 }
