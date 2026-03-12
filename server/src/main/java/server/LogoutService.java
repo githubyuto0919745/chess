@@ -19,12 +19,8 @@ public class LogoutService {
     AuthDataAccess authDataAccess;
 
     public LogoutService() throws DataAccessException {
-        try {
-            userDataAccess = new MySqlUserDAO();
-            authDataAccess = new MySqlAuthDAO();
-        }catch(SQLException e){
-           throw new DataAccessException("error",e);
-        }
+        userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
     }
 
     public void logout(String token) throws DataAccessException {

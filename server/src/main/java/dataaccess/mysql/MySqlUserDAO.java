@@ -3,6 +3,7 @@ package dataaccess.mysql;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDataAccess;
+import record.GameData;
 import record.UserData;
 
 import java.sql.Connection;

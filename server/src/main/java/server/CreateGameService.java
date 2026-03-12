@@ -21,13 +21,9 @@ public class CreateGameService {
     AuthDataAccess authDataAccess;
     GameDataAccess gameDataAccess;
     public CreateGameService() throws DataAccessException {
-        try {
-            userDataAccess = new MySqlUserDAO();
-            authDataAccess = new MySqlAuthDAO();
-            gameDataAccess = new MySqlGameDAO();
-        }catch( SQLException e){
-            throw new DataAccessException("error",e);
-        }
+        userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
+        gameDataAccess = new MySqlGameDAO();
     }
 
 

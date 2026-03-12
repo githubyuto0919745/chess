@@ -22,12 +22,8 @@ public class RegisterService {
     UserDataAccess userDataAccess;
     AuthDataAccess authDataAccess;
     public RegisterService() throws DataAccessException {
-        try {
-            userDataAccess = new MySqlUserDAO();
-            authDataAccess = new MySqlAuthDAO();
-        }catch(SQLException e){
-          throw new DataAccessException("error",e);
-        }
+        userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
     }
     public void storeUserPassword(String username, String clearPassword, String email) throws DataAccessException {
         String hashedPassword = BCrypt.hashpw(clearPassword, BCrypt.gensalt());

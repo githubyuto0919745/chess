@@ -111,6 +111,9 @@ public class Server {
         try {
             LogoutService logoutService = new LogoutService();
             String token = ctx.header("Authorization");
+            if(token == null){
+                throw new UnauthorizedException();
+            }
             logoutService.logout(token);
             ctx.status(200);
         }catch(UnauthorizedException e){
@@ -132,6 +135,9 @@ public class Server {
         try {
             ListGamesService listgamesService = new ListGamesService();
             String token = ctx.header("Authorization");
+            if(token == null){
+                throw new UnauthorizedException();
+            }
             var games = listgamesService.listGames(token);
             HashMap<String, Object> response = new HashMap<>();
             response.put("games",games);
@@ -159,7 +165,9 @@ public class Server {
             GameData game = new Gson().fromJson(ctx.body(), GameData.class);
 
             String token = ctx.header("Authorization");
-
+            if(token == null){
+                throw new UnauthorizedException();
+            }
             if(game == null || game.gameName() == null){
                 ErrorMessage error = new ErrorMessage("Error: bad request");
                 ctx.result(new Gson().toJson(error));
@@ -196,14 +204,16 @@ public class Server {
             JoinGameRequest request = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
 
 
-            if(request == null || request.playerColor() == null|| request.gameID() == null){
+            if(request == null ||request.gameID() == null){
                 ErrorMessage error = new ErrorMessage("Error: bad request");
                 ctx.result(new Gson().toJson(error));
                 ctx.status(400);
                 return;
             }
             String token = ctx.header("Authorization");
-
+            if(token == null){
+                throw new UnauthorizedException();
+            }
             joinGameService.joinGame(token,request.gameID(),request.playerColor());
             ctx.status(200);
         }catch(AlreadyTakenException e){

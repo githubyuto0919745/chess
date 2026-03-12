@@ -20,13 +20,9 @@ public class JoinGameService {
     AuthDataAccess authDataAccess;
     GameDataAccess gameDataAccess;
     public JoinGameService() throws DataAccessException {
-        try {
-            userDataAccess = new MySqlUserDAO();
-            authDataAccess = new MySqlAuthDAO();
-            gameDataAccess = new MySqlGameDAO();
-        }catch(SQLException e){
-           throw new DataAccessException("error",e);
-        }
+        userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
+        gameDataAccess = new MySqlGameDAO();
     }
     public void joinGame(String authToken, int gameID, String playerColor) throws DataAccessException {
         AuthData auth = authDataAccess.getAuth(authToken);
@@ -38,10 +34,6 @@ public class JoinGameService {
         if(game == null){
             throw new BadRequestException();
         }
-        if(playerColor == null){
-            throw new BadRequestException();
-        }
-
         GameData updatedGame;
 
         if("WHITE".equals(playerColor)) {

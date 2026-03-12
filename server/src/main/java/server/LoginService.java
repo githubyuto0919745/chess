@@ -21,12 +21,8 @@ public class LoginService {
     UserDataAccess userDataAccess;
     AuthDataAccess authDataAccess;
     public LoginService() throws DataAccessException {
-        try {
-            userDataAccess = new MySqlUserDAO();
-            authDataAccess = new MySqlAuthDAO();
-        }catch(SQLException e){
-            throw new DataAccessException("error",e);
-        }
+        userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
     }
 
 

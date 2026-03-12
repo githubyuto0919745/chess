@@ -21,7 +21,7 @@ public class MySqlAuthDAO implements AuthDataAccess {
             CREATE TABLE IF NOT EXISTS auth (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `authToken` VARCHAR(256) NOT NULL,
-            `username` VARCHAR(256) NOT NULL,
+            `username` VARCHAR(256) NOT NULL
             )
             """
     };

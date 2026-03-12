@@ -26,10 +26,10 @@ public class MySqlGameDAO implements GameDataAccess {
             """
             CREATE TABLE IF NOT EXISTS game (
             `gameID` INT AUTO_INCREMENT PRIMARY KEY,
-            `gameName` VARCHAR(256) NOT NULL,
             `whiteUsername` VARCHAR(256),
             `blackUsername` VARCHAR(256),
-            `game` TEXT NOT NULL,
+            `gameName` VARCHAR(256) NOT NULL,
+            `game` TEXT NOT NULL
             )
             """
     };
@@ -48,19 +48,19 @@ public class MySqlGameDAO implements GameDataAccess {
 
     private GameData readGame(ResultSet rs) throws SQLException {
         Integer gameID  = rs.getInt("gameID");
-        String gameName = rs.getString("gameName");
         String whiteUsername = rs.getString("whiteUsername");
         String blackUsername = rs.getString("blackUsername");
+        String gameName = rs.getString("gameName");
         ChessGame game = new ChessGame();
 
-        return new GameData(gameID, gameName, whiteUsername, blackUsername, game);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName,game);
     }
 
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM game WHERE gameID = ?";
+            var table = "SELECT gameID, whiteUsername, blackUsername,gameName,game FROM game WHERE gameID = ?";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 ps.setInt(1, gameID);
                 try(ResultSet rs = ps.executeQuery()){
@@ -78,25 +78,37 @@ public class MySqlGameDAO implements GameDataAccess {
     @Override
     public GameData createGame(GameData game)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "INSERT INTO game (gameName, whiteUsername, blackUsername, game) VALUES (?,?,?,?)";
-            try(PreparedStatement ps = connect.prepareStatement(table)){
-                ps.setString(1,game.gameName());
-                ps.setString(2,game.whiteUsername());
-                ps.setString(3,game.blackUsername());
+            var table = "INSERT INTO game (whiteUsername, blackUsername, gameName,game) VALUES (?,?,?,?)";
+            try(PreparedStatement ps = connect.prepareStatement(table,java.sql.Statement.RETURN_GENERATED_KEYS)){
+                ps.setString(1,game.whiteUsername());
+                ps.setString(2,game.blackUsername());
+                ps.setString(3,game.gameName());
                 ps.setString(4, "");
                 ps.executeUpdate();
+
+                ResultSet rs = ps.getGeneratedKeys();
+                if(rs.next()){
+                    int id = rs.getInt(1);
+                    return new GameData(
+                            id,
+                            game.whiteUsername(),
+                            game.blackUsername(),
+                            game.gameName(),
+                            game.game()
+                            );
+                }
             }
         }catch(SQLException ex){
             throw new DataAccessException("Unable to create Game", ex);
         }
-        return null;
+        throw new DataAccessException("Unable to get ID");
     }
 
     @Override
     public Collection<GameData> listGame()throws DataAccessException {
         Collection<GameData> gameList = new ArrayList<>();
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM game";
+            var table = "SELECT gameID, whiteUsername, blackUsername,  gameName, game FROM game";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 try(ResultSet rs = ps.executeQuery()){
                     while(rs.next()){
@@ -115,15 +127,17 @@ public class MySqlGameDAO implements GameDataAccess {
         try (Connection connect = DatabaseManager.getConnection()){
             var table = """
                 UPDATE game
-                SET gameName = ?, whiteUsername = ?, blackUsername= ?, game =?
+                SET  whiteUsername = ?, blackUsername= ?, gameName = ?,game =?
                 WHERE gameID = ?
         """;
             try(PreparedStatement ps = connect.prepareStatement(table)){
-                ps.setString(1,game.gameName());
-                ps.setString(2,game.whiteUsername());
-                ps.setString(3,game.blackUsername());
+
+                ps.setString(1,game.whiteUsername());
+                ps.setString(2,game.blackUsername());
+                ps.setString(3,game.gameName());
                 ps.setString(4,"");
                 ps.setInt(5,game.gameID());
+
                 ps.executeUpdate();
             }
         }catch(SQLException ex){
