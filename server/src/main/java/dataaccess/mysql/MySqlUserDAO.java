@@ -3,8 +3,6 @@ package dataaccess.mysql;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDataAccess;
-import org.eclipse.jetty.server.Authentication;
-import passoff.exception.ResponseParseException;
 import record.UserData;
 
 import java.sql.Connection;
@@ -14,14 +12,14 @@ import java.sql.SQLException;
 
 public class MySqlUserDAO implements UserDataAccess {
 
-    public MySqlUserDAO() throws SQLException, DataAccessException {
+    public MySqlUserDAO() throws DataAccessException {
         configureDatabase();
     }
     private final String[] createTable = {
             """
             CREATE TABLE IF NOT EXISTS user (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `username` VARCHAR(256) NOT NULL,
+            `username` VARCHAR(256) NOT NULL UNIQUE,
             `password` VARCHAR(256) NOT NULL,
             `email` VARCHAR(256) NOT NULL
             )
@@ -37,12 +35,12 @@ public class MySqlUserDAO implements UserDataAccess {
                 }
             }
         }catch(SQLException ex){
-            throw new DataAccessException("Unable to configure table");
+            throw new DataAccessException("Unable to configure table",ex);
         }
     }
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "SELECT id, username, password, email FROM user WHERE username = ?";
             try(PreparedStatement ps = connect.prepareStatement(table)){
@@ -53,8 +51,8 @@ public class MySqlUserDAO implements UserDataAccess {
                     }
                 }
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to getUser",ex);
         }
         return null;
     }
@@ -66,7 +64,7 @@ public class MySqlUserDAO implements UserDataAccess {
         return new UserData(username, password, email);
     }
     @Override
-    public void createUser(UserData user) {
+    public void createUser(UserData user) throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "INSERT INTO user (username, password, email) VALUES (?,?,?)";
             try(PreparedStatement ps = connect.prepareStatement(table)){
@@ -75,20 +73,20 @@ public class MySqlUserDAO implements UserDataAccess {
                 ps.setString(3, user.email());
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to createUser", ex);
         }
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "DELETE FROM user";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to clear User",ex);
         }
     }
 }

@@ -4,24 +4,30 @@ import dataaccess.*;
 import dataaccess.memory.AuthDAO;
 import dataaccess.memory.GameDAO;
 import dataaccess.memory.UserDAO;
+import dataaccess.mysql.MySqlAuthDAO;
+import dataaccess.mysql.MySqlGameDAO;
+import dataaccess.mysql.MySqlUserDAO;
 import record.*;
 import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
+
+import java.sql.SQLException;
 
 public class JoinGameService {
 
     UserDataAccess userDataAccess;
     AuthDataAccess authDataAccess;
     GameDataAccess gameDataAccess;
-    public JoinGameService() {
-
-        userDataAccess = new UserDAO();
-        authDataAccess = new AuthDAO();
-        gameDataAccess = new GameDAO();
+    public JoinGameService() throws DataAccessException {
+        try {
+            userDataAccess = new MySqlUserDAO();
+            authDataAccess = new MySqlAuthDAO();
+            gameDataAccess = new MySqlGameDAO();
+        }catch(SQLException e){
+           throw new DataAccessException("error",e);
+        }
     }
-
-
     public void joinGame(String authToken, int gameID, String playerColor) throws DataAccessException {
         AuthData auth = authDataAccess.getAuth(authToken);
         if(auth ==null){

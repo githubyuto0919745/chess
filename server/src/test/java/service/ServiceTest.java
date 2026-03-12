@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +10,14 @@ import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.sql.SQLException;
+
 public class ServiceTest {
+    public ServiceTest() throws SQLException, DataAccessException {
+    }
+
     @BeforeEach
-    public void setup() {
+    public void setup() throws DataAccessException {
         clearService.clears();
     }
     RegisterService registerService = new RegisterService();
@@ -24,7 +30,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("Register Success")
-    public void setRegisterSuccess() {
+    public void setRegisterSuccess() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("register1", "123456", "yuto@gmail.com"));
         Assertions.assertNotNull(auth);
     }
@@ -38,14 +44,14 @@ public class ServiceTest {
                     new UserData("", "123456", "yuto@gmail.com")
             );
             Assertions.assertFalse(false);
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | DataAccessException e) {
             Assertions.assertTrue(true);
         }
     }
 
     @Test
     @DisplayName("Login Success")
-    public void setLoginSuccess() {
+    public void setLoginSuccess() throws DataAccessException {
         registerService.register(
                 new UserData("user1","123456","yuto@gmail.com")
         );
@@ -62,14 +68,14 @@ public class ServiceTest {
             loginService.login("", "1234567"
             );
             Assertions.fail("Invalid Password");
-        } catch (UnauthorizedException e) {
+        } catch (UnauthorizedException | DataAccessException e) {
             Assertions.assertTrue(true);
         }
     }
 
     @Test
     @DisplayName("Logout Success")
-    public void setLogoutSuccess() {
+    public void setLogoutSuccess() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("logout1","123456","yuto@gmail.com"));
         logoutService.logout(auth.authToken());
         Assertions.assertNotNull(auth);
@@ -84,7 +90,7 @@ public class ServiceTest {
             AuthData auth = registerService.register(new UserData("logout2","1234567","yuto@gmail.com"));
             logoutService.logout(auth.authToken());
             Assertions.assertFalse(false);
-        } catch (UnauthorizedException e) {
+        } catch (UnauthorizedException | DataAccessException e) {
             Assertions.assertTrue(true);
         }
     }
@@ -92,7 +98,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("Create-game Success")
-    public void setCreateGameSuccess() {
+    public void setCreateGameSuccess() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = new GameData(0,null,null,"game1",null);
         createGameService.createGames(game,auth.authToken());
@@ -103,20 +109,20 @@ public class ServiceTest {
 
     @Test
     @DisplayName("Create-game Failure")
-    public void setCreateGameFailure() {
+    public void setCreateGameFailure() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = new GameData(0, null, null, "", null);
         try {
             createGameService.createGames(game, auth.authToken());
             Assertions.assertFalse(false);
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | DataAccessException e) {
             Assertions.assertTrue(true);
         }
     }
 
     @Test
     @DisplayName("Join-game Success")
-    public void setJoinGameSuccess() {
+    public void setJoinGameSuccess() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = createGameService.createGames(new GameData(0,null,null,"game1",null),auth.authToken());
 
@@ -132,13 +138,13 @@ public class ServiceTest {
 
     @Test
     @DisplayName("Join-game Failure")
-    public void setJoinGameFailure() {
+    public void setJoinGameFailure() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         GameData game = new GameData(0, null, null, "", null);
         try {
             joinGameService.joinGame(auth.authToken(),game.gameID(), "BLUE");
             Assertions.assertFalse(false);
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | DataAccessException e) {
             Assertions.assertTrue(true);
         }
     }
@@ -146,7 +152,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("List-game Success")
-    public void setListGameSuccess() {
+    public void setListGameSuccess() throws DataAccessException {
         AuthData auth = registerService.register(new UserData("create1","123456","yuto@gmail.com"));
         listGamesService.listGames(auth.authToken());
         Assertions.assertNotNull(auth);
@@ -161,14 +167,14 @@ public class ServiceTest {
         try {
             listGamesService.listGames("token");
             Assertions.assertFalse(false);
-        } catch (UnauthorizedException e) {
+        } catch (UnauthorizedException | DataAccessException e) {
             Assertions.assertTrue(true);
         }
     }
 
     @Test
     @DisplayName("Clear Success")
-    public void setClearSuccess() {
+    public void setClearSuccess() throws DataAccessException {
         registerService.register(new UserData("user1", "123456", "yuto@gmail.com"));
             clearService.clears();
             Assertions.assertTrue(true);

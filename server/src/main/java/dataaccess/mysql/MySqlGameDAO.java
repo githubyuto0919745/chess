@@ -30,8 +30,6 @@ public class MySqlGameDAO implements GameDataAccess {
             `whiteUsername` VARCHAR(256),
             `blackUsername` VARCHAR(256),
             `game` TEXT NOT NULL,
-            FOREIGN KEY (whiteUsername) REFERENCES user(username),
-            FOREIGN KEY (blackUsername) REFERENCES user(username),
             )
             """
     };
@@ -44,7 +42,7 @@ public class MySqlGameDAO implements GameDataAccess {
                 }
             }
         }catch(SQLException ex){
-            throw new DataAccessException("Unable to configure table");
+            throw new DataAccessException("Unable to configure table", ex);
         }
     }
 
@@ -60,7 +58,7 @@ public class MySqlGameDAO implements GameDataAccess {
 
 
     @Override
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM game WHERE gameID = ?";
             try(PreparedStatement ps = connect.prepareStatement(table)){
@@ -71,31 +69,31 @@ public class MySqlGameDAO implements GameDataAccess {
                     }
                 }
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to get Game", ex);
         }
         return null;
     }
 
     @Override
-    public GameData createGame(GameData game) {
+    public GameData createGame(GameData game)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "INSERT INTO game (gameName, whiteUsername, blackUsername, game) VALUES (?,?,?,?)";
             try(PreparedStatement ps = connect.prepareStatement(table)){
-                ps.setInt(1,game.gameID());
-                ps.setString(2,game.gameName());
-                ps.setString(3,game.whiteUsername());
-                ps.setString(4,game.blackUsername());
+                ps.setString(1,game.gameName());
+                ps.setString(2,game.whiteUsername());
+                ps.setString(3,game.blackUsername());
+                ps.setString(4, "");
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to create Game", ex);
         }
         return null;
     }
 
     @Override
-    public Collection<GameData> listGame() {
+    public Collection<GameData> listGame()throws DataAccessException {
         Collection<GameData> gameList = new ArrayList<>();
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM game";
@@ -106,41 +104,42 @@ public class MySqlGameDAO implements GameDataAccess {
                     }
                 }
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to list Game", ex);
         }
         return gameList;
     }
 
     @Override
-    public void updateGame(GameData game) {
+    public void updateGame(GameData game) throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){
             var table = """
-                UPDATE game +
-                SET gameName = ?, whiteUsername = ?, blackUsername= ?, game =?)
+                UPDATE game
+                SET gameName = ?, whiteUsername = ?, blackUsername= ?, game =?
                 WHERE gameID = ?
-                """;
+        """;
             try(PreparedStatement ps = connect.prepareStatement(table)){
-                ps.setInt(1,game.gameID());
-                ps.setString(2,game.gameName());
-                ps.setString(3,game.whiteUsername());
-                ps.setString(4,game.blackUsername());
+                ps.setString(1,game.gameName());
+                ps.setString(2,game.whiteUsername());
+                ps.setString(3,game.blackUsername());
+                ps.setString(4,"");
+                ps.setInt(5,game.gameID());
                 ps.executeUpdate();
             }
-        }catch( Exception e) {
-            throw new ResponseParseException("Unable", e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to update Game", ex);
         }
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "TRUNCATE game";
+            var table = "DELETE FROM game";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to clear Game", ex);
         }
     }
 }

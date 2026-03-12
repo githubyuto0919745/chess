@@ -7,7 +7,6 @@ import passoff.exception.ResponseParseException;
 import record.AuthData;
 import record.UserData;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +22,6 @@ public class MySqlAuthDAO implements AuthDataAccess {
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `authToken` VARCHAR(256) NOT NULL,
             `username` VARCHAR(256) NOT NULL,
-            FOREIGN KEY (username) REFERENCES user(username)
             )
             """
     };
@@ -36,13 +34,13 @@ public class MySqlAuthDAO implements AuthDataAccess {
                 }
             }
         }catch(SQLException ex){
-            throw new DataAccessException("Unable to configure table");
+            throw new DataAccessException("Unable to configure table", ex);
         }
     }
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "SELECT username,authToken FROM auth WHERE username = ?";
+            var table = "SELECT username, authToken FROM auth WHERE authToken = ?";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 ps.setString(1, authToken);
                 try(ResultSet rs = ps.executeQuery()){
@@ -51,8 +49,8 @@ public class MySqlAuthDAO implements AuthDataAccess {
                     }
                 }
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to get Auth", ex);
         }
         return null;
     }
@@ -64,7 +62,7 @@ public class MySqlAuthDAO implements AuthDataAccess {
     }
 
     @Override
-    public void createAuth(AuthData auth) {
+    public void createAuth(AuthData auth)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
             var table = "INSERT INTO auth (username,authToken) VALUES (?,?)";
             try(PreparedStatement ps = connect.prepareStatement(table)){
@@ -72,32 +70,33 @@ public class MySqlAuthDAO implements AuthDataAccess {
                 ps.setString(2,auth.authToken());
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to create Auth", ex);
         }
     }
 
     @Override
-    public void deleteAuth(String authToken) {
+    public void deleteAuth(String authToken)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "DELETE FROM auth WHERE id = ?";
+            var table = "DELETE FROM auth WHERE authToken = ?";
             try(PreparedStatement ps = connect.prepareStatement(table)){
+                ps.setString(1, authToken);
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to delete Auth", ex);
         }
     }
 
     @Override
-    public void clear() {
+    public void clear()throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
-            var table = "TRUNCATE auth";
+            var table = "DELETE FROM auth";
             try(PreparedStatement ps = connect.prepareStatement(table)){
                 ps.executeUpdate();
             }
-        }catch( Exception e){
-            throw new ResponseParseException("Unable",e);
+        }catch(SQLException ex){
+            throw new DataAccessException("Unable to clear Auth", ex);
         }
     }
 }

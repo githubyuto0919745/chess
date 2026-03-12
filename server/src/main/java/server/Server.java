@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import record.*;
@@ -28,28 +29,34 @@ public class Server {
     }
 
     private void clearHandler(Context ctx) {
-        ClearService clearservice = new ClearService();
-
         try {
+            ClearService clearservice = new ClearService();
             clearservice.clears();
             ctx.status(200);
-        } catch (Exception e){
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
+        }
+        catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
             ctx.status(500);
         }
+
     }
 
     private void registerHandler(Context ctx) {
-        RegisterService registerservice = new RegisterService();
-        UserData user = new Gson().fromJson(ctx.body(), UserData.class);
-        if(user == null || user.username()==null || user.password() == null) {
-            ErrorMessage error = new ErrorMessage("Error: bad request");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(400);
-            return;
-        }
+
         try {
+            RegisterService registerservice = new RegisterService();
+            UserData user = new Gson().fromJson(ctx.body(), UserData.class);
+            if(user == null || user.username()==null || user.password() == null) {
+                ErrorMessage error = new ErrorMessage("Error: bad request");
+                ctx.result(new Gson().toJson(error));
+                ctx.status(400);
+                return;
+            }
             AuthData auth = registerservice.register(user);
             ctx.result(new Gson().toJson(auth));
             ctx.status(200);
@@ -61,6 +68,10 @@ public class Server {
             ErrorMessage error = new ErrorMessage("Error: bad request");
             ctx.result(new Gson().toJson(error));
             ctx.status(400);
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -69,15 +80,16 @@ public class Server {
 
     }
     private void loginHandler(Context ctx){
-        LoginService loginService = new LoginService();
-        UserData user = new Gson().fromJson(ctx.body(), UserData.class);
-        if(user == null || user.username()==null || user.password() == null){
-            ErrorMessage error = new ErrorMessage("Error: bad request");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(400);
-            return;
-        }
+
         try {
+            LoginService loginService = new LoginService();
+            UserData user = new Gson().fromJson(ctx.body(), UserData.class);
+            if(user == null || user.username()==null || user.password() == null){
+                ErrorMessage error = new ErrorMessage("Error: bad request");
+                ctx.result(new Gson().toJson(error));
+                ctx.status(400);
+                return;
+            }
             AuthData auth = loginService.login(user.username(), user.password());
             ctx.result(new Gson().toJson(auth));
             ctx.status(200);
@@ -85,6 +97,10 @@ public class Server {
             ErrorMessage error = new ErrorMessage("Error: unauthorized");
             ctx.result(new Gson().toJson(error));
             ctx.status(401);
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -92,15 +108,19 @@ public class Server {
         }
     }
     private void logoutHandler(Context ctx){
-        LogoutService logoutService = new LogoutService();
-        String token = ctx.header("Authorization");
         try {
+            LogoutService logoutService = new LogoutService();
+            String token = ctx.header("Authorization");
             logoutService.logout(token);
             ctx.status(200);
         }catch(UnauthorizedException e){
             ErrorMessage error = new ErrorMessage("Error: unauthorized");
             ctx.result(new Gson().toJson(error));
             ctx.status(401);
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -109,10 +129,9 @@ public class Server {
     }
 
     private void listGameHandler(Context ctx){
-        ListGamesService listgamesService = new ListGamesService();
-        String token = ctx.header("Authorization");
-
         try {
+            ListGamesService listgamesService = new ListGamesService();
+            String token = ctx.header("Authorization");
             var games = listgamesService.listGames(token);
             HashMap<String, Object> response = new HashMap<>();
             response.put("games",games);
@@ -122,6 +141,10 @@ public class Server {
             ErrorMessage error = new ErrorMessage("Error: unauthorized");
             ctx.result(new Gson().toJson(error));
             ctx.status(401);
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -130,19 +153,19 @@ public class Server {
     }
 
     private void createGameHandler(Context ctx){
-        CreateGameService createGameService = new CreateGameService();
-        GameData game = new Gson().fromJson(ctx.body(), GameData.class);
 
-        String token = ctx.header("Authorization");
-
-        if(game == null || game.gameName() == null){
-            ErrorMessage error = new ErrorMessage("Error: bad request");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(400);
-            return;
-        }
         try {
+            CreateGameService createGameService = new CreateGameService();
+            GameData game = new Gson().fromJson(ctx.body(), GameData.class);
 
+            String token = ctx.header("Authorization");
+
+            if(game == null || game.gameName() == null){
+                ErrorMessage error = new ErrorMessage("Error: bad request");
+                ctx.result(new Gson().toJson(error));
+                ctx.status(400);
+                return;
+            }
             GameData created = createGameService.createGames(game,token);
             ctx.status(200);
             ctx.result(new Gson().toJson(created));
@@ -155,6 +178,10 @@ public class Server {
             ErrorMessage error = new ErrorMessage("Error: bad request");
             ctx.result(new Gson().toJson(error));
             ctx.status(400);
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));
@@ -163,19 +190,20 @@ public class Server {
     }
 
     private void joinGameHandler(Context ctx){
-        JoinGameService joinGameService = new JoinGameService();
-        JoinGameRequest request = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
-
-
-        if(request == null || request.playerColor() == null|| request.gameID() == null){
-            ErrorMessage error = new ErrorMessage("Error: bad request");
-            ctx.result(new Gson().toJson(error));
-            ctx.status(400);
-            return;
-        }
-        String token = ctx.header("Authorization");
 
         try {
+            JoinGameService joinGameService = new JoinGameService();
+            JoinGameRequest request = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
+
+
+            if(request == null || request.playerColor() == null|| request.gameID() == null){
+                ErrorMessage error = new ErrorMessage("Error: bad request");
+                ctx.result(new Gson().toJson(error));
+                ctx.status(400);
+                return;
+            }
+            String token = ctx.header("Authorization");
+
             joinGameService.joinGame(token,request.gameID(),request.playerColor());
             ctx.status(200);
         }catch(AlreadyTakenException e){
@@ -193,6 +221,10 @@ public class Server {
             ctx.result(new Gson().toJson(error));
             ctx.status(400);
 
+        }catch(DataAccessException e){
+            ErrorMessage error = new ErrorMessage("Error: database failure");
+            ctx.result(new Gson().toJson(error));
+            ctx.status(500);
         }catch (Exception e){
             ErrorMessage error = new ErrorMessage("Error: description of error");
             ctx.result(new Gson().toJson(error));

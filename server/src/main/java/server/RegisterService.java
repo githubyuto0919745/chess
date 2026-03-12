@@ -1,25 +1,35 @@
 package server;
 
+import dataaccess.DataAccessException;
 import dataaccess.memory.AuthDAO;
 import dataaccess.AuthDataAccess;
+import dataaccess.memory.GameDAO;
 import dataaccess.memory.UserDAO;
 import dataaccess.UserDataAccess;
+import dataaccess.mysql.MySqlAuthDAO;
+import dataaccess.mysql.MySqlGameDAO;
+import dataaccess.mysql.MySqlUserDAO;
 import org.mindrot.jbcrypt.BCrypt;
 import record.UserData;
 import record.AuthData;
 import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class RegisterService {
     UserDataAccess userDataAccess;
     AuthDataAccess authDataAccess;
-    public RegisterService(){
-        userDataAccess = new UserDAO();
-        authDataAccess = new AuthDAO();
+    public RegisterService() throws DataAccessException {
+        try {
+            userDataAccess = new MySqlUserDAO();
+            authDataAccess = new MySqlAuthDAO();
+        }catch(SQLException e){
+          throw new DataAccessException("error",e);
+        }
     }
-    public void storeUserPassword(String username, String clearPassword, String email){
+    public void storeUserPassword(String username, String clearPassword, String email) throws DataAccessException {
         String hashedPassword = BCrypt.hashpw(clearPassword, BCrypt.gensalt());
         UserData user = new UserData(username, hashedPassword,email);
         userDataAccess.createUser(user);
@@ -27,7 +37,7 @@ public class RegisterService {
     public static String generateToken(){
         return UUID.randomUUID().toString();
     }
-    public AuthData register(UserData user){
+    public AuthData register(UserData user) throws DataAccessException {
         // username already exist
         if(userDataAccess.getUser(user.username()) != null) {
             throw new AlreadyTakenException();
