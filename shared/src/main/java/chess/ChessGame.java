@@ -65,7 +65,6 @@ public class ChessGame {
         return validMove;
 
     }
-
     private boolean isValidMove(ChessPiece piece, ChessPosition myPosition, ChessMove move) {
         Collection<ChessMove> moves = piece.pieceMoves(board, myPosition);
         boolean valid = false;

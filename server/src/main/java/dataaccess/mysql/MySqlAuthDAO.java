@@ -54,13 +54,11 @@ public class MySqlAuthDAO implements AuthDataAccess {
         }
         return null;
     }
-
     private AuthData readAuth(ResultSet rs) throws SQLException {
         String username  = rs.getString("username");
         String authToken = rs.getString("authToken");
         return new AuthData(username, authToken);
     }
-
     @Override
     public void createAuth(AuthData auth)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
@@ -74,7 +72,6 @@ public class MySqlAuthDAO implements AuthDataAccess {
             throw new DataAccessException("Unable to create Auth", ex);
         }
     }
-
     @Override
     public void deleteAuth(String authToken)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
@@ -87,7 +84,6 @@ public class MySqlAuthDAO implements AuthDataAccess {
             throw new DataAccessException("Unable to delete Auth", ex);
         }
     }
-
     @Override
     public void clear()throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){

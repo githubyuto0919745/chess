@@ -16,12 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 public class MySqlGameDAO implements GameDataAccess {
-
     public MySqlGameDAO() throws DataAccessException {
         configureDatabase();
     }
-
-
     private final String[] createTable = {
             """
             CREATE TABLE IF NOT EXISTS game (
@@ -45,7 +42,6 @@ public class MySqlGameDAO implements GameDataAccess {
             throw new DataAccessException("Unable to configure table", ex);
         }
     }
-
     private GameData readGame(ResultSet rs) throws SQLException {
         Integer gameID  = rs.getInt("gameID");
         String whiteUsername = rs.getString("whiteUsername");
@@ -55,8 +51,6 @@ public class MySqlGameDAO implements GameDataAccess {
 
         return new GameData(gameID, whiteUsername, blackUsername, gameName,game);
     }
-
-
     @Override
     public GameData getGame(int gameID) throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){
@@ -74,7 +68,6 @@ public class MySqlGameDAO implements GameDataAccess {
         }
         return null;
     }
-
     @Override
     public GameData createGame(GameData game)throws DataAccessException {
         try (Connection connect = DatabaseManager.getConnection()){
@@ -103,7 +96,6 @@ public class MySqlGameDAO implements GameDataAccess {
         }
         throw new DataAccessException("Unable to get ID");
     }
-
     @Override
     public Collection<GameData> listGame()throws DataAccessException {
         Collection<GameData> gameList = new ArrayList<>();
@@ -121,7 +113,6 @@ public class MySqlGameDAO implements GameDataAccess {
         }
         return gameList;
     }
-
     @Override
     public void updateGame(GameData game) throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){
@@ -144,7 +135,6 @@ public class MySqlGameDAO implements GameDataAccess {
             throw new DataAccessException("Unable to update Game", ex);
         }
     }
-
     @Override
     public void clear() throws DataAccessException{
         try (Connection connect = DatabaseManager.getConnection()){

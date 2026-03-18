@@ -26,7 +26,6 @@ public class MySqlUserDAO implements UserDataAccess {
             )
             """
     };
-
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection connect = DatabaseManager.getConnection()){
