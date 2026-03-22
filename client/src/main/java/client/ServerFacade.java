@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import record.AuthData;
+import record.GameData;
 import record.UserData;
 
 import java.io.IOException;
@@ -17,18 +18,53 @@ public class ServerFacade {
         severalUrl = url;
     }
 
-    private AuthData createGame (UserData user) throws ResponseException{
-        var request = buildRequest ("POST", "/user", user);
+
+    public void clear () throws ResponseException{
+        var request = buildRequest ("DELETE", "/db", null, null);
+        var response = sendRequest(request);
+        handleResponse(response, null);
+    }
+    public static AuthData register(UserData user) throws ResponseException{
+        var request = buildRequest ("POST", "/user", user, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
+    public AuthData login (UserData user) throws ResponseException{
+        var request = buildRequest ("POST", "/session", user, null);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
+    }
+    public AuthData logout (String authToken) throws ResponseException{
+        var request = buildRequest ("DELETE", "/session", null, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, null);
+    }
+    public GameData listGame (GameData game, String authToken) throws ResponseException{
+        var request = buildRequest ("GET", "/game", game, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, GameData.class);
+    }
+    public GameData createGame (GameData game, String authToken) throws ResponseException{
+        var request = buildRequest ("POST", "/game", game, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, GameData.class);
+    }
+    public GameData joinGame (GameData game, String authToken) throws ResponseException{
+        var request = buildRequest ("PUT", "/game", game, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, GameData.class);
+    }
 
-    private HttpRequest buildRequest (String method, String path, Object body){
+
+    private HttpRequest buildRequest (String method, String path, Object body, String authToken){
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(severalUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+        if (authToken != null) {
+            request.setHeader("Authorization", authToken);
         }
         return request.build();
     }
@@ -40,16 +76,16 @@ public class ServerFacade {
         }
     }
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
-        var status = response.statusCode();
+        int status = response.statusCode();
         if(!isSuccessful(status)){
             var body = response.body();
             if(body != null){
                 throw ResponseException.fromJson(body);
             }
-            throw new ResponseException(ResponseException.fromHttpStatusCode(status),"other failure: " + status);
+            throw new ResponseException(ResponseException.fromHttpStatusCode(status));
         }
 
-        if(responseClass == null){
+        if(responseClass != null){
             return new Gson().fromJson(response.body(),responseClass);
         }
         return null;
@@ -58,7 +94,7 @@ public class ServerFacade {
         try{
             return client.send(request, HttpResponse.BodyHandlers.ofString());
         }catch (Exception ex){
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ex.getMessage());
         }
     }
 

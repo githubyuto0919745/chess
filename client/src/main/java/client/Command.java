@@ -1,5 +1,8 @@
 package client;
 
+import record.AuthData;
+import record.UserData;
+
 import java.util.Scanner;
 
 public class Command {
@@ -19,7 +22,12 @@ public class Command {
                     String username = scanner.next();
                     String password = scanner.next();
                     String email = scanner.next();
+                    try{
+                        AuthData register = ServerFacade.register(new UserData(username, password, email));
 
+                    }catch(){
+
+                    }
                     System.out.print("Registered as " + username);
                     break;
                 case "login":
