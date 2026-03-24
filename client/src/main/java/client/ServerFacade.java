@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.*;
 
 public class ServerFacade {
     private static final HttpClient client = HttpClient.newHttpClient();
@@ -34,25 +35,29 @@ public class ServerFacade {
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
-    public void logout (String authToken) throws ResponseException{
+    public String logout (String authToken) throws ResponseException{
         var request = buildRequest ("DELETE", "/session", null, authToken);
         var response = sendRequest(request);
-        handleResponse(response, null);
+        return handleResponse(response, null);
     }
-    public GameData[] listGame (String authToken) throws ResponseException{
+    public List<GameData> listGame(String authToken) throws ResponseException{
         var request = buildRequest ("GET", "/game", null, authToken);
         var response = sendRequest(request);
-        return handleResponse(response, GameData[].class);
+
+        GameData[] games = handleResponse(response, GameData[].class);
+
+        List<GameData> list = new ArrayList<>(Arrays.asList(games));
+        return list;
     }
     public GameData createGame (GameData game, String authToken) throws ResponseException{
         var request = buildRequest ("POST", "/game", game, authToken);
         var response = sendRequest(request);
         return handleResponse(response, GameData.class);
     }
-    public void joinGame (JoinGameRequest game, String authToken) throws ResponseException{
+    public GameData joinGame (JoinGameRequest game, String authToken) throws ResponseException{
         var request = buildRequest ("PUT", "/game", game, authToken);
         var response = sendRequest(request);
-        handleResponse(response, GameData.class);
+        return handleResponse(response, GameData.class);
     }
 
 

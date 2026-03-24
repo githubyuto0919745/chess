@@ -5,20 +5,21 @@ import record.GameData;
 import record.JoinGameRequest;
 import record.UserData;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class Command {
     private final ServerFacade server;
     private String authToken = null;
-    private GameData[] lastGame;
+    private List<GameData> lastGame = new ArrayList<>();
     public Command(String serverUrl){
         server = new ServerFacade(serverUrl);
     }
 
     public void commands (){
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to 240 chess. Type help to get started!!!");
+
         while (true) {
-            System.out.print("Welcome to 240 chess. Type help to get started!!!");
             System.out.println("[LOGGED_OUT]>>> ");
             String command = scanner.next();
 
@@ -30,7 +31,7 @@ public class Command {
                     try {
                         AuthData auth = server.register(new UserData(username, password, email));
                         authToken = auth.authToken();
-                        System.out.print("Registered as " + username);
+                        System.out.println("Registered as " + username);
 
                     } catch (ResponseException ex) {
                         System.out.println("Error:" + ex.getMessage());
@@ -44,7 +45,9 @@ public class Command {
                         AuthData auth = server.login(new UserData(user, pass, null));
                         authToken = auth.authToken();
 
-                        System.out.print("Logged in as" + user);
+                        System.out.println("Logged in as" +  user);
+                        System.out.println("Type help to get started!!!");
+
                         boolean loggedIn = true;
 
                         while (loggedIn) {
@@ -56,17 +59,20 @@ public class Command {
                                     String name = scanner.next();
                                     try{
                                         var game = server.createGame(new GameData(0,null,null,name,null), authToken);
-                                        System.out.println("Created game: " + game);
+                                        lastGame.add(game);
+                                        System.out.println("Created game: " + game.gameName());
                                     }catch(ResponseException ex){
                                         System.out.println("Error:" + ex.getMessage());
                                     }
                                 }
                                 case "list" -> {
-                                    lastGame = server.listGame(authToken);
+
                                     try {
-                                        for(int i = 1; i < lastGame.length; i++){
-                                            GameData game = lastGame[i];
-                                            System.out.println((i + 1) + ". "+ game.gameName());
+                                        lastGame = server.listGame(authToken);
+                                        int displayIndex = 1;
+                                        for(GameData game: lastGame){
+                                            System.out.println(displayIndex + ". "+ game);
+                                            displayIndex ++;
                                         }
                                     }catch(ResponseException ex){
                                         System.out.println("Error:" + ex.getMessage());
@@ -74,19 +80,20 @@ public class Command {
                                 }
                                 case "join" -> {
 
-                                    if(lastGame == null){
+                                    if(lastGame == null || lastGame.isEmpty()){
                                         System.out.println("List is not displayed yet");
+                                        break;
                                     }
 
                                     System.out.println("Choose game with number ");
                                     int choice = scanner.nextInt();
 
                                     System.out.println("Which team color?: [White/Black]");
-                                    String color  = scanner.next();
+                                    String color  = scanner.nextLine();
 
-                                    GameData selected = lastGame[choice -1];
                                     try{
-                                        server.joinGame(new JoinGameRequest(selected.gameID(),color),authToken);
+                                        GameData joinedGame = server.joinGame(new JoinGameRequest(choice,color),authToken);
+                                        joinedGame = new GameData(joinedGame.gameID(),joinedGame.whiteUsername(),"player2", joinedGame.gameName(),joinedGame.game());
                                         System.out.println("You joined the game" + choice);
                                     }catch(ResponseException ex){
                                         System.out.println("Error:" + ex.getMessage());
@@ -100,7 +107,7 @@ public class Command {
                                     System.out.println("Observe which game ");
                                     int choice = scanner.nextInt();
 
-                                    GameData selected = lastGame[choice -1];
+                                    GameData selected = lastGame.get(choice -1);
                                     try{
                                         server.joinGame(new JoinGameRequest(selected.gameID(), null),authToken);
                                         System.out.println("Observing game of " + selected.gameName());
@@ -123,13 +130,13 @@ public class Command {
                                     return;
                                 }
                                 case "help" -> {
-                                    System.out.print("create <NAME> - a game");
-                                    System.out.print("list - games");
-                                    System.out.print("join <ID> [WHITE|BLACK] - a game");
-                                    System.out.print("observe <ID> - a game");
-                                    System.out.print("logout - when you are done");
-                                    System.out.print("quit - playing chess");
-                                    System.out.print("help - with possible commands");
+                                    System.out.println("create <NAME>");
+                                    System.out.println("list");
+                                    System.out.println("join <ID> <[WHITE|BLACK]>");
+                                    System.out.println("observe <ID>");
+                                    System.out.println("logout");
+                                    System.out.println("quit");
+                                    System.out.println("help");
                                 }
                             }
                         }
@@ -143,10 +150,10 @@ public class Command {
                     return;
                 }
                 case "help" -> {
-                    System.out.print("register <Username><Password><Email>");
-                    System.out.print("login <Username><Password>");
-                    System.out.print("quit");
-                    System.out.print("help");
+                    System.out.println("register <Username><Password><Email>");
+                    System.out.println("login <Username><Password>");
+                    System.out.println("quit");
+                    System.out.println("help");
                 }
 
 
