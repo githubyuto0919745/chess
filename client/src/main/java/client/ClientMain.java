@@ -7,7 +7,11 @@ import ui.boardDesign;
 public class ClientMain {
     public static void main(String[] args) {
 
-        boardDesign.whiteView();
+        System.out.println("White view:");
+        boardDesign whiteBoard = new boardDesign("WHITE");
+        System.out.println("\nBlack view:");
+        boardDesign blackBoard = new boardDesign("BLACK");
+
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
 

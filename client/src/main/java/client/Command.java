@@ -1,9 +1,11 @@
 package client;
 
+import chess.ChessBoard;
 import record.AuthData;
 import record.GameData;
 import record.JoinGameRequest;
 import record.UserData;
+import ui.boardDesign;
 
 import java.util.*;
 
@@ -11,6 +13,7 @@ public class Command {
     private final ServerFacade server;
     private String authToken = null;
     private List<GameData> lastGame = new ArrayList<>();
+    private boardDesign board;
     public Command(String serverUrl){
         server = new ServerFacade(serverUrl);
     }
@@ -69,6 +72,11 @@ public class Command {
 
                                     try {
                                         lastGame = server.listGame(authToken);
+                                        if(lastGame == null || lastGame.isEmpty()){
+                                            System.out.println("No games available to join");
+                                            break;
+                                        }
+
                                         int displayIndex = 1;
                                         for(GameData game: lastGame){
                                             System.out.println(displayIndex + ". "+ game);
@@ -91,10 +99,35 @@ public class Command {
                                     System.out.println("Which team color?: [White/Black]");
                                     String color  = scanner.nextLine();
 
+                                    GameData selectedGame = lastGame.get(choice-1);
+                                    if ((selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) &&
+                                            (selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty())) {
+                                        System.out.println("This game already has two players.");
+                                        break;
+                                    }
+                                    if (color.equals("WHITE") &&
+                                            selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) {
+                                        System.out.println("White player slot is already taken... Choose Black!");
+                                        break;
+                                    }
+                                    if (color.equals("BLACK") &&
+                                            selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty()) {
+                                        System.out.println("Black player slot is already taken... Choose White!");
+                                        break;
+                                    }
+
                                     try{
-                                        GameData joinedGame = server.joinGame(new JoinGameRequest(choice,color),authToken);
-                                        joinedGame = new GameData(joinedGame.gameID(),joinedGame.whiteUsername(),"player2", joinedGame.gameName(),joinedGame.game());
+                                        int selectId = lastGame.get(choice - 1).gameID();
+                                        GameData joinedGame = server.joinGame(new JoinGameRequest(selectId,color),authToken);
+                                        joinedGame = new GameData(
+                                                joinedGame.gameID(),
+                                                joinedGame.whiteUsername(),
+                                                "player2",
+                                                joinedGame.gameName(),
+                                                joinedGame.game());
+
                                         System.out.println("You joined the game" + choice);
+                                        board = new boardDesign(color.toUpperCase());
                                     }catch(ResponseException ex){
                                         System.out.println("Error:" + ex.getMessage());
                                     }
@@ -155,8 +188,6 @@ public class Command {
                     System.out.println("quit");
                     System.out.println("help");
                 }
-
-
             }
 
         }

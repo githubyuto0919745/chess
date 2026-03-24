@@ -135,7 +135,7 @@ public class ServerFacadeTests {
         facade.createGame(game1, auth.authToken());
 
         List<GameData> listedGame = facade.listGame(auth.authToken());
-        Assertions.assertEquals(null, listedGame.get(0).whiteUsername());
+        Assertions.assertEquals(null, listedGame.getFirst().whiteUsername());
 
 
     }
