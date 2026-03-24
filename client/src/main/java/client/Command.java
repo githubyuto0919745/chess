@@ -1,6 +1,5 @@
 package client;
 
-import chess.ChessBoard;
 import record.AuthData;
 import record.GameData;
 import record.JoinGameRequest;
@@ -134,10 +133,12 @@ public class Command {
                                     int choice = scanner.nextInt();
                                     scanner.nextLine();
 
-                                    GameData selected = lastGame.get(choice -1);
+                                    GameData selected = lastGame.get(choice-1);
                                     try{
-                                        server.joinGame(new JoinGameRequest(selected.gameID(), null),authToken);
-                                        System.out.println("Observing game of " + selected.gameName());
+                                        System.out.println("===== Observing game =====");
+                                        System.out.println("Game Name: " + selected.gameName());
+                                        System.out.println("Game WhiteUser: " + selected.whiteUsername());
+                                        System.out.println("Game BlackUser: " + selected.blackUsername());
                                     }catch(ResponseException ex){
                                         System.out.println("Error:" + ex.getMessage());
                                     }
@@ -153,14 +154,14 @@ public class Command {
                                     }
                                 }
                                 case "quit" -> {
-                                    System.out.println("Thank you!");
+                                    System.out.println("Thank you for playing!");
                                     return;
                                 }
                                 case "help" -> {
                                     System.out.println("create <NAME>");
                                     System.out.println("list");
                                     System.out.println("join");
-                                    System.out.println("observe <ID>");
+                                    System.out.println("observe");
                                     System.out.println("logout");
                                     System.out.println("quit");
                                     System.out.println("help");
