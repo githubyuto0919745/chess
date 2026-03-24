@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.List;
 public class MySqlGameDAO implements GameDataAccess {
     public MySqlGameDAO() throws DataAccessException {
-        configureDatabase();
+        MySqlBaseDAO.configureDatabase(createTable);
     }
     private final String[] createTable = {
             """
@@ -30,18 +30,7 @@ public class MySqlGameDAO implements GameDataAccess {
             )
             """
     };
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection connect = DatabaseManager.getConnection()){
-            for(String table : createTable){
-                try(var preparedStatement = connect.prepareStatement(table)){
-                    preparedStatement.executeUpdate();
-                }
-            }
-        }catch(SQLException ex){
-            throw new DataAccessException("Unable to configure table", ex);
-        }
-    }
+
     private GameData readGame(ResultSet rs) throws SQLException {
         Integer gameID  = rs.getInt("gameID");
         String whiteUsername = rs.getString("whiteUsername");

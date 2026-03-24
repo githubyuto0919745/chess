@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 import java.util.*;
 
 public class ServerFacade {
-    private static final HttpClient client = HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private final String severalUrl;
     public ServerFacade(String url){
         severalUrl = url;
@@ -94,7 +94,7 @@ public class ServerFacade {
     }
     private static HttpResponse<String> sendRequest(HttpRequest request) throws ResponseException{
         try{
-            return client.send(request, HttpResponse.BodyHandlers.ofString());
+            return CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         }catch (Exception ex){
             throw new ResponseException(ex.getMessage());
         }

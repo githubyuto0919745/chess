@@ -4,7 +4,7 @@ import record.AuthData;
 import record.GameData;
 import record.JoinGameRequest;
 import record.UserData;
-import ui.boardDesign;
+import ui.BoardDesign;
 
 import java.util.*;
 
@@ -12,7 +12,7 @@ public class Command {
     private final ServerFacade server;
     private String authToken = null;
     private List<GameData> lastGame = new ArrayList<>();
-    private boardDesign board;
+    private BoardDesign board;
     private static String authUsername;
     public Command(String serverUrl){
         server = new ServerFacade(serverUrl);
@@ -91,7 +91,7 @@ public class Command {
 
     }
 
-    private static void loggedinCommand(ServerFacade server, String authToken, List<GameData> lastGame, boardDesign board){
+    private static void loggedinCommand(ServerFacade server, String authToken, List<GameData> lastGame, BoardDesign board){
         boolean loggedIn = true;
         Scanner scanner = new Scanner(System.in);
         while (loggedIn) {
@@ -175,7 +175,7 @@ public class Command {
                     try{
                         server.joinGame(new JoinGameRequest(selectedGame.gameID(), color),authToken);
                         System.out.println("You joined the game  " + choice + ". " + lastGame.get(choice-1).gameName() + "  as  " + color);
-                        board = new boardDesign(color);
+                        board = new BoardDesign(color);
                         System.out.println();
                     }catch(ResponseException ex){
                         System.out.println(ex.getMessage());
@@ -207,7 +207,7 @@ public class Command {
                         System.out.println("Game WhiteUser: " + selected.whiteUsername());
                         System.out.println("Game BlackUser: " + selected.blackUsername());
 
-                        board = new boardDesign(color);
+                        board = new BoardDesign(color);
                         System.out.println();
                 }
                 case "logout" -> {

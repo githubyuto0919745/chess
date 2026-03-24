@@ -1,16 +1,15 @@
 package client;
 
 import chess.*;
-import ui.EscapeSequences;
-import ui.boardDesign;
+import ui.BoardDesign;
 
 public class ClientMain {
     public static void main(String[] args) {
 
         System.out.println("White view:");
-        boardDesign whiteBoard = new boardDesign("WHITE");
+        BoardDesign whiteBoard = new BoardDesign("WHITE");
         System.out.println("\nBlack view:");
-        boardDesign blackBoard = new boardDesign("BLACK");
+        BoardDesign blackBoard = new BoardDesign("BLACK");
 
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println();

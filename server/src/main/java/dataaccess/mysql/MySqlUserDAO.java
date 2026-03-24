@@ -14,9 +14,9 @@ import java.sql.SQLException;
 public class MySqlUserDAO implements UserDataAccess {
 
     public MySqlUserDAO() throws DataAccessException {
-        configureDatabase();
+        MySqlBaseDAO.configureDatabase(createTable);
     }
-    private final String[] createTable = {
+    private static final String[] createTable = {
             """
             CREATE TABLE IF NOT EXISTS user (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,18 +26,7 @@ public class MySqlUserDAO implements UserDataAccess {
             )
             """
     };
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection connect = DatabaseManager.getConnection()){
-            for(String table : createTable){
-                try(var preparedStatement = connect.prepareStatement(table)){
-                    preparedStatement.executeUpdate();
-                }
-            }
-        }catch(SQLException ex){
-            throw new DataAccessException("Unable to configure table",ex);
-        }
-    }
+
 
     @Override
     public UserData getUser(String username) throws DataAccessException {

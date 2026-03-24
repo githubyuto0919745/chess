@@ -1,9 +1,9 @@
 package ui;
 
-public class boardDesign {
+public class BoardDesign {
     private String[][] board;
     int size = 8;
-    public boardDesign(String color){
+    public BoardDesign(String color){
         board = new String[size][size];
         setBoard();
         if(color.equals("WHITE")){
