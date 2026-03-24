@@ -57,14 +57,12 @@ public class boardDesign {
             }
         }
         for(int row = 0; row < size; row ++){
-            String bgOutside = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE;
-            System.out.print(bgOutside + " " + EscapeSequences.RESET_BG_COLOR);
             for ( int col = 0; col < size; col ++){
                 String bgColor = ((row + col) %2 ==0)?
                         EscapeSequences.SET_BG_COLOR_BLUE :
                         EscapeSequences.SET_BG_COLOR_BLACK;
                 String piece = displayBoard[row][col];
-                System.out.print(bgColor + EscapeSequences.SET_TEXT_COLOR_WHITE + piece +EscapeSequences.RESET_BG_COLOR );
+                System.out.print(bgColor + EscapeSequences.SET_TEXT_COLOR_WHITE + String.format("%-3s",piece) +EscapeSequences.RESET_BG_COLOR );
 
             }
             System.out.print(" " + (row+1));
