@@ -13,6 +13,7 @@ public class Command {
     private String authToken = null;
     private List<GameData> lastGame = new ArrayList<>();
     private boardDesign board;
+    private static String authUsername;
     public Command(String serverUrl){
         server = new ServerFacade(serverUrl);
     }
@@ -40,6 +41,7 @@ public class Command {
                     try {
                         AuthData auth = server.register(new UserData(username, password, email));
                         authToken = auth.authToken();
+                        authUsername = username.trim();
                         System.out.println("Registered as  " + username);
                         loggedinCommand(server, authToken, lastGame,board);
 
@@ -58,6 +60,7 @@ public class Command {
                     try {
                         AuthData auth = server.login(new UserData(user, pass, null));
                         authToken = auth.authToken();
+                        authUsername = user.trim();
 
                         System.out.println("Logged in as  " + user);
                         System.out.println("Type help to get started!!!");
@@ -135,28 +138,42 @@ public class Command {
                         System.out.println("You need to fill the information!");
                         break;
                     }
-                    int choice = Integer.parseInt(parts[1]);
+                    int choice;
+                    try{ choice = Integer.parseInt(parts[1]);
+                    }catch(ResponseException ex){
+                        System.out.println(ex.getMessage());
+                        break;
+                    }
+                    if(choice <1 || choice > lastGame.size()){
+                        System.out.println("No exist! ");
+                        break;
+                    }
                     String color = parts[2].toUpperCase();
+                    if(!color.equals("WHITE") && !color.equals("BLACK")){
+                        System.out.println("Color is invalid");
+                    }
+
+                    String user = authUsername.trim();
+                    GameData selectedGame = lastGame.get(choice-1);
+
+                    if((user.equalsIgnoreCase(selectedGame.blackUsername())) || user.equalsIgnoreCase(selectedGame.whiteUsername())){
+                        System.out.println("You are already in the game!");
+                        break;
+                    }
+
+                    if ((selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) &&
+                            (selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty())) {
+                        System.out.println("This game already has two players.");
+                       break;
+                    }
+                    if ((color.equals("WHITE") && selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty())||
+                            ((color.equals("BLACK") && selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty()))) {
+                        System.out.println( color + "slot is already taken... Choose Black!");
+                       break;
+                    }
+
                     try{
-                        GameData selectedGame = lastGame.get(choice-1);
-
-                        if ((selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) &&
-                                (selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty())) {
-                            System.out.println("This game already has two players.");
-                            break;
-                        }
-                        if (color.equals("WHITE") &&
-                                selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) {
-                            System.out.println("White player slot is already taken... Choose Black!");
-                            break;
-                        }
-                        if (color.equals("BLACK") &&
-                                selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty()) {
-                            System.out.println("Black player slot is already taken... Choose White!");
-                            break;
-                        }
                         server.joinGame(new JoinGameRequest(selectedGame.gameID(), color),authToken);
-
                         System.out.println("You joined the game  " + choice + ". " + lastGame.get(choice-1).gameName() + "  as  " + color);
                         board = new boardDesign(color);
                         System.out.println();
@@ -169,16 +186,22 @@ public class Command {
                         System.out.println("You need to fill the information!");
                         break;
                     }
-                    int choice = Integer.parseInt(parts[1]);
-                    String color = parts[2].toUpperCase();
-
-                    if(lastGame == null){
-                        System.out.println("List is not displayed yet");
+                    int choice;
+                    try{ choice = Integer.parseInt(parts[1]);
+                    }catch(ResponseException ex){
+                        System.out.println(ex.getMessage());
                         break;
+                    }
+                    if(choice <1 || choice > lastGame.size()){
+                        System.out.println("No exist! ");
+                        break;
+                    }
+                    String color = parts[2].toUpperCase();
+                    if(!color.equals("WHITE") && !color.equals("BLACK")){
+                        System.out.println("Color is invalid");
                     }
 
                     GameData selected = lastGame.get(choice-1);
-                    try{
                         System.out.println("===== Observing game =====");
                         System.out.println("Game Name: " + selected.gameName());
                         System.out.println("Game WhiteUser: " + selected.whiteUsername());
@@ -186,14 +209,12 @@ public class Command {
 
                         board = new boardDesign(color);
                         System.out.println();
-                    }catch(ResponseException ex){
-                        System.out.println(ex.getMessage());
-                    }
                 }
                 case "logout" -> {
                     try {
                         server.logout(authToken);
                         authToken = null;
+                        authUsername = null;
                         loggedIn = false;
                         System.out.print("Logged out successfully!");
                         System.out.println();
@@ -209,7 +230,7 @@ public class Command {
                     System.out.println("create <NAME>");
                     System.out.println("list");
                     System.out.println("join <Index of Game> <[WHITE/BLACK]>");
-                    System.out.println("observe <Index of Game> <[WHITE/BLACK]");
+                    System.out.println("observe <Index of Game> <[WHITE/BLACK]>");
                     System.out.println("logout");
                     System.out.println("quit");
                     System.out.println("help");
