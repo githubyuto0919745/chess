@@ -1,10 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
-import record.AuthData;
-import record.GameData;
-import record.JoinGameRequest;
-import record.UserData;
+import record.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -44,9 +41,9 @@ public class ServerFacade {
         var request = buildRequest ("GET", "/game", null, authToken);
         var response = sendRequest(request);
 
-        GameData[] games = handleResponse(response, GameData[].class);
+        ListGameResponse listre = handleResponse(response, ListGameResponse.class);
 
-        List<GameData> list = new ArrayList<>(Arrays.asList(games));
+        List<GameData> list = new ArrayList<>(Arrays.asList(listre.games()));
         return list;
     }
     public GameData createGame (GameData game, String authToken) throws ResponseException{
@@ -54,10 +51,10 @@ public class ServerFacade {
         var response = sendRequest(request);
         return handleResponse(response, GameData.class);
     }
-    public GameData joinGame (JoinGameRequest game, String authToken) throws ResponseException{
+    public void joinGame (JoinGameRequest game, String authToken) throws ResponseException{
         var request = buildRequest ("PUT", "/game", game, authToken);
         var response = sendRequest(request);
-        return handleResponse(response, GameData.class);
+        handleResponse(response, JoinGameResponse.class);
     }
 
 

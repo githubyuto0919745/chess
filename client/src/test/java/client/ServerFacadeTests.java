@@ -134,10 +134,12 @@ public class ServerFacadeTests {
         var game1 = new GameData(null,null,null,"game1",null);
         facade.createGame(game1, auth.authToken());
 
+
         List<GameData> listedGame = facade.listGame(auth.authToken());
-        Assertions.assertEquals(null, listedGame.getFirst().whiteUsername());
+        Assertions.assertFalse(listedGame.isEmpty());
 
-
+        GameData firstGame = listedGame.getFirst();
+        Assertions.assertEquals(null, firstGame.whiteUsername());
     }
 
     @Test
@@ -161,12 +163,12 @@ public class ServerFacadeTests {
         var newGame = new GameData(null,"player1",null,"game1",null);
         var createdGame = facade.createGame(newGame, whiteAuth.authToken());
 
-        JoinGameRequest join = new JoinGameRequest(createdGame.gameID(),"BLACK");
-        GameData joinedGame = facade.joinGame(join,blackAuth.authToken());
+        List<GameData> listedGame = facade.listGame(blackAuth.authToken());
 
-        Assertions.assertNotNull(join.gameID());
-        Assertions.assertEquals("player1", joinedGame.whiteUsername());
-        Assertions.assertEquals("player2", joinedGame.blackUsername());
+        JoinGameRequest join = new JoinGameRequest(createdGame.gameID(),"BLACK");
+
+        Assertions.assertDoesNotThrow(()-> facade.joinGame(join,blackAuth.authToken()));
+
     }
 
     @Test
@@ -174,7 +176,7 @@ public class ServerFacadeTests {
     public void joinGameNegative() throws Exception {
         boolean fail = false;
         try{
-            facade.listGame("tokenInvalid");
+            facade.joinGame(new JoinGameRequest(1,null),"invalidToken");
         }catch(ResponseException ex){
             fail = true;
         }
