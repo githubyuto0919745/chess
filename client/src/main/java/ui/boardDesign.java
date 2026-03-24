@@ -60,7 +60,7 @@ public class boardDesign {
             }
         }
 
-        String[] letters = {"a", "b", "c", "d", "e", "f", "g", "h"};
+
         for(int row = 0; row < size; row ++){
             String bgOutside = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE;
             System.out.print(bgOutside + " " + EscapeSequences.RESET_BG_COLOR);
@@ -72,8 +72,11 @@ public class boardDesign {
                 System.out.print(bgColor + EscapeSequences.SET_TEXT_COLOR_WHITE + piece +EscapeSequences.RESET_BG_COLOR );
 
             }
+            System.out.print(" " + (row+1));
             System.out.println();
         }
+        System.out.print("  a  "+" b  "+"c " + "  d " + "  e " + " f " + "  g " + " h ");
+
 
 
     }

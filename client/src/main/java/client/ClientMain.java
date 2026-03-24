@@ -13,6 +13,7 @@ public class ClientMain {
         boardDesign blackBoard = new boardDesign("BLACK");
 
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        System.out.println();
         System.out.println("♕ 240 Chess Client: " + piece);
 
         String severalUrl = "http://localhost:8080";
