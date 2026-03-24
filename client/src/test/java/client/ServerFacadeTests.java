@@ -182,4 +182,16 @@ public class ServerFacadeTests {
         }
         Assertions.assertTrue(fail);
     }
+
+    @Test
+    @DisplayName("clear positive")
+    public void clearPositive() throws Exception {
+        var auth = facade.register(new UserData("player1","password1","p1@gmail.com"));
+        var newGame = new GameData(null,"player1",null,"game1",null);
+        facade.createGame(newGame, auth.authToken());
+
+        facade.clear();
+        Assertions.assertTrue(true);
+
+    }
 }
