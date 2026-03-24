@@ -78,7 +78,7 @@ public class Command {
 
                                         int displayIndex = 1;
                                         for(GameData game: lastGame){
-                                            System.out.println(displayIndex + ". "+ game);
+                                            System.out.println(displayIndex + ". " + "GameName:"+game.gameName() + "  WhitePlayer:" + game.whiteUsername() + " BlackPlayer:" + game.blackUsername());
                                             displayIndex ++;
                                         }
                                     }catch(ResponseException ex){
@@ -117,7 +117,7 @@ public class Command {
                                         }
                                         server.joinGame(new JoinGameRequest(selectedGame.gameID(), color),authToken);
 
-                                        System.out.println("You joined the game  " + choice + lastGame.get(choice-1).gameName() + "  as  " + color);
+                                        System.out.println("You joined the game  " + choice + ". " + lastGame.get(choice-1).gameName() + "  as  " + color);
                                         board = new boardDesign(color);
                                     }catch(ResponseException ex){
                                         System.out.println("Error:" + ex.getMessage());

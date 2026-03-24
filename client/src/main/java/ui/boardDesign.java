@@ -12,7 +12,6 @@ public class boardDesign {
             printBoard(true);
         }
     }
-
     private void setBoard(){
         for (int row = 0; row < size; row++){
             for(int col = 0; col < size; col++){
@@ -41,8 +40,6 @@ public class boardDesign {
         for (int col = 0; col< size; col++){
             board[6][col] = EscapeSequences.WHITE_PAWN;
         }
-
-
     }
     public void printBoard(boolean blackView){
         String[][] displayBoard = new String[size][size];
@@ -59,8 +56,6 @@ public class boardDesign {
                 }
             }
         }
-
-
         for(int row = 0; row < size; row ++){
             String bgOutside = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE;
             System.out.print(bgOutside + " " + EscapeSequences.RESET_BG_COLOR);
@@ -76,10 +71,5 @@ public class boardDesign {
             System.out.println();
         }
         System.out.print("  a  "+" b  "+"c " + "  d " + "  e " + " f " + "  g " + " h ");
-
-
-
     }
-
-
 }
