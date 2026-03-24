@@ -1,0 +1,77 @@
+♕ 240 Chess Client: chess.ChessPiece@c064240a
+Welcome to 240 chess. Type help to get started!!!
+[LOGGED_OUT]>>>
+help
+register <Username><Password><Email>
+login <Username><Password>
+quit
+help
+[LOGGED_OUT]>>>
+register donkey con y@gmail.com
+Registered as  donkey
+[LOGGED_OUT]>>>
+help
+register <Username><Password><Email>
+login <Username><Password>
+quit
+help
+[LOGGED_OUT]>>>
+login donkey con
+Logged in as  donkey
+Type help to get started!!!
+help
+LOGGED_IN >>>
+create <NAME>
+list
+join
+observe
+logout
+quit
+help
+logout
+LOGGED_IN >>>
+Logged out successfully![LOGGED_OUT]>>>
+register donkey con y@gmail.com
+Error: Error: already taken
+[LOGGED_OUT]>>>
+register f
+
+a
+f
+Registered as  f
+[LOGGED_OUT]>>>
+login donkey con
+Logged in as  donkey
+Type help to get started!!!
+list
+LOGGED_IN >>>
+1. GameName:game5  WhitePlayer:red BlackPlayer:null
+2. GameName:game8  WhitePlayer:red BlackPlayer:red
+3. GameName:yutogame  WhitePlayer:null BlackPlayer:null
+create game0
+LOGGED_IN >>>
+Created game:  game0
+list
+LOGGED_IN >>>
+1. GameName:game5  WhitePlayer:red BlackPlayer:null
+2. GameName:game8  WhitePlayer:red BlackPlayer:red
+3. GameName:yutogame  WhitePlayer:null BlackPlayer:null
+4. GameName:game0  WhitePlayer:null BlackPlayer:null
+join
+LOGGED_IN >>>
+Choose game with number
+4
+Which team color?: [WHITE/BLACK]
+white
+You joined the game  4. game0  as  WHITE
+
+LOGGED_IN >>>
+Observe which game
+4
+===== Observing game =====
+Game Name: game0
+Game WhiteUser: null
+Game BlackUser: null
+observe -1
+LOGGED_IN >>>
+Observe which game
