@@ -319,6 +319,7 @@ public class ChessPiece {
                 function.addAll(helperPawn(board, myPosition, endDownRight, false));
                 function.addAll(helperPawn(board, myPosition, endDownLeft, false));
             }
+
             else {
                 if (endDown.getRow() == 1) {
                     if (board.getPiece(endDown) == null) {
