@@ -209,7 +209,7 @@ public class ChessPiece {
                 }
                 endPosition = new ChessPosition(endPosition.getRow() + directRow, endPosition.getColumn()+directCol);
             }
-            else{ break;}
+            else break;
         }
         return rook;
     }
@@ -254,7 +254,7 @@ public class ChessPiece {
                 }
                 endPosition = new ChessPosition(endPosition.getRow() + directRow, endPosition.getColumn()+directCol);
             }
-            else {break;}
+            else break;
         }
         return queen;
     }
@@ -275,8 +275,8 @@ public class ChessPiece {
         if(pieceColor == ChessGame.TeamColor.WHITE){
 
             if(myPosition.getRow()==2){
-                if(board.getPiece(endUp) != null){
-                }else{
+
+                if(board.getPiece(endUp) != null){}else {
                     function.addAll(helperPawn(board, myPosition, endUp, true));
                     function.addAll(helperPawn(board, myPosition, endUpDouble, true));
                 }
@@ -291,15 +291,15 @@ public class ChessPiece {
 
                     if (isonBoard(endUpRight)) {
                         ChessPiece right = board.getPiece(endUpRight);
-                        if (right != null && right.pieceColor != pieceColor)
+                        if (right != null && right.pieceColor != pieceColor) {
                             promotionPawn(function, myPosition, endUpRight);
-
+                        }
                     }
                     if (isonBoard(endUpLeft)) {
                         ChessPiece left = board.getPiece(endUpLeft);
-                        if (left != null && left.pieceColor != pieceColor)
+                        if (left != null && left.pieceColor != pieceColor) {
                             promotionPawn(function, myPosition, endUpLeft);
-
+                        }
                     }
                 }else {
                     function.addAll(helperPawn(board, myPosition, endUp, true));
@@ -312,8 +312,8 @@ public class ChessPiece {
 
             if(myPosition.getRow()==7){
 
-                if(board.getPiece(endDown) != null){}
-                   else{ function.addAll(helperPawn(board, myPosition, endDown, true));
+                if(board.getPiece(endDown) != null){}else{
+                    function.addAll(helperPawn(board, myPosition, endDown, true));
                     function.addAll(helperPawn(board, myPosition, endDownDouble, true));
                 }
                 function.addAll(helperPawn(board, myPosition, endDownRight, false));
@@ -321,21 +321,21 @@ public class ChessPiece {
             }
             else {
                 if (endDown.getRow() == 1) {
-                    if (board.getPiece(endDown) == null)
+                    if (board.getPiece(endDown) == null) {
                         promotionPawn(function, myPosition, endDown);
-
+                    }
 
                     if (isonBoard(endDownRight)) {
                         ChessPiece right = board.getPiece(endDownRight);
-                        if (right != null && right.pieceColor != pieceColor)
+                        if (right != null && right.pieceColor != pieceColor) {
                             promotionPawn(function, myPosition, endDownRight);
-
+                        }
                     }
                     if (isonBoard(endDownLeft)) {
                         ChessPiece left = board.getPiece(endDownLeft);
-                        if (left != null && left.pieceColor != pieceColor)
+                        if (left != null && left.pieceColor != pieceColor) {
                             promotionPawn(function, myPosition, endDownLeft);
-
+                        }
                     }
                 }else {
                     function.addAll(helperPawn(board, myPosition, endDown, true));

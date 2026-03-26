@@ -117,7 +117,10 @@ public class Command {
                         }
                         int displayIndex = 1;
                         for(GameData game: lastGame){
-                            System.out.println(displayIndex + ". " + "GameName:"+game.gameName() + "  WhitePlayer:" + game.whiteUsername() + " BlackPlayer:" + game.blackUsername());
+                            System.out.println(displayIndex + ". " +
+                                    "GameName:"+game.gameName()
+                                    + "  WhitePlayer:" + game.whiteUsername() +
+                                    " BlackPlayer:" + game.blackUsername());
                             displayIndex ++;
                         }
                     }catch(ResponseException ex){
