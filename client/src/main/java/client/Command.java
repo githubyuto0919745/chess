@@ -139,9 +139,10 @@ public class Command {
                         break;
                     }
                     int choice;
-                    try{ choice = Integer.parseInt(parts[1]);
-                    }catch(ResponseException ex){
-                        System.out.println(ex.getMessage());
+                    try{
+                        choice = Integer.parseInt(parts[1]);
+                    }catch(NumberFormatException ex){
+                        System.out.println("Requires number ");
                         break;
                     }
                     if(choice <1 || choice > lastGame.size()){

@@ -14,9 +14,9 @@ import java.sql.SQLException;
 
 public class MySqlAuthDAO implements AuthDataAccess {
     public MySqlAuthDAO() throws DataAccessException {
-        MySqlBaseDAO.configureDatabase(createTable);
+        MySqlBaseDAO.configureDatabase(CREATE_TABLE);
     }
-    private final String[] createTable = {
+    private final String[] CREATE_TABLE = {
             """
             CREATE TABLE IF NOT EXISTS auth (
             `id` INT AUTO_INCREMENT PRIMARY KEY,

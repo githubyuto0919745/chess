@@ -17,9 +17,9 @@ import java.util.Collection;
 import java.util.List;
 public class MySqlGameDAO implements GameDataAccess {
     public MySqlGameDAO() throws DataAccessException {
-        MySqlBaseDAO.configureDatabase(createTable);
+        MySqlBaseDAO.configureDatabase(CREATE_TABLE);
     }
-    private final String[] createTable = {
+    private final String[] CREATE_TABLE = {
             """
             CREATE TABLE IF NOT EXISTS game (
             `gameID` INT AUTO_INCREMENT PRIMARY KEY,

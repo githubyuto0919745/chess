@@ -14,9 +14,9 @@ import java.sql.SQLException;
 public class MySqlUserDAO implements UserDataAccess {
 
     public MySqlUserDAO() throws DataAccessException {
-        MySqlBaseDAO.configureDatabase(createTable);
+        MySqlBaseDAO.configureDatabase(CREATE_TABLE);
     }
-    private static final String[] createTable = {
+    private static final String[] CREATE_TABLE = {
             """
             CREATE TABLE IF NOT EXISTS user (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
