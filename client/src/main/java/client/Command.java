@@ -121,12 +121,9 @@ public class Command {
                                     "GameName:"+game.gameName()
                                     + "  WhitePlayer:" + game.whiteUsername() +
                                     " BlackPlayer:" + game.blackUsername());
-                            displayIndex ++;
-                        }
-                    }catch(ResponseException ex){
+                            displayIndex ++;}}catch(ResponseException ex){
                         System.out.println(ex.getMessage());
-                    }
-                }
+                    }}
                 case "join", "observe" -> {
                     Object[] array = helperChoiceColor(parts, lastGame);
                     if (array == null) break;
@@ -134,9 +131,7 @@ public class Command {
                     String color = (String) array[1];
                     String user = authUsername.trim();
                     GameData selectedGame = lastGame.get(choice);
-
                     if (actions.equals("join")) {
-
                         if ((user.equalsIgnoreCase(selectedGame.blackUsername())) || user.equalsIgnoreCase(selectedGame.whiteUsername())) {
                             System.out.println("You are already in the game!");
                             break;
@@ -144,21 +139,18 @@ public class Command {
                         if ((selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) &&
                                 (selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty())) {
                             System.out.println("This game already has two players.");
-                            break;
-                        }
+                            break;}
                         if ((color.equals("WHITE") && selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) ||
                                 ((color.equals("BLACK") && selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty()))) {
                             System.out.println(color + "slot is already taken... Choose Black!");
-                            break;
-                        }
+                            break;}
                         try {
                             server.joinGame(new JoinGameRequest(selectedGame.gameID(), color), authToken);
                             System.out.println("You joined the game  " + choice + ". " + lastGame.get(choice - 1).gameName() + "  as  " + color);
                             board = new BoardDesign(color);
                             System.out.println();
                         } catch (ResponseException ex) {
-                            System.out.println(ex.getMessage());
-                        }
+                            System.out.println(ex.getMessage());}
                     } else {
                         System.out.println("===== Observing game =====");
                         System.out.println("Game Name: " + selectedGame.gameName());
