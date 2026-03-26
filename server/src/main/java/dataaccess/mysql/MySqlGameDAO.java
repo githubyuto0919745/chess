@@ -19,7 +19,7 @@ public class MySqlGameDAO implements GameDataAccess {
     public MySqlGameDAO() throws DataAccessException {
         MySqlBaseDAO.configureDatabase(CREATE_TABLE);
     }
-    private final String[] CREATE_TABLE = {
+    private static final String[] CREATE_TABLE = {
             """
             CREATE TABLE IF NOT EXISTS game (
             `gameID` INT AUTO_INCREMENT PRIMARY KEY,

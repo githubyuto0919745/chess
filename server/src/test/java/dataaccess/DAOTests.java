@@ -67,14 +67,14 @@ public class DAOTests {
     public void createGameSuccess() throws DataAccessException {
         userDAO.createUser(new UserData("whiteUser","2345", "white@gmail.com"));
         userDAO.createUser(new UserData("blackUser", "1234", "black@gmail.com"));
-
         GameData game = new GameData(null,  "whiteUser", "blackUser","gameTest", new ChessGame());
-        game = gameDAO.createGame(game);
         GameData check = gameDAO.getGame(game.gameID());
-        Assertions.assertNotNull(check);
-        Assertions.assertEquals("whiteUser", check.whiteUsername());
-        Assertions.assertEquals("blackUser", check.blackUsername());
-        Assertions.assertEquals("gameTest", check.gameName());
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(check),
+                () -> Assertions.assertEquals("whiteUser", check.whiteUsername()),
+                () -> Assertions.assertEquals("blackUser", check.blackUsername()),
+                () -> Assertions.assertEquals("gameTest", check.gameName())
+        );
     }
     @Test
     @DisplayName("create Game Failure")
