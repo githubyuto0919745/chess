@@ -75,7 +75,7 @@ public class ChessGame {
                 break;
             }
         }
-        if(!valid) return false;
+        if(!valid){ return false;}
 
         ChessPiece captured = board.getPiece(move.getEndPosition());
         if(captured != null && captured.getTeamColor() == piece.getTeamColor()){
@@ -147,10 +147,8 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> candidateMove = piece.pieceMoves(board, new ChessPosition(row, col));
                     for (ChessMove move : candidateMove) {
-                        if (move.getEndPosition().equals(kingPosition)) {
+                        if (move.getEndPosition().equals(kingPosition))
                             return true;
-                        }
-
                     }
                 }
             }
