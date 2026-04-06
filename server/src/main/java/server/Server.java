@@ -5,16 +5,18 @@ import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import record.*;
+import server.WebSocket.WebSocketHandler;
 import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
 
+import java.net.http.WebSocket;
 import java.util.HashMap;
 
 public class Server {
 
     private final Javalin javalin;
-
+    private final WebSocketHandler webSockeyHandler;
     public Server() {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -49,6 +51,12 @@ public class Server {
         javalin.get("/game", this::listGameHandler);
         javalin.post("/game", this::createGameHandler);
         javalin.put("/game", this::joinGameHandler);
+
+        webSockeyHandler.ws("/ws", ws -> {
+            ws.onConnect(webSocktHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+        });
     }
 
     private void clearHandler(Context ctx)throws DataAccessException {

@@ -21,12 +21,18 @@ public class GamePlayCommand {
             String plays = parts[0];
             switch (plays.toLowerCase()) {
                 case "help" -> {
+                    System.out.println("redraw ChessBoard");
+                    System.out.println("leave");
+                    System.out.println("resign");
+                    System.out.println("make move");
+                    System.out.println("help");
                 }
-                case "redraw Chess-Board" -> {
+                case "redraw" -> {
                 }
                 case "leave" -> {
+                    isJoined = false;
                 }
-                case "make move" -> {
+                case "move" -> {
                 }
                 case "resign" -> {
                 }
