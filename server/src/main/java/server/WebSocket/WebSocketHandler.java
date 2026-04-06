@@ -4,10 +4,15 @@ package server.WebSocket;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
-import org.eclipse.jetty.server.HttpChannelState;
+import jakarta.websocket.Session;
 import org.jetbrains.annotations.NotNull;
+import websocket.commands.UserGameCommand;
 
 import javax.swing.*;
+import java.io.IOException;
+
+import static javax.management.remote.JMXConnectorFactory.connect;
+import static websocket.commands.UserGameCommand.CommandType.CONNECT;
 
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler{
@@ -33,15 +38,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     @Override
     public void handleMessage(@NotNull WsMessageContext ctx) throws Exception {
         ctx.send("WebSocket response: " + ctx.message());
-//        try{
-//            Action action = new Gson().fromJson(ctx.message(), Action.class);
-//            switch (action.type()){
-//                case ENTER -> enter(action.)
-//            }
-//            ctx.send("Websocket response: " + ctx.message());
-//        } catch (IOException ex){
-//            ex.printStackTrace();
-//        }
+        try{
+            UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            switch (command.getCommandType()){
+                case CONNECT -> connect(command.getAuthToken(), (Session) ctx.session);
+                case MAKE_MOVE -> move(command.getAuthToken(), (Session) ctx.session);
+                case LEAVE -> leave(command.getAuthToken(), (Session) ctx.session);
+                case RESIGN -> resign(command.getAuthToken(), (Session) ctx.session);
+            }
+            ctx.send("Websocket response: " + ctx.message());
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    private void connect (String authToken, Session session) throws IOException{
+
+    }
+    private void move (String authToken, Session session) throws IOException{
+
+    }
+    private void leave (String authToken, Session session) throws IOException{
+
+    }
+    private void resign (String authToken, Session session) throws IOException{
 
     }
 

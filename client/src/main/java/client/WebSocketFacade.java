@@ -67,8 +67,6 @@ public class WebSocketFacade extends Endpoint {
             throw new ResponseException(ex.getMessage());
         }
     }
-
-
     private void send(String message) throws IOException {
         session.getBasicRemote().sendText(message);
     }
