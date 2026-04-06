@@ -87,7 +87,7 @@ public class AccountCommand {
             }
         }
     }
-    private static void loggedinCommand(HttpFacade server, String authToken, List<GameData> lastGame, BoardDesign board){
+    private static void loggedinCommand(HttpFacade httpFacade, String authToken, List<GameData> lastGame, BoardDesign board){
         boolean loggedIn = true;
         Scanner scanner = new Scanner(System.in);
         while (loggedIn) {
@@ -102,7 +102,7 @@ public class AccountCommand {
                         break;}
                     String name = parts[1];
                     try{
-                        var game = server.createGame(new GameData(0,null,null,name,null), authToken);
+                        var game = httpFacade.createGame(new GameData(0,null,null,name,null), authToken);
                         lastGame.add(game);
                         System.out.println("Created game:  " + game.gameName());
                     }catch(ResponseException ex){
@@ -110,7 +110,7 @@ public class AccountCommand {
                     }}
                 case "list" -> {
                     try {
-                        lastGame = server.listGame(authToken);
+                        lastGame = httpFacade.listGame(authToken);
                         if(lastGame == null || lastGame.isEmpty()){
                             System.out.println("No games available to join");
                             break;
@@ -145,7 +145,7 @@ public class AccountCommand {
                             System.out.println(color + "slot is already taken... Choose Black!");
                             break;}
                         try {
-                            server.joinGame(new JoinGameRequest(selectedGame.gameID(), color), authToken);
+                            httpFacade.joinGame(new JoinGameRequest(selectedGame.gameID(), color), authToken);
                             System.out.println("You joined the game  " + choice + ". " + lastGame.get(choice - 1).gameName() + "  as  " + color);
                             board = new BoardDesign(color);
                             System.out.println();
@@ -162,7 +162,7 @@ public class AccountCommand {
                 }
                 case "logout" -> {
                     try {
-                        server.logout(authToken);
+                        httpFacade.logout(authToken);
                         authToken = null;
                         authUsername = null;
                         loggedIn = false;

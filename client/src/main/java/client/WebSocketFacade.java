@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;

@@ -3,14 +3,18 @@ package client;
 import java.util.Scanner;
 
 public class PlayCommand {
-    private final WebSocketFacade websocket;
+    private final WebSocketFacade wsFacade;
+    private String authToken = null;
 
-    public PlayCommand(WebSocketFacade websocket) {
-        this.websocket = websocket;
+    public PlayCommand(WebSocketFacade wsFacade) {
+
+        this.wsFacade = wsFacade;
     }
 
     public void webCommand() {
         Scanner scanner = new Scanner(System.in);
+
+
         boolean isJoined = true;
         while (isJoined) {
             System.out.println("JOINED_IN >>>");
@@ -29,10 +33,13 @@ public class PlayCommand {
                 }
                 case "leave" -> {
                     isJoined = false;
+                    wsFacade.leave(authToken);
                 }
                 case "move" -> {
+                    wsFacade.move(authToken);
                 }
                 case "resign" -> {
+                    wsFacade.resign(authToken);
                 }
 
             }
