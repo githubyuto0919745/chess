@@ -8,14 +8,14 @@ import ui.BoardDesign;
 
 import java.util.*;
 
-public class Command {
-    private final ServerFacade server;
+public class AccountCommand {
+    private final HttpFacade httpFacade;
     private String authToken = null;
     private List<GameData> lastGame = new ArrayList<>();
     private BoardDesign board;
     private static String authUsername;
-    public Command(String serverUrl){
-        server = new ServerFacade(serverUrl);
+    public AccountCommand(String serverUrl){
+        httpFacade = new HttpFacade(serverUrl);
     }
 
     public void commands (){
@@ -39,11 +39,11 @@ public class Command {
                     String email =  parts[3];
 
                     try {
-                        AuthData auth = server.register(new UserData(username, password, email));
+                        AuthData auth = httpFacade.register(new UserData(username, password, email));
                         authToken = auth.authToken();
                         authUsername = username.trim();
                         System.out.println("Registered as  " + username);
-                        loggedinCommand(server, authToken, lastGame,board);
+                        loggedinCommand(httpFacade, authToken, lastGame,board);
 
                     } catch (ResponseException ex) {
                         System.out.println(ex.getMessage());
@@ -58,13 +58,13 @@ public class Command {
                     String pass =  parts[2];
 
                     try {
-                        AuthData auth = server.login(new UserData(user, pass, null));
+                        AuthData auth = httpFacade.login(new UserData(user, pass, null));
                         authToken = auth.authToken();
                         authUsername = user.trim();
 
                         System.out.println("Logged in as  " + user);
                         System.out.println("Type help to get started!!!");
-                        loggedinCommand(server, authToken, lastGame,board);
+                        loggedinCommand(httpFacade, authToken, lastGame,board);
 
                     } catch (ResponseException ex) {
                         System.out.println(ex.getMessage());
@@ -87,7 +87,7 @@ public class Command {
             }
         }
     }
-    private static void loggedinCommand(ServerFacade server, String authToken, List<GameData> lastGame, BoardDesign board){
+    private static void loggedinCommand(HttpFacade server, String authToken, List<GameData> lastGame, BoardDesign board){
         boolean loggedIn = true;
         Scanner scanner = new Scanner(System.in);
         while (loggedIn) {

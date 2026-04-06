@@ -9,10 +9,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
-public class ServerFacade {
+public class HttpFacade {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private final String severalUrl;
-    public ServerFacade(String url){
+    public HttpFacade(String url){
         severalUrl = url;
     }
 

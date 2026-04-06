@@ -4,7 +4,6 @@ import org.junit.jupiter.api.*;
 import record.GameData;
 import record.JoinGameRequest;
 import record.UserData;
-import server.JoinGameService;
 import server.Server;
 
 import java.util.List;
@@ -13,14 +12,14 @@ import java.util.List;
 public class ServerFacadeTests {
 
     private static Server server;
-    static ServerFacade facade;
+    static HttpFacade facade;
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         String url = "http://localhost:" + port;
-        facade = new ServerFacade(url);
+        facade = new HttpFacade(url);
 
     }
     @BeforeEach

@@ -16,7 +16,7 @@ public class ClientMain {
         System.out.println("♕ 240 Chess Client: " + piece);
 
         String severalUrl = "http://localhost:8080";
-        Command command = new Command(severalUrl);
+        AccountCommand command = new AccountCommand(severalUrl);
         command.commands();
 
     }

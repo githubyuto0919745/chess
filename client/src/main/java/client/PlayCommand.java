@@ -1,13 +1,11 @@
 package client;
 
-import record.GameData;
-
 import java.util.Scanner;
 
-public class GamePlayCommand {
+public class PlayCommand {
     private final WebSocketFacade websocket;
 
-    public GamePlayCommand(WebSocketFacade websocket) {
+    public PlayCommand(WebSocketFacade websocket) {
         this.websocket = websocket;
     }
 
