@@ -3,6 +3,8 @@ package client;
 import com.google.gson.Gson;
 import com.sun.nio.sctp.NotificationHandler;
 import io.javalin.router.Endpoint;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.DeploymentException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketContainer;
 

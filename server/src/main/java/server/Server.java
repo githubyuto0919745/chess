@@ -16,8 +16,9 @@ import java.util.HashMap;
 public class Server {
 
     private final Javalin javalin;
-    private final WebSocketHandler webSockeyHandler;
+
     public Server() {
+
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
@@ -51,9 +52,12 @@ public class Server {
         javalin.get("/game", this::listGameHandler);
         javalin.post("/game", this::createGameHandler);
         javalin.put("/game", this::joinGameHandler);
+        javalin.start(8080);
 
-        webSockeyHandler.ws("/ws", ws -> {
-            ws.onConnect(webSocktHandler);
+        WebSocketHandler webSocketHandler = new WebSocketHandler();
+
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler);
             ws.onMessage(webSocketHandler);
             ws.onClose(webSocketHandler);
         });
