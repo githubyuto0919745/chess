@@ -33,6 +33,7 @@ public class PlayCommand {
                     System.out.println("help");
                 }
                 case "redraw" -> {
+
                 }
                 case "leave" -> {
                     isJoined = false;

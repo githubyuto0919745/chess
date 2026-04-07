@@ -43,7 +43,7 @@ public class UserGameCommand {
         return gameID;
     }
 
-    public ChessMove move;
+    public ChessMove move = null;
 
     @Override
     public boolean equals(Object o) {

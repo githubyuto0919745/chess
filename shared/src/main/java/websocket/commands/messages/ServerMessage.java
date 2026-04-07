@@ -1,5 +1,9 @@
 package websocket.commands.messages;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import org.eclipse.jetty.server.Server;
+
 import java.util.Objects;
 
 /**
@@ -25,6 +29,41 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+
+    public static class NotificationMessage extends ServerMessage{
+        private String message;
+
+        public NotificationMessage(String message) {
+            super(ServerMessageType.NOTIFICATION);
+            this.message = message;
+        }
+        public String getMessage(){
+            return message;
+        }
+    }
+
+    public static class LoadGameMessage extends ServerMessage{
+        private ChessGame game;
+
+        public LoadGameMessage(ChessGame game){
+            super(ServerMessageType.LOAD_GAME);
+            this.game = game;
+        }
+        public ChessGame getGame(){
+            return game;
+        }
+    }
+    public static class ErrorMessage extends ServerMessage{
+        private String error;
+
+        public ErrorMessage (String error){
+            super(ServerMessageType.ERROR);
+            this.error = error;
+        }
+        public String getError(){
+            return error;
+        }
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) {
