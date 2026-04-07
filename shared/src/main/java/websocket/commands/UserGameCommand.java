@@ -1,5 +1,7 @@
 package websocket.commands;
 
+import chess.ChessMove;
+
 import java.util.Objects;
 
 /**
@@ -40,6 +42,8 @@ public class UserGameCommand {
     public Integer getGameID() {
         return gameID;
     }
+
+    public ChessMove move;
 
     @Override
     public boolean equals(Object o) {

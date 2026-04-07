@@ -1,11 +1,14 @@
 package client;
 
+import chess.ChessMove;
+
 import java.util.Scanner;
 
 public class PlayCommand {
     private final WebSocketFacade wsFacade;
     private String authToken = null;
-
+    private Integer gameID;
+    private ChessMove move;
     public PlayCommand(WebSocketFacade wsFacade) {
 
         this.wsFacade = wsFacade;
@@ -33,13 +36,16 @@ public class PlayCommand {
                 }
                 case "leave" -> {
                     isJoined = false;
-                    wsFacade.leave(authToken);
+                    wsFacade.leave(authToken, gameID);
                 }
                 case "move" -> {
-                    wsFacade.move(authToken);
+                    wsFacade.move(authToken, gameID, move);
                 }
                 case "resign" -> {
-                    wsFacade.resign(authToken);
+                    wsFacade.resign(authToken, gameID);
+                }
+                case "highlight" ->{
+
                 }
 
             }

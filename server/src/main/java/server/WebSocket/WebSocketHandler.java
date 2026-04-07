@@ -7,13 +7,15 @@ import io.javalin.websocket.*;
 import jakarta.websocket.Session;
 import org.jetbrains.annotations.NotNull;
 import websocket.commands.UserGameCommand;
+import websocket.commands.messages.ServerMessage;
 
+import javax.management.Notification;
 import javax.swing.*;
 import java.io.IOException;
 
-import static javax.management.remote.JMXConnectorFactory.connect;
-import static websocket.commands.UserGameCommand.CommandType.CONNECT;
-
+import static websocket.commands.messages.ServerMessage.ServerMessageType.LOAD_GAME;
+import static websocket.commands.messages.ServerMessage.ServerMessageType.ERROR;
+import static websocket.commands.messages.ServerMessage.ServerMessageType.NOTIFICATION;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler{
     public static void main( String[] args){
@@ -41,10 +43,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()){
-                case CONNECT -> connect(command.getAuthToken(), (Session) ctx.session);
-                case MAKE_MOVE -> move(command.getAuthToken(), (Session) ctx.session);
-                case LEAVE -> leave(command.getAuthToken(), (Session) ctx.session);
-                case RESIGN -> resign(command.getAuthToken(), (Session) ctx.session);
+                case CONNECT -> Connect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
+                case MAKE_MOVE -> Move(command.getAuthToken(), (Session) ctx.session, command.getGameID());
+                case LEAVE -> Leave(command.getAuthToken(), (Session) ctx.session, command.getGameID());
+                case RESIGN -> Resign(command.getAuthToken(), (Session) ctx.session, command.getGameID());
             }
             ctx.send("Websocket response: " + ctx.message());
         } catch (IOException ex){
@@ -52,22 +54,41 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
     }
+    public void handleServerMessage(String message){
+        ServerMessage server = new Gson().fromJson(message, ServerMessage.class);
 
-    private void connect (String authToken, Session session) throws IOException{
+        switch(server.getServerMessageType()){
+            case LOAD_GAME -> LoadGame();
+            case ERROR -> Error();
+            case NOTIFICATION -> Notification();
+            
+        }
+    }
+
+    private void Notification() {
+    }
+
+    private void Error() {
+    }
+
+    private void LoadGame() {
+    }
+
+    private void Connect (String authToken, Session session, Integer gameID) throws IOException{
 
     }
-    private void move (String authToken, Session session) throws IOException{
+    private void Move (String authToken, Session session, Integer gameID) throws IOException{
 
     }
-    private void leave (String authToken, Session session) throws IOException{
+    private void Leave (String authToken, Session session, Integer gameID) throws IOException{
 
     }
-    private void resign (String authToken, Session session) throws IOException{
+    private void Resign (String authToken, Session session, Integer gameID) throws IOException{
 
     }
 
     @Override
-    public void handleClose(@NotNull WsCloseContext ctx) throws Exception {
+    public void handleClose(@NotNull WsCloseContext ctx, Integer gameID) throws Exception {
         System.out.println("Websocket closed");
     }
 
