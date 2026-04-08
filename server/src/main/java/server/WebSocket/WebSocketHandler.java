@@ -49,10 +49,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()){
-                case CONNECT -> Connect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
-                case MAKE_MOVE -> Move(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
-                case LEAVE -> Leave((Session) ctx.session, command.getGameID());
-                case RESIGN -> Resign(command.getGameID());
+                case CONNECT -> returnConnect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
+                case MAKE_MOVE -> returnMove(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
+                case LEAVE -> returnLeave((Session) ctx.session, command.getGameID());
+                case RESIGN -> returnResign(command.getGameID());
             }
             ctx.send("Websocket response: " + ctx.message());
         } catch (IOException ex){
@@ -61,7 +61,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void Connect (String authToken, Session session, Integer gameID) throws IOException{
+    private void returnConnect (String authToken, Session session, Integer gameID) throws IOException{
         AuthData auth = authDAO.getAuth(authToken);
         String username = auth.username();
         GameData game = gameDAO.getGame(gameID);
@@ -79,7 +79,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         sendLoadGame(gameID,chessGame);
         sendNotificationExcept(gameID,username + " joined the game as " + role);
     }
-    private void Move (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, InvalidMoveException {
+    private void returnMove (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, InvalidMoveException {
         try{
             AuthData auth = authDAO.getAuth(authToken);
             String username = auth.username();
@@ -108,12 +108,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "error");
         }
     }
-    private void Leave (Session session, Integer gameID) throws IOException{
+    private void returnLeave (Session session, Integer gameID) throws IOException{
         sendNotificationExcept(gameID, "You left the game");
         connections.remove(gameID, session);
 
     }
-    private void Resign (Integer gameID) throws IOException{
+    private void returnResign (Integer gameID) throws IOException{
         sendNotificationAll(gameID,"You resigned the game");
 
     }

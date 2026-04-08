@@ -14,9 +14,9 @@ public class PlayCommand {
         this.wsFacade = wsFacade;
     }
 
-    public void webCommand() {
+    public void wsCommand() {
         Scanner scanner = new Scanner(System.in);
-
+        wsFacade.connect(authToken,gameID);
 
         boolean isJoined = true;
         while (isJoined) {

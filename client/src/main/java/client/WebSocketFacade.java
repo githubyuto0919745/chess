@@ -37,27 +37,27 @@ public class WebSocketFacade extends Endpoint {
         switch(server.getServerMessageType()){
             case LOAD_GAME -> {
                 ServerMessage.LoadGame loadGame = new Gson().fromJson(message, ServerMessage.LoadGame.class);
-                LoadGame(loadGame);
+                returnLoadGame(loadGame);
             }
             case ERROR ->{
                 ServerMessage.Error error = new Gson().fromJson(message, ServerMessage.Error.class);
-                Error(error);
+                returnError(error);
             }
             case NOTIFICATION -> {
                 ServerMessage.Notification notification = new Gson().fromJson(message, ServerMessage.Notification.class);
-                Notification(notification);
+                returnNotification(notification);
             }
 
         }
     }
 
-    public void LoadGame(ServerMessage.LoadGame server){
+    public void returnLoadGame(ServerMessage.LoadGame server){
         System.out.println("Game Loaded");
     }
-    public void Error(ServerMessage.Error server){
+    public void returnError(ServerMessage.Error server){
         System.out.println("Error" + server.getError());
     }
-    public void Notification(ServerMessage.Notification server){
+    public void returnNotification(ServerMessage.Notification server){
         System.out.println(server.getMessage());
     }
 
