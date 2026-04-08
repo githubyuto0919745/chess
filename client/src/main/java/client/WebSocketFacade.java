@@ -3,14 +3,14 @@ package client;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
+import org.eclipse.jetty.server.Server;
 import websocket.commands.UserGameCommand;
+import websocket.commands.messages.ServerMessage;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Scanner;
-
-@ClientEndpoint
 
 public class WebSocketFacade extends Endpoint {
     public Session session;
@@ -31,6 +31,36 @@ public class WebSocketFacade extends Endpoint {
             URI uri = new URI("ws://localhost:8080/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             session = container.connectToServer(this, uri);
+    }
+
+    public void handleServerMessage(String message){
+        ServerMessage server = new Gson().fromJson(message, ServerMessage.class);
+
+        switch(server.getServerMessageType()){
+            case LOAD_GAME -> {
+                ServerMessage.LoadGame loadGame = new Gson().fromJson(message, ServerMessage.LoadGame.class);
+                LoadGame(loadGame);
+            }
+            case ERROR ->{
+                ServerMessage.Error error = new Gson().fromJson(message, ServerMessage.Error.class);
+                Error(error);
+            }
+            case NOTIFICATION -> {
+                ServerMessage.Notification notification = new Gson().fromJson(message, ServerMessage.Notification.class);
+                Notification(notification);
+            }
+
+        }
+    }
+
+    public void LoadGame(ServerMessage.LoadGame server){
+        System.out.println("Game Loaded");
+    }
+    public void Error(ServerMessage.Error server){
+        System.out.println("Error" + server.getError());
+    }
+    public void Notification(ServerMessage.Notification server){
+        System.out.println(server.getMessage());
     }
 
     @Override

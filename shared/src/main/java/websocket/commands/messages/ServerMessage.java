@@ -30,10 +30,10 @@ public class ServerMessage {
     }
 
 
-    public static class NotificationMessage extends ServerMessage{
+    public static class Notification extends ServerMessage{
         private String message;
 
-        public NotificationMessage(String message) {
+        public Notification(String message) {
             super(ServerMessageType.NOTIFICATION);
             this.message = message;
         }
@@ -42,10 +42,10 @@ public class ServerMessage {
         }
     }
 
-    public static class LoadGameMessage extends ServerMessage{
+    public static class LoadGame extends ServerMessage{
         private ChessGame game;
 
-        public LoadGameMessage(ChessGame game){
+        public LoadGame(ChessGame game){
             super(ServerMessageType.LOAD_GAME);
             this.game = game;
         }
@@ -53,10 +53,10 @@ public class ServerMessage {
             return game;
         }
     }
-    public static class ErrorMessage extends ServerMessage{
+    public static class Error extends ServerMessage{
         private String error;
 
-        public ErrorMessage (String error){
+        public Error (String error){
             super(ServerMessageType.ERROR);
             this.error = error;
         }

@@ -1,23 +1,29 @@
 package server.WebSocket;
 
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import com.sun.nio.sctp.Notification;
+import dataaccess.memory.AuthDAO;
+import dataaccess.memory.GameDAO;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
+import record.AuthData;
+import record.GameData;
 import websocket.commands.UserGameCommand;
-import websocket.commands.messages.ConnectionManager;
 import websocket.commands.messages.ServerMessage;
 
 
-import javax.swing.*;
 import java.io.IOException;
 
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler{
     private final ConnectionManager connections = new ConnectionManager();
+    private final GameDAO gameDAO = new GameDAO();
+    private final AuthDAO authDAO = new AuthDAO();
     public static void main( String[] args){
         Javalin.create()
                 .get("/echo/{msg}",ctx->ctx.result("HTTP response: " + ctx.pathParam("msg")))
@@ -44,9 +50,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()){
                 case CONNECT -> Connect((Session) ctx.session, command.getGameID());
-                case MAKE_MOVE -> Move(command.getAuthToken(), (Session) ctx.session, command.getGameID());
-                case LEAVE -> Leave(command.getAuthToken(), (Session) ctx.session, command.getGameID());
-                case RESIGN -> Resign(command.getAuthToken(), (Session) ctx.session, command.getGameID());
+                case MAKE_MOVE -> Move(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
+                case LEAVE -> Leave((Session) ctx.session, command.getGameID());
+                case RESIGN -> Resign((Session) ctx.session, command.getGameID());
             }
             ctx.send("Websocket response: " + ctx.message());
         } catch (IOException ex){
@@ -54,41 +60,60 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
     }
-    public void handleServerMessage(String message){
-        ServerMessage server = new Gson().fromJson(message, ServerMessage.class);
-
-        switch(server.getServerMessageType()){
-            case LOAD_GAME -> LoadGame();
-            case ERROR -> Error();
-            case NOTIFICATION -> Notification();
-            
-        }
-    }
-
-    private void Notification() {
-    }
-
-    private void Error() {
-    }
-
-    private void LoadGame() {
-    }
 
     private void Connect (Session session, Integer gameID) throws IOException{
         connections.add(gameID, session);
-        var notification = new Notification("ARRIVAL", "Player joined the game");
-        connections.broadcast(session, notification);
+        ServerMessage.Notification notification = new ServerMessage.Notification("You connected to a game");
+        connections.broadcast(gameID, new Gson().toJson(notification));
 
     }
-    private void Move (String authToken, Session session, Integer gameID) throws IOException{
+    private void Move (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, InvalidMoveException {
+        AuthData auth = authDAO.getAuth(authToken);
+        String username = auth.username();
+        GameData game = gameDAO.getGame(gameID);
+
+        ChessGame chessGame = game.game();
+        chessGame.makeMove(move);
+
+        gameDAO.updateGame(game);
+
+        ServerMessage.Notification notification = new ServerMessage.Notification(username + "You made a move");
+        connections.broadcast(gameID, new Gson().toJson(notification));
+    }
+    private void Leave (Session session, Integer gameID) throws IOException{
+        ServerMessage.Notification notification = new ServerMessage.Notification("You left the game");
+        connections.broadcast(gameID, new Gson().toJson(notification));
+        connections.remove(gameID, session);
 
     }
-    private void Leave (String authToken, Session session, Integer gameID) throws IOException{
+    private void Resign (Session session, Integer gameID) throws IOException{
+        ServerMessage.Notification notification = new ServerMessage.Notification("You resigned the game");
+        connections.broadcast(gameID, new Gson().toJson(notification));
+        connections.remove(gameID, session);
+    }
+
+
+
+
+
+
+    private void Notification(Integer gameID) throws IOException {
+        ServerMessage.Notification notification = new ServerMessage.Notification("You connected to a game");
+        connections.broadcast(gameID, new Gson().toJson(notification));
 
     }
-    private void Resign (String authToken, Session session, Integer gameID) throws IOException{
+
+    private void Error(Session session) throws IOException {
+        ServerMessage.Error error= new ServerMessage.Error("Error");
+        session.getRemote().sendString(new Gson().toJson(error));
+    }
+
+    private void LoadGame(Integer gameID, ChessGame game) throws IOException {
+        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game);
+        connections.broadcast(gameID, new Gson().toJson(loadGame));
 
     }
+
 
 
     @Override
