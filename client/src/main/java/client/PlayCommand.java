@@ -1,14 +1,23 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
+import ui.BoardDesign;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class PlayCommand {
     private final WebSocketFacade wsFacade;
     private String authToken = null;
     private Integer gameID;
     private ChessMove move;
+    private ChessGame game;
+    private ChessPosition pos;
+    private BoardDesign boardDesign;
     public PlayCommand(WebSocketFacade wsFacade) {
 
         this.wsFacade = wsFacade;
@@ -33,7 +42,7 @@ public class PlayCommand {
                     System.out.println("help");
                 }
                 case "redraw" -> {
-
+                   boardDesign.printBoard(null);
                 }
                 case "leave" -> {
                     isJoined = false;
@@ -46,6 +55,12 @@ public class PlayCommand {
                     wsFacade.resign(authToken, gameID);
                 }
                 case "highlight" ->{
+                    Collection<ChessMove> moves = game.validMoves(pos);
+                    Set<ChessPosition> highlights = new HashSet<>();
+                    for(ChessMove move: moves){
+                        highlights.add(move.getEndPosition());
+                    }
+                    boardDesign.printBoard(highlights);
 
                 }
 

@@ -1,7 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.mysql.MySqlAuthDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
 import record.*;
@@ -10,14 +12,17 @@ import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
 
+import java.io.IOException;
 import java.net.http.WebSocket;
 import java.util.HashMap;
 
 public class Server {
 
     private final Javalin javalin;
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
-    public Server() {
+
+    public Server() throws DataAccessException {
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -52,9 +57,8 @@ public class Server {
         javalin.get("/game", this::listGameHandler);
         javalin.post("/game", this::createGameHandler);
         javalin.put("/game", this::joinGameHandler);
-        javalin.start(8080);
 
-        WebSocketHandler webSocketHandler = new WebSocketHandler();
+
 
         javalin.ws("/ws", ws -> {
             ws.onConnect(webSocketHandler);
@@ -145,7 +149,7 @@ public class Server {
             ctx.result(new Gson().toJson(created));
     }
 
-    private void joinGameHandler(Context ctx) throws DataAccessException{
+    private void joinGameHandler(Context ctx) throws DataAccessException, IOException {
 
 
             JoinGameService joinGameService = new JoinGameService();
@@ -162,7 +166,8 @@ public class Server {
             if(token == null){
                 throw new UnauthorizedException();
             }
-            joinGameService.joinGame(token,request.gameID(),request.playerColor());
+
+            joinGameService.joinGame(token,request.gameID(), request.playerColor());
             ctx.status(200);
     }
 

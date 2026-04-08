@@ -4,6 +4,8 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
+import java.util.Set;
+
 public class BoardDesign {
     private String[][] board;
     private final int size = 8;
@@ -83,7 +85,7 @@ public class BoardDesign {
         };
     }
 
-    public void printBoard(){
+    public void printBoard(Set<ChessPosition> highlights){
         String[][] displayBoard = new String[size][size];
         if(this.blackView){
             for (int row = 0; row < size; row++){
@@ -95,6 +97,21 @@ public class BoardDesign {
             for (int row = 0; row < size; row++){
                 for (int col = 0; col < size; col++){
                     displayBoard[row][col] = board[row][col];
+                }
+            }
+        }
+        for (int row = 0; row < size; row++){
+            for (int col = 0; col < size; col++){
+                ChessPosition current = new ChessPosition(row + 1, col + 1);
+                boolean highlight = highlights != null && highlights.contains(current);
+                String bgColor;
+
+                if(highlight){
+                    bgColor = EscapeSequences.SET_BG_COLOR_YELLOW;
+                }else{
+                    bgColor = ((row + col) % 2 ==0)
+                            ? EscapeSequences.SET_BG_COLOR_BLUE
+                            : EscapeSequences.SET_BG_COLOR_BLACK;
                 }
             }
         }
@@ -110,6 +127,6 @@ public class BoardDesign {
             System.out.print(" " + (row+1));
             System.out.println();
         }
-        System.out.print("  a  "+" b  "+"c " + "  d " + "  e " + " f " + "  g " + " h ");
+        System.out.print(" a b c d e f g h ");
     }
 }

@@ -14,6 +14,7 @@ public class AccountCommand {
     private List<GameData> lastGame = new ArrayList<>();
     private BoardDesign board;
     private static String authUsername;
+    private static PlayCommand playCommand;
     public AccountCommand(String serverUrl){
         httpFacade = new HttpFacade(serverUrl);
     }
@@ -149,6 +150,7 @@ public class AccountCommand {
                             System.out.println("You joined the game  " + choice + ". " + lastGame.get(choice - 1).gameName() + "  as  " + color);
                             board = new BoardDesign(color);
                             System.out.println();
+                            playCommand.wsCommand();
                         } catch (ResponseException ex) {
                             System.out.println(ex.getMessage());}
                     } else {

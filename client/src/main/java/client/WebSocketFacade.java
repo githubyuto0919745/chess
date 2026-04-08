@@ -1,8 +1,10 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
+import ui.BoardDesign;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -12,7 +14,7 @@ import java.util.Scanner;
 
 public class WebSocketFacade extends Endpoint {
     public Session session;
-
+    private BoardDesign boardDesign;
 
     public static void main(String[] args) throws Exception{
         WebSocketFacade client = new WebSocketFacade();
@@ -33,11 +35,14 @@ public class WebSocketFacade extends Endpoint {
 
     public void handleServerMessage(String message){
         ServerMessage server = new Gson().fromJson(message, ServerMessage.class);
-
         switch(server.getServerMessageType()){
             case LOAD_GAME -> {
                 ServerMessage.LoadGame loadGame = new Gson().fromJson(message, ServerMessage.LoadGame.class);
                 returnLoadGame(loadGame);
+
+                ChessGame game = loadGame.getGame();
+                boardDesign.updateGame(game);
+                boardDesign.printBoard(null);
             }
             case ERROR ->{
                 ServerMessage.Error error = new Gson().fromJson(message, ServerMessage.Error.class);

@@ -53,14 +53,14 @@ public class ServerMessage {
 
     }
     public static class Error extends ServerMessage{
-        private String error;
+        private String errorMessage;
 
         public Error (String error){
             super(ServerMessageType.ERROR);
-            this.error = error;
+            this.errorMessage = error;
         }
         public String getError(){
-            return error;
+            return errorMessage;
         }
     }
     @Override
