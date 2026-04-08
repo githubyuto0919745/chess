@@ -49,7 +49,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()){
-                case CONNECT -> Connect((Session) ctx.session, command.getGameID());
+                case CONNECT -> Connect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
                 case MAKE_MOVE -> Move(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
                 case LEAVE -> Leave((Session) ctx.session, command.getGameID());
                 case RESIGN -> Resign((Session) ctx.session, command.getGameID());
@@ -61,10 +61,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void Connect (Session session, Integer gameID) throws IOException{
+    private void Connect (String authToken, Session session, Integer gameID) throws IOException{
+        AuthData auth = authDAO.getAuth(authToken);
+        String username = auth.username();
+        GameData game = gameDAO.getGame(gameID);
+        ChessGame chessGame = game.game();
         connections.add(gameID, session);
-        ServerMessage.Notification notification = new ServerMessage.Notification("You connected to a game");
-        connections.broadcast(gameID, new Gson().toJson(notification));
+
+        String role;
+        if(username.equals(game.whiteUsername())){
+            role = "WHITE";
+        }else if(username.equals(game.blackUsername())){
+            role = "BLACK";
+        }else{
+            role = "OBSERVE";
+        }
+        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(chessGame, "connected to the game");
+        ServerMessage.Notification notification = new ServerMessage.Notification(username + " connected to a game as " + role);
+
+        connections.broadcastExcept(gameID,new Gson().toJson(loadGame));
+        connections.broadcastExcept(gameID, new Gson().toJson(notification));
 
     }
     private void Move (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, InvalidMoveException {
@@ -79,7 +95,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameDAO.updateGame(game);
 
 
-            ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(chessGame);
+            ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(chessGame, "game started");
             String loadGameJson = new Gson().toJson(loadGame);
 
 
@@ -139,7 +155,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void LoadGame(Integer gameID, ChessGame game) throws IOException {
-        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game);
+        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game, " ");
         connections.broadcast(gameID, new Gson().toJson(loadGame));
 
     }

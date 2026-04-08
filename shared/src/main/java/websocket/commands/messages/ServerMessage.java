@@ -44,13 +44,16 @@ public class ServerMessage {
 
     public static class LoadGame extends ServerMessage{
         private ChessGame game;
-
-        public LoadGame(ChessGame game){
+        private String gameMessage;
+        public LoadGame(ChessGame game, String gameMessage){
             super(ServerMessageType.LOAD_GAME);
             this.game = game;
         }
         public ChessGame getGame(){
             return game;
+        }
+        public String getGameMessage(){
+            return gameMessage;
         }
     }
     public static class Error extends ServerMessage{
