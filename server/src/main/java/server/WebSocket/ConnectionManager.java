@@ -34,4 +34,16 @@ public class ConnectionManager {
         }
 
     }
+    public void broadcastExcept (Integer gameID, String message) throws IOException {
+        Set<Session> sessions = connections.get(gameID);
+        if(sessions != null){
+            for (Session session : sessions){
+                if(!session.equals(sessions)){
+                    session.getRemote().sendString(message);
+                }
+            }
+        }
+    }
+
+
 }

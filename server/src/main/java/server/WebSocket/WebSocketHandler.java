@@ -68,17 +68,47 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
     private void Move (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, InvalidMoveException {
-        AuthData auth = authDAO.getAuth(authToken);
-        String username = auth.username();
-        GameData game = gameDAO.getGame(gameID);
+        try{
+            AuthData auth = authDAO.getAuth(authToken);
+            String username = auth.username();
+            GameData game = gameDAO.getGame(gameID);
 
-        ChessGame chessGame = game.game();
-        chessGame.makeMove(move);
+            ChessGame chessGame = game.game();
+            chessGame.makeMove(move);
 
-        gameDAO.updateGame(game);
+            gameDAO.updateGame(game);
 
-        ServerMessage.Notification notification = new ServerMessage.Notification(username + "You made a move");
-        connections.broadcast(gameID, new Gson().toJson(notification));
+
+            ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(chessGame);
+            String loadGameJson = new Gson().toJson(loadGame);
+
+
+            ServerMessage.Notification notification = new ServerMessage.Notification(username + " moved from" + move.getStartPosition() + " to " + move.getEndPosition());
+            String notificationJson = new Gson().toJson(notification);
+
+            connections.broadcast(gameID, loadGameJson);
+            connections.broadcastExcept(gameID,notificationJson);
+
+            if(chessGame.isInCheck(ChessGame.TeamColor.WHITE) ||
+            chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
+                ServerMessage.Notification check = new ServerMessage.Notification("Check!");
+                connections.broadcast(gameID, new Gson().toJson(check));
+            }
+            if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                    chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
+                ServerMessage.Notification checkmate = new ServerMessage.Notification("Check!");
+                connections.broadcast(gameID, new Gson().toJson(checkmate));
+            }
+            if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
+                    chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
+                ServerMessage.Notification stalemate = new ServerMessage.Notification("Check!");
+                connections.broadcast(gameID, new Gson().toJson(stalemate));
+            }
+
+
+        }catch(InvalidMoveException ex) {
+            throw new InvalidMoveException("invalid");
+        }
     }
     private void Leave (Session session, Integer gameID) throws IOException{
         ServerMessage.Notification notification = new ServerMessage.Notification("You left the game");
