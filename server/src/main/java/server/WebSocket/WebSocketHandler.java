@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import record.AuthData;
 import record.GameData;
 import websocket.commands.UserGameCommand;
-import websocket.commands.messages.ServerMessage;
+import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> Connect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
                 case MAKE_MOVE -> Move(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
                 case LEAVE -> Leave((Session) ctx.session, command.getGameID());
-                case RESIGN -> Resign((Session) ctx.session, command.getGameID());
+                case RESIGN -> Resign(command.getGameID());
             }
             ctx.send("Websocket response: " + ctx.message());
         } catch (IOException ex){
@@ -76,12 +76,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }else{
             role = "OBSERVE";
         }
-        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(chessGame, "connected to the game");
-        ServerMessage.Notification notification = new ServerMessage.Notification(username + " connected to a game as " + role);
-
-        connections.broadcastExcept(gameID,new Gson().toJson(loadGame));
-        connections.broadcastExcept(gameID, new Gson().toJson(notification));
-
+        sendLoadGame(gameID,chessGame);
+        sendNotificationExcept(gameID,username + " joined the game as " + role);
     }
     private void Move (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, InvalidMoveException {
         try{
@@ -93,69 +89,51 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             chessGame.makeMove(move);
 
             gameDAO.updateGame(game);
-
-
-            ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(chessGame, "game started");
-            String loadGameJson = new Gson().toJson(loadGame);
-
-
-            ServerMessage.Notification notification = new ServerMessage.Notification(username + " moved from" + move.getStartPosition() + " to " + move.getEndPosition());
-            String notificationJson = new Gson().toJson(notification);
-
-            connections.broadcast(gameID, loadGameJson);
-            connections.broadcastExcept(gameID,notificationJson);
+            sendLoadGame(gameID,chessGame);
+            sendNotificationExcept(gameID, username + " moved from" + move.getStartPosition() + " to " + move.getEndPosition());
 
             if(chessGame.isInCheck(ChessGame.TeamColor.WHITE) ||
             chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
-                ServerMessage.Notification check = new ServerMessage.Notification("Check!");
-                connections.broadcast(gameID, new Gson().toJson(check));
+                sendNotificationAll(gameID,"Check!");
             }
             if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
                     chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-                ServerMessage.Notification checkmate = new ServerMessage.Notification("Check!");
-                connections.broadcast(gameID, new Gson().toJson(checkmate));
+                sendNotificationAll(gameID,"CheckMate!");
             }
             if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
                     chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-                ServerMessage.Notification stalemate = new ServerMessage.Notification("Check!");
-                connections.broadcast(gameID, new Gson().toJson(stalemate));
+                sendNotificationAll(gameID,"StaleMate!");
             }
-
-
         }catch(InvalidMoveException ex) {
-            throw new InvalidMoveException("invalid");
+            sendError(session, "error");
         }
     }
     private void Leave (Session session, Integer gameID) throws IOException{
-        ServerMessage.Notification notification = new ServerMessage.Notification("You left the game");
-        connections.broadcast(gameID, new Gson().toJson(notification));
+        sendNotificationExcept(gameID, "You left the game");
         connections.remove(gameID, session);
 
     }
-    private void Resign (Session session, Integer gameID) throws IOException{
-        ServerMessage.Notification notification = new ServerMessage.Notification("You resigned the game");
-        connections.broadcast(gameID, new Gson().toJson(notification));
-        connections.remove(gameID, session);
-    }
-
-
-
-
-
-
-    private void Notification(Integer gameID) throws IOException {
-        ServerMessage.Notification notification = new ServerMessage.Notification("You connected to a game");
-        connections.broadcast(gameID, new Gson().toJson(notification));
+    private void Resign (Integer gameID) throws IOException{
+        sendNotificationAll(gameID,"You resigned the game");
 
     }
 
-    private void Error(Session session) throws IOException {
-        ServerMessage.Error error= new ServerMessage.Error("Error");
+    private void sendNotificationExcept(Integer gameID, String message) throws IOException {
+        ServerMessage.Notification notification = new ServerMessage.Notification(message);
+        connections.broadcastExcept(gameID, new Gson().toJson(notification));
+    }
+    private void sendNotificationAll(Integer gameID, String message) throws IOException {
+        ServerMessage.Notification notification = new ServerMessage.Notification(message);
+        connections.broadcast(gameID, new Gson().toJson(notification));
+    }
+
+    private void sendError(Session session, String message) throws IOException {
+        ServerMessage.Error error= new ServerMessage.Error("Error" + message);
         session.getRemote().sendString(new Gson().toJson(error));
     }
 
-    private void LoadGame(Integer gameID, ChessGame game) throws IOException {
-        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game, " ");
+    private void sendLoadGame(Integer gameID, ChessGame game) throws IOException {
+        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game);
         connections.broadcast(gameID, new Gson().toJson(loadGame));
 
     }

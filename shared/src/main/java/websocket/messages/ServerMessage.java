@@ -1,8 +1,6 @@
-package websocket.commands.messages;
+package websocket.messages;
 
 import chess.ChessGame;
-import chess.ChessMove;
-import org.eclipse.jetty.server.Server;
 
 import java.util.Objects;
 
@@ -44,17 +42,15 @@ public class ServerMessage {
 
     public static class LoadGame extends ServerMessage{
         private ChessGame game;
-        private String gameMessage;
-        public LoadGame(ChessGame game, String gameMessage){
+
+        public LoadGame(ChessGame game){
             super(ServerMessageType.LOAD_GAME);
             this.game = game;
         }
         public ChessGame getGame(){
             return game;
         }
-        public String getGameMessage(){
-            return gameMessage;
-        }
+
     }
     public static class Error extends ServerMessage{
         private String error;
