@@ -1,16 +1,19 @@
 package ui;
 
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
+
 public class BoardDesign {
     private String[][] board;
-    int size = 8;
+    private final int size = 8;
+    private boolean blackView;
+
     public BoardDesign(String color){
         board = new String[size][size];
+        this.blackView = color.equalsIgnoreCase("BLACK");
         setBoard();
-        if(color.equals("WHITE")){
-            printBoard(false);
-        }else{
-            printBoard(true);
-        }
+
     }
     private void setBoard(){
         for (int row = 0; row < size; row++){
@@ -41,9 +44,48 @@ public class BoardDesign {
             board[6][col] = EscapeSequences.WHITE_PAWN;
         }
     }
-    public void printBoard(boolean blackView){
+
+    public void updateGame(ChessGame game){
+        for(int row = 0; row < 8; row ++){
+            for ( int col = 0; col<8; col ++){
+                board[row][col] = EscapeSequences.EMPTY;
+            }}
+
+        for(int row = 0; row < 8; row ++){
+            for ( int col = 0; col<8; col ++){
+                ChessPosition pos = new ChessPosition(row + 1, col+1);
+                ChessPiece piece = game.getBoard().getPiece(pos);
+                if(piece != null){
+                    board[row][col] = convertPiece(piece);
+                }
+            }
+        }
+    }
+
+    private String convertPiece(ChessPiece piece){
+        ChessPiece.PieceType type = piece.getPieceType();
+        ChessGame.TeamColor color = piece.getTeamColor();
+
+        return switch(type){
+            case KING -> (color == ChessGame.TeamColor.WHITE)
+                    ? EscapeSequences.WHITE_KING : EscapeSequences.BLACK_KING;
+            case QUEEN -> (color == ChessGame.TeamColor.WHITE)
+                    ? EscapeSequences.WHITE_QUEEN : EscapeSequences.BLACK_QUEEN;
+            case ROOK ->(color == ChessGame.TeamColor.WHITE)
+                    ? EscapeSequences.WHITE_ROOK : EscapeSequences.BLACK_ROOK;
+            case BISHOP -> (color == ChessGame.TeamColor.WHITE)
+                    ? EscapeSequences.WHITE_BISHOP : EscapeSequences.BLACK_BISHOP;
+            case KNIGHT -> (color == ChessGame.TeamColor.WHITE)
+                    ? EscapeSequences.WHITE_KNIGHT : EscapeSequences.BLACK_KNIGHT;
+            case PAWN -> (color == ChessGame.TeamColor.WHITE)
+                    ? EscapeSequences.WHITE_PAWN: EscapeSequences.BLACK_PAWN;
+
+        };
+    }
+
+    public void printBoard(){
         String[][] displayBoard = new String[size][size];
-        if(blackView){
+        if(this.blackView){
             for (int row = 0; row < size; row++){
                 for (int col = 0; col < size; col++){
                     displayBoard[row][col] = board[size - 1 - row][size - 1 - col];
