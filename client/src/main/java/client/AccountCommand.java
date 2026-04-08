@@ -159,6 +159,7 @@ public class AccountCommand {
                         System.out.println("Game WhiteUser: " + selectedGame.whiteUsername());
                         System.out.println("Game BlackUser: " + selectedGame.blackUsername());
                         board = new BoardDesign(color);
+                        playCommand.wsCommand();
                         System.out.println();
                     }
                 }

@@ -9,11 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
     public final ConcurrentHashMap<Integer, Set<Session>> connections = new ConcurrentHashMap<>();
 
-    public int count(Integer gameID){
-        return connections.get(gameID).size();
-    }
     public void add(Integer gameID, Session session){
-        Set<Session> sessions = connections.computeIfAbsent(gameID, k -> new HashSet<>());
+        Set<Session> sessions = connections.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet());
 
         sessions.add(session);
     }
@@ -47,6 +44,14 @@ public class ConnectionManager {
             }
         }
     }
-
+    public void onePerson (Session only, String message) throws IOException {
+            if (only !=null && only.isOpen()) {
+                only.getRemote().sendString(message);
+            }
+    }
 
 }
+
+
+
+

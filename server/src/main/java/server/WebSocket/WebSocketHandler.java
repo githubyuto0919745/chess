@@ -10,7 +10,6 @@ import dataaccess.mysql.MySqlAuthDAO;
 import dataaccess.mysql.MySqlGameDAO;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
-import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import record.AuthData;
@@ -64,7 +63,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> returnConnect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
                 case MAKE_MOVE -> returnMove(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
                 case LEAVE -> returnLeave((Session) ctx.session, command.getGameID());
-                case RESIGN -> returnResign(command.getAuthToken(),command.getGameID());
+                case RESIGN -> returnResign(command.getAuthToken(),(Session) ctx.session,command.getGameID());
             }
         } catch (IOException ex){
             ex.printStackTrace();
@@ -96,12 +95,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else {
             role = "OBSERVER";
         }
-        sendNotificationExcept(
-                gameID,
-                username + " joined the game as " + role,
-                session
+
+        sendOnlyLoadGame(
+                session,
+                chessGame
         );
-        sendLoadGame(gameID,chessGame);
+        sendNotificationExcept(gameID, username + " joined the game as " + role, session);
 
     }
     private void returnMove (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, DataAccessException {
@@ -128,14 +127,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 return;
             }
 
+
             ChessGame.TeamColor currentTurn = chessGame.getTeamTurn();
             if((currentTurn == ChessGame.TeamColor.WHITE && !role.equals("WHITE")) ||
                     (currentTurn == ChessGame.TeamColor.BLACK && !role.equals("BLACK"))){
                 sendError(session,"It is a wrong turn");
                 return;
             }
-            if(!chessGame.validMoves(move.getStartPosition()).contains(move)){
-                sendError(session, "Invalid move");
+
+            boolean found = false;
+            for (ChessMove m : chessGame.validMoves(move.getStartPosition())){
+                if(m.equals(move)){
+                    found = true;
+                    break;
+                }
+            }if(!found){
+                sendError(session,"Invalid move");
                 return;
             }
             try{
@@ -144,21 +151,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 sendError(session, "Invalid move");
                 return;
             }
+
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                    chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                    chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
+                    chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+
+                sendNotificationAll(gameID, "Game Over!");
+            }
             gameDAO.updateGame(game);
             sendLoadGame(gameID,chessGame);
+            sendNotificationExcept(gameID, username + " made move from " + move.getStartPosition() + " to " + move.getEndPosition(), session);
 
-            if(chessGame.isInCheck(ChessGame.TeamColor.WHITE) ||
-            chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
-                sendNotificationAll(gameID,"Check!");
+            if(chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                sendNotificationAll(gameID,"White is in Check!");
             }
-            if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
-                    chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-                sendNotificationAll(gameID,"CheckMate!");
+            if(chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
+                sendNotificationAll(gameID,"Black is in Check!");
             }
-            if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
-                    chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-                sendNotificationAll(gameID,"StaleMate!");
+            if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                sendNotificationAll(gameID,"White is in CheckMate!");
             }
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
+                sendNotificationAll(gameID,"Black is in CheckMate!");
+            }
+            if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
+                sendNotificationAll(gameID,"White is in StaleMate!");
+            }
+           if(chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
+               sendNotificationAll(gameID,"Black is in StaleMate!");
+            }
+
+
 
     }
     private void returnLeave (Session session, Integer gameID) throws IOException{
@@ -174,6 +198,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         String username = auth.username();
         GameData game = gameDAO.getGame(gameID);
+        ChessGame chessGame = game.game();
         String role;
         if (username.equals(game.whiteUsername())) {
             role = "WHITE";
@@ -186,8 +211,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "Observers cannot make moves");
             return;
         }
+        chessGame.resign();
+        gameDAO.updateGame(game);
+        sendLoadGame(gameID,chessGame);
         sendNotificationAll(gameID,"You resigned the game");
-
     }
 
     public void sendNotificationExcept(Integer gameID, String message, Session exclude) throws IOException {
@@ -199,6 +226,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(gameID, new Gson().toJson(notification));
     }
 
+
+
     private void sendError(Session session, String message) throws IOException {
         ServerMessage.Error error= new ServerMessage.Error(message);
         session.getRemote().sendString(new Gson().toJson(error));
@@ -207,7 +236,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void sendLoadGame(Integer gameID, ChessGame game) throws IOException {
         ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game);
         connections.broadcast(gameID, new Gson().toJson(loadGame));
-
+    }
+    private void sendOnlyLoadGame(Session session, ChessGame game) throws IOException {
+        ServerMessage.LoadGame loadGame = new ServerMessage.LoadGame(game);
+        connections.onePerson(session, new Gson().toJson(loadGame));
     }
 
 

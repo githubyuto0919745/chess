@@ -13,10 +13,15 @@ import java.util.Objects;
 public class ChessGame {
     ChessBoard board = new ChessBoard();
     TeamColor team = TeamColor.WHITE;
-
+    Boolean resigned = false;
     public ChessGame() {
         board.resetBoard();
     }
+
+    public void resign(){
+        resigned = true;
+    }
+
 
     /**
      * @return Which team's turn it is
@@ -24,6 +29,7 @@ public class ChessGame {
     public TeamColor getTeamTurn() {
         return team;
     }
+
 
     /**
      * Set's which teams turn it is
