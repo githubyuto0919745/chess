@@ -14,7 +14,7 @@ import java.util.Set;
 public class PlayCommand {
     private WebSocketFacade wsFacade;
     private final String authToken;
-    private final Integer gameID;
+    private Integer gameID;
     private final BoardDesign boardDesign;
     private ChessGame game;
     private final boolean isObserver;
@@ -32,6 +32,44 @@ public class PlayCommand {
         this.game = newGame;
         boardDesign.updateGame(newGame);
         boardDesign.printBoard(null);
+
+        checkPromotion();
+        promote = false;
+    }
+
+    private void checkPromotion(){
+        for(int col = 0; col < 8; col ++){
+            ChessPosition whitePos = new ChessPosition(8, col + 1);
+            ChessPiece whitePiece = game.getBoard().getPiece(whitePos);
+
+            if(isPawn(whitePiece, ChessGame.TeamColor.WHITE)){
+                handlePromotion(whitePos, whitePiece);
+                return;
+            }
+
+            ChessPosition blackPos = new ChessPosition(1, col + 1);
+            ChessPiece blackPiece = game.getBoard().getPiece(blackPos);
+
+            if(isPawn(blackPiece, ChessGame.TeamColor.BLACK)){
+                handlePromotion(blackPos, blackPiece);
+                return;
+            }
+        }
+    }
+    private boolean isPawn(ChessPiece piece, ChessGame.TeamColor color){
+        return piece != null
+                && piece.getPieceType() == ChessPiece.PieceType.PAWN
+                && piece.getTeamColor() == color;
+    }
+
+    private boolean promote = false;
+    private void handlePromotion(ChessPosition pos, ChessPiece pawn ){
+        if(promote) return;
+        promote = true;
+        PawnPromotion promotion = new PawnPromotion();
+        ChessPiece.PieceType choice = promotion.askPromotion();
+        ChessMove promotionMove = new ChessMove(pos,pos,choice);
+        wsFacade.move(authToken,gameID,promotionMove);
     }
     public void setWebSocketFacade(WebSocketFacade wsFacade) {
         this.wsFacade = wsFacade;
@@ -88,6 +126,7 @@ public class PlayCommand {
                     }
                     wsFacade.leave(authToken, gameID);
                     isJoined = false;
+                    gameID = null;
                     continue;
                 }
                 case "move" -> {
@@ -160,10 +199,10 @@ public class PlayCommand {
                         System.out.println("You need to fill the information!");
                         break;
                     }
-                    System.out.print("Row (1-8):    ");
+                    System.out.print("Row (1-8):  ");
                     String rowInput = scanner.nextLine().trim();
 
-                    System.out.print("Col (a-h):    ");
+                    System.out.print("Col (a-h):  ");
                     String colInput = scanner.nextLine().trim().toLowerCase();
 
                     int row;
@@ -182,10 +221,8 @@ public class PlayCommand {
                         break;
                     }
                     int col = convertColumn(colInput);
-                    int gameRow = boardDesign.blackView ? (9 - row) : row;
-                    int gameCol = boardDesign.blackView ? (9 - col) : col;
 
-                    ChessPosition pos = new ChessPosition(gameRow,gameCol);
+                    ChessPosition pos = new ChessPosition(row,col);
                     ChessPiece piece = game.getBoard().getPiece(pos);
                     if(piece == null){
                         System.out.println("Empty square selected");
