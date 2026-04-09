@@ -17,7 +17,7 @@ public class WebSocketFacade extends Endpoint {
     private BoardDesign boardDesign;
 
     public static void main(String[] args) throws Exception{
-        WebSocketFacade client = new WebSocketFacade();
+        WebSocketFacade client = new WebSocketFacade("WHITE");
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter a message you want to echo:");
@@ -26,11 +26,12 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public WebSocketFacade() throws Exception{
-
+    public WebSocketFacade(String color) throws Exception{
+        this.boardDesign = new BoardDesign(color);
             URI uri = new URI("ws://localhost:8080/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             session = container.connectToServer(this, uri);
+
     }
 
     public void handleServerMessage(String message){
@@ -39,10 +40,6 @@ public class WebSocketFacade extends Endpoint {
             case LOAD_GAME -> {
                 ServerMessage.LoadGame loadGame = new Gson().fromJson(message, ServerMessage.LoadGame.class);
                 returnLoadGame(loadGame);
-
-                ChessGame game = loadGame.getGame();
-                boardDesign.updateGame(game);
-                boardDesign.printBoard(null);
             }
             case ERROR ->{
                 ServerMessage.Error error = new Gson().fromJson(message, ServerMessage.Error.class);
@@ -57,9 +54,14 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void returnLoadGame(ServerMessage.LoadGame server){
+
         System.out.println("Game Loaded");
+        ChessGame game = server.getGame();
+        boardDesign.updateGame(game);
+        boardDesign.printBoard(null);
     }
     public void returnError(ServerMessage.Error server){
+
         System.out.println("Error" + server.getError());
     }
     public void returnNotification(ServerMessage.Notification server){
@@ -68,8 +70,17 @@ public class WebSocketFacade extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        this.session = session;
 
+        this.session.addMessageHandler(new MessageHandler.Whole<String>(){
+            public void onMessage(String message){
+                handleServerMessage(message);
+            }
+        });
     }
+
+
+
 
     public void leave (String authToken, int gameID) throws ResponseException{
         try{

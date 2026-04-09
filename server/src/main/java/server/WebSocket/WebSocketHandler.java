@@ -3,6 +3,7 @@ package server.WebSocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
@@ -14,6 +15,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import record.AuthData;
 import record.GameData;
+import record.JoinGameRequest;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -138,6 +140,29 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 sendError(session,"It is not your turn");
                 return;
             }
+
+            ChessGame.TeamColor playerColor;
+
+            if(username.equals(game.whiteUsername())){
+                playerColor = ChessGame.TeamColor.WHITE;
+            }else if (username.equals(game.blackUsername())){
+                playerColor = ChessGame.TeamColor.BLACK;
+            }else{
+                sendError(session,"Observers cannot make moves");
+                return;
+            }
+
+            ChessPiece piece = chessGame.getBoard().getPiece(move.getStartPosition());
+
+            if(piece == null){
+                sendError(session, "No piece at this position");
+                return;
+            }
+            if(piece.getTeamColor() != playerColor){
+                sendError(session, "You cannot move the opponent's piece");
+                return;
+            }
+
 
             boolean found = false;
             for (ChessMove m : chessGame.validMoves(move.getStartPosition())){
