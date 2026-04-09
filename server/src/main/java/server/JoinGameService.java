@@ -37,7 +37,7 @@ public class JoinGameService {
         GameData updatedGame;
 
         if("WHITE".equals(playerColor)) {
-            if(game.whiteUsername()!= null){
+            if(game.whiteUsername()!= null && !game.whiteUsername().equals(auth.username())){
                 throw new AlreadyTakenException();
             }
             updatedGame = new GameData(
@@ -48,7 +48,7 @@ public class JoinGameService {
                     game.game()
             );
         }else if("BLACK".equals(playerColor)){
-            if(game.blackUsername()!=null){
+            if(game.blackUsername()!=null && !game.blackUsername().equals(auth.username())){
                 throw new AlreadyTakenException();
             }
             updatedGame = new GameData(

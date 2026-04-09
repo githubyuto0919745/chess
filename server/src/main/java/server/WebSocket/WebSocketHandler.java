@@ -62,7 +62,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()){
                 case CONNECT -> returnConnect(command.getAuthToken(), (Session) ctx.session, command.getGameID());
                 case MAKE_MOVE -> returnMove(command.getAuthToken(), (Session) ctx.session, command.getGameID(), command.move);
-                case LEAVE -> returnLeave((Session) ctx.session, command.getGameID());
+                case LEAVE -> returnLeave(command.getAuthToken(),(Session) ctx.session, command.getGameID());
                 case RESIGN -> returnResign(command.getAuthToken(),(Session) ctx.session,command.getGameID());
             }
         } catch (IOException ex){
@@ -135,6 +135,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ChessGame.TeamColor currentTurn = chessGame.getTeamTurn();
             if((currentTurn == ChessGame.TeamColor.WHITE && !role.equals("WHITE")) ||
                     (currentTurn == ChessGame.TeamColor.BLACK && !role.equals("BLACK"))){
+                sendError(session,"It is not your turn");
                 return;
             }
 
@@ -145,12 +146,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     break;
                 }
             }if(!found){
+                sendError(session,"Invalid move");
                 return;
             }
 
             try{
                 chessGame.makeMove(move);
             }catch(InvalidMoveException ex) {
+                sendError(session,"Invalid Move");
                 return;
             }
 
@@ -182,8 +185,39 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 sendNotificationAll(gameID,"Black is in Check!");
             }
     }
-    private void returnLeave (Session session, Integer gameID) throws IOException{
-        sendNotificationExcept(gameID, "You left the game", session);
+    private void returnLeave (String authToken,Session session, Integer gameID) throws IOException, DataAccessException {
+        AuthData auth = authDAO.getAuth(authToken);
+        if(auth == null){
+            sendError(session,"bad auth token");
+            return;
+        }
+
+        GameData game = gameDAO.getGame(gameID);
+        if(game == null){
+            sendError(session, "bad game id");
+            return;
+        }
+        String username = auth.username();
+        GameData update = game;
+        if(username.equals(game.whiteUsername())){
+            update = new GameData(
+                    game.gameID(),
+                    null,
+                    game.blackUsername(),
+                    game.gameName(),
+                    game.game()
+            );
+        }else if (username.equals(game.blackUsername())){
+            update = new GameData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    null,
+                    game.gameName(),
+                    game.game()
+            );
+        }
+        gameDAO.updateGame(update);
+        sendNotificationExcept(gameID, username + " left the game", session);
         connections.remove(gameID, session);
 
     }
@@ -196,6 +230,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String username = auth.username();
         GameData game = gameDAO.getGame(gameID);
         ChessGame chessGame = game.game();
+        if(chessGame.getGameOver()){
+            sendError(session,"Game is already over");
+            return;
+        }
         String role;
         if (username.equals(game.whiteUsername())) {
             role = "WHITE";
@@ -210,7 +248,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         chessGame.resign();
         gameDAO.updateGame(game);
-        sendNotificationAll(gameID,username + "You resigned the game");
+        sendNotificationAll(gameID,username + " resigned the game");
     }
 
     public void sendNotificationExcept(Integer gameID, String message, Session exclude) throws IOException {
