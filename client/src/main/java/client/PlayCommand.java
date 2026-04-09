@@ -117,6 +117,7 @@ public class PlayCommand {
                     String fromCol = scanner.nextLine().trim().toLowerCase();
                     if(fromCol.length() !=1 || fromCol.charAt(0) < 'a' || fromCol.charAt(0) > 'h'){
                         System.out.println("Invalid column: must be a letter (a-h)");
+                        break;
                     }
 
                     int fc = fromCol.charAt(0) - 'a' + 1;
@@ -130,6 +131,10 @@ public class PlayCommand {
                     }
                     System.out.print("To col:  (a-h) ");
                     String toCol = scanner.nextLine().trim().toLowerCase();
+                    if(toCol.length() !=1 || toCol.charAt(0) < 'a' || toCol.charAt(0) > 'h'){
+                        System.out.println("Invalid column: must be a letter (a-h)");
+                        break;
+                    }
                     int tc = toCol.charAt(0) - 'a' + 1;
 
                     ChessMove move = new ChessMove(
@@ -149,8 +154,6 @@ public class PlayCommand {
                         break;
                     }
                     wsFacade.resign(authToken, gameID);
-                    boardDesign.updateGame(game);
-                    boardDesign.printBoard(null);
                 }
                 case "highlight" ->{
                     if (parts.length != 1){
