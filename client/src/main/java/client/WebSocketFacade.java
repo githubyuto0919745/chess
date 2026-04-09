@@ -10,28 +10,27 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Scanner;
 
 public class WebSocketFacade extends Endpoint {
     public Session session;
-    private BoardDesign boardDesign;
+    private final PlayCommand playCommand;
 
-    public static void main(String[] args) throws Exception{
-        BoardDesign boardDesign = new BoardDesign("WHITE");
-        WebSocketFacade client = new WebSocketFacade(boardDesign);
-        Scanner scanner = new Scanner(System.in);
+//    public static void main(String[] args) throws Exception{
+//        BoardDesign boardDesign = new BoardDesign("WHITE");
+//        WebSocketFacade client = new WebSocketFacade(boardDesign);
+//        Scanner scanner = new Scanner(System.in);
+//
+//        System.out.println("Enter a message you want to echo:");
+//        while (true){
+//            client.send(scanner.nextLine());
+//        }
+//    }
 
-        System.out.println("Enter a message you want to echo:");
-        while (true){
-            client.send(scanner.nextLine());
-        }
-    }
-
-    public WebSocketFacade(BoardDesign boardDesign) throws Exception{
-        this.boardDesign = boardDesign;
-            URI uri = new URI("ws://localhost:8080/ws");
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            session = container.connectToServer(this, uri);
+    public WebSocketFacade(PlayCommand playCommand) throws Exception{
+        this.playCommand = playCommand;
+        URI uri = new URI("ws://localhost:8080/ws");
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        session = container.connectToServer(this, uri);
 
     }
 
@@ -55,11 +54,8 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void returnLoadGame(ServerMessage.LoadGame server){
-
         System.out.println("Game Loaded");
-        ChessGame game = server.getGame();
-        boardDesign.updateGame(game);
-        boardDesign.printBoard(null);
+        playCommand.updateGame(server.getGame());
     }
     public void returnError(ServerMessage.Error server){
 
@@ -75,6 +71,7 @@ public class WebSocketFacade extends Endpoint {
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>(){
             public void onMessage(String message){
+
                 handleServerMessage(message);
             }
         });

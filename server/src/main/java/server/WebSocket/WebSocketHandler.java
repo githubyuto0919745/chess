@@ -21,6 +21,7 @@ import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
+import java.util.Collection;
 
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler{
@@ -106,7 +107,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
     private void returnMove (String authToken, Session session, Integer gameID, ChessMove move) throws IOException, DataAccessException {
-
             AuthData auth = authDAO.getAuth(authToken);
             if(auth == null){
                 sendError(session, "bad auth token for making move");
@@ -114,44 +114,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
             String username = auth.username();
             GameData game = gameDAO.getGame(gameID);
+            if(game == null){
+                sendError(session, "bad game ID");
+                return;
+            }
             ChessGame chessGame = game.game();
 
             if(chessGame.getGameOver()){
                 sendError(session,"Game is already over");
                 return;
             }
-            String role;
-            if (username.equals(game.whiteUsername())) {
-                role = "WHITE";
-            } else if (username.equals(game.blackUsername())) {
-                role = "BLACK";
-            } else {
-                role = "OBSERVER";
-            }
-            if(role.equals("OBSERVER")){
-                sendError(session, "Observers cannot make moves");
-                return;
-            }
-
-
-            ChessGame.TeamColor currentTurn = chessGame.getTeamTurn();
-            if((currentTurn == ChessGame.TeamColor.WHITE && !role.equals("WHITE")) ||
-                    (currentTurn == ChessGame.TeamColor.BLACK && !role.equals("BLACK"))){
-                sendError(session,"It is not your turn");
-                return;
-            }
-
             ChessGame.TeamColor playerColor;
-
-            if(username.equals(game.whiteUsername())){
+            if (username.equals(game.whiteUsername())) {
                 playerColor = ChessGame.TeamColor.WHITE;
-            }else if (username.equals(game.blackUsername())){
+            } else if (username.equals(game.blackUsername())) {
                 playerColor = ChessGame.TeamColor.BLACK;
-            }else{
+            } else {
                 sendError(session,"Observers cannot make moves");
                 return;
             }
 
+            ChessGame.TeamColor currentTurn = chessGame.getTeamTurn();
+            if(currentTurn != playerColor){
+                sendError(session,"It is not your turn");
+                return;
+            }
             ChessPiece piece = chessGame.getBoard().getPiece(move.getStartPosition());
 
             if(piece == null){
@@ -163,9 +150,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 return;
             }
 
-
+            Collection<ChessMove> validMoves = chessGame.validMoves(move.getStartPosition());
+            if(validMoves == null){
+                sendError(session, "No valid moves for this piece");
+                return;
+            }
             boolean found = false;
-            for (ChessMove m : chessGame.validMoves(move.getStartPosition())){
+            for (ChessMove m : validMoves){
                 if(m.equals(move)){
                     found = true;
                     break;
@@ -182,7 +173,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 return;
             }
 
-            gameDAO.updateGame(game);
+            gameDAO.updateGame(new GameData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    game.blackUsername(),
+                    game.gameName(),
+                    chessGame
+            ));
             sendLoadGame(gameID,chessGame);
             sendNotificationExcept(gameID, username + " made move from " + move.getStartPosition() + " to " + move.getEndPosition(), session);
 
@@ -223,6 +220,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         String username = auth.username();
+        boolean isPlayer = false;
         GameData update = game;
         if(username.equals(game.whiteUsername())){
             update = new GameData(
@@ -232,6 +230,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     game.gameName(),
                     game.game()
             );
+            isPlayer = true;
         }else if (username.equals(game.blackUsername())){
             update = new GameData(
                     game.gameID(),
@@ -240,10 +239,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     game.gameName(),
                     game.game()
             );
+            isPlayer = true;
         }
-        gameDAO.updateGame(update);
-        sendNotificationExcept(gameID, username + " left the game", session);
+        if(isPlayer){
+            gameDAO.updateGame(update);
+        }
         connections.remove(gameID, session);
+        sendNotificationExcept(gameID, username + " left the game", session);
 
     }
     private void returnResign (String authToken, Session session, Integer gameID) throws IOException, DataAccessException {
@@ -272,8 +274,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         chessGame.resign();
-        gameDAO.updateGame(game);
+        gameDAO.updateGame(new GameData(
+                game.gameID(),
+                game.whiteUsername(),
+                game.blackUsername(),
+                game.gameName(),
+                chessGame
+        ));
         sendNotificationAll(gameID,username + " resigned the game");
+        sendLoadGame(gameID,chessGame);
     }
 
     public void sendNotificationExcept(Integer gameID, String message, Session exclude) throws IOException {

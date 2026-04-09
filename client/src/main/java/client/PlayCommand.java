@@ -11,19 +11,43 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class PlayCommand {
-    private final WebSocketFacade wsFacade;
+    private WebSocketFacade wsFacade;
     private final String authToken;
     private final Integer gameID;
     private final BoardDesign boardDesign;
-    private final ChessGame game;
-    public PlayCommand(WebSocketFacade wsFacade, BoardDesign boardDesign, String authToken, Integer gameID, ChessGame game) {
+    private ChessGame game;
+    private final boolean isObserver;
+
+
+    public PlayCommand(WebSocketFacade wsFacade, BoardDesign boardDesign, String authToken, Integer gameID, ChessGame game, boolean isObserver) {
         this.wsFacade = wsFacade;
         this.boardDesign = boardDesign;
         this.authToken = authToken;
         this.gameID= gameID;
         this.game = game;
+        this.isObserver = isObserver;
     }
-
+    public void updateGame(ChessGame newGame){
+        this.game = newGame;
+        boardDesign.updateGame(newGame);
+        boardDesign.printBoard(null);
+    }
+    public void setWebSocketFacade(WebSocketFacade wsFacade) {
+        this.wsFacade = wsFacade;
+    }
+    private int convertColumn(String col){
+    return switch (col.toLowerCase()) {
+        case "a" -> 0;
+        case "b" -> 1;
+        case "c" -> 2;
+        case "d" -> 3;
+        case "e" -> 4;
+        case "f" -> 5;
+        case "g" -> 6;
+        case "h" -> 7;
+        default -> throw new IllegalArgumentException("Invalid column: " + col);
+    };
+    }
     public void wsCommand() {
         Scanner scanner = new Scanner(System.in);
         wsFacade.connect(authToken,gameID);
@@ -50,18 +74,34 @@ public class PlayCommand {
                 case "leave" -> {
                     wsFacade.leave(authToken, gameID);
                     isJoined = false;
-                    return;
+                    continue;
                 }
                 case "move" -> {
-                    System.out.print("From row: ");
+                    if(isObserver){
+                        System.out.println("Observers cannot make moves ");
+                        break;
+                    }
+                    System.out.print("From row:  (1-8) ");
                     int fr = Integer.parseInt(scanner.nextLine());
-                    System.out.print("From col: ");
-                    int fc = Integer.parseInt(scanner.nextLine());
-                    System.out.print("To row: ");
-                    int tr = Integer.parseInt(scanner.nextLine());
-                    System.out.print("To col: ");
-                    int tc = Integer.parseInt(scanner.nextLine());
+                    if(fr < 1 || fr > 8){
+                        System.out.println("Row must be between 1 - 8");
+                        break;
+                    }
 
+                    System.out.print("From col:  (a-h) ");
+                    String fromCol = scanner.nextLine().trim().toLowerCase();
+                    int fc = fromCol.charAt(0) - 'a';
+
+
+                    System.out.print("To row:  (1-8) ");
+                    int tr = Integer.parseInt(scanner.nextLine());
+                    if(tr < 1 || tr > 8){
+                        System.out.println("Row must be between 1 - 8");
+                        break;
+                    }
+                    System.out.print("To col:  (a-h) ");
+                    String toCol = scanner.nextLine().trim().toLowerCase();
+                    int tc = toCol.charAt(0) - 'a';
                     ChessMove move = new ChessMove(
                             new ChessPosition(fr,fc),
                             new ChessPosition(tr,tc),
@@ -72,17 +112,24 @@ public class PlayCommand {
                     wsFacade.move(authToken, gameID, move);
                 }
                 case "resign" -> {
+                    if(isObserver){
+                        System.out.println("Observers cannot resign ");
+                        break;
+                    }
                     wsFacade.resign(authToken, gameID);
 
                 }
                 case "highlight" ->{
                     System.out.print("Row: ");
-                    int r = Integer.parseInt(scanner.nextLine());
+                    String r = scanner.nextLine();
 
                     System.out.print("Col: ");
-                    int c = Integer.parseInt(scanner.nextLine());
+                    String c = scanner.nextLine();
 
-                    ChessPosition pos = new ChessPosition(r,c);
+                    int row = Integer.parseInt(r) -1;
+                    int col = convertColumn(c);
+
+                    ChessPosition pos = new ChessPosition(row,col);
                     Collection<ChessMove> moves = game.validMoves(pos);
                     Set<ChessPosition> highlights = new HashSet<>();
                     for(ChessMove move: moves){

@@ -136,12 +136,29 @@ public class AccountCommand {
                     int gameID = selectedGame.gameID();
                     ChessGame game = new ChessGame();
                     BoardDesign boardDesign = new BoardDesign(color);
-                    WebSocketFacade wsFacade = new WebSocketFacade(boardDesign);
-                    PlayCommand playCommand = new PlayCommand(wsFacade,boardDesign,authToken,gameID,game);
+                    boolean isObserver = !actions.equals("join");
+                    PlayCommand playCommand = new PlayCommand(
+                            null,
+                            boardDesign,
+                            authToken,
+                            gameID,
+                            game,
+                            isObserver);
+                    WebSocketFacade wsFacade = new WebSocketFacade(playCommand);
+                    playCommand.setWebSocketFacade(wsFacade);
+                    if(actions.equals("join")){
+                        isObserver = false;
+                    }else{
+                        isObserver = true;
+                    }
                     if (actions.equals("join")) {
                         if ((user.equalsIgnoreCase(selectedGame.blackUsername())) || user.equalsIgnoreCase(selectedGame.whiteUsername())) {
-                            System.out.println("You are already in the game!");
-                            break;
+                            System.out.println("You are already in the game! Rejoin the game!!");
+
+                            board = new BoardDesign(color);
+                            playCommand = new PlayCommand(wsFacade,board,authToken,gameID,game,false);
+                            playCommand.wsCommand();
+                            return;
                         }
                         if ((selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) &&
                                 (selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty())) {
