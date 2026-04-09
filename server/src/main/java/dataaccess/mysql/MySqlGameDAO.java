@@ -1,6 +1,7 @@
 package dataaccess.mysql;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDataAccess;
@@ -36,7 +37,7 @@ public class MySqlGameDAO implements GameDataAccess {
         String whiteUsername = rs.getString("whiteUsername");
         String blackUsername = rs.getString("blackUsername");
         String gameName = rs.getString("gameName");
-        ChessGame game = new ChessGame();
+        ChessGame game = new Gson().fromJson(rs.getString("game"),ChessGame.class);
 
         return new GameData(gameID, whiteUsername, blackUsername, gameName,game);
     }
@@ -65,7 +66,7 @@ public class MySqlGameDAO implements GameDataAccess {
                 ps.setString(1,game.whiteUsername());
                 ps.setString(2,game.blackUsername());
                 ps.setString(3,game.gameName());
-                ps.setString(4, "");
+                ps.setString(4, new Gson().toJson(game.game()));
                 ps.executeUpdate();
 
                 ResultSet rs = ps.getGeneratedKeys();
@@ -112,10 +113,11 @@ public class MySqlGameDAO implements GameDataAccess {
         """;
             try(PreparedStatement ps = connect.prepareStatement(table)){
 
+
                 ps.setString(1,game.whiteUsername());
                 ps.setString(2,game.blackUsername());
                 ps.setString(3,game.gameName());
-                ps.setString(4,"");
+                ps.setString(4,new Gson().toJson(game.game()));
                 ps.setInt(5,game.gameID());
 
                 ps.executeUpdate();

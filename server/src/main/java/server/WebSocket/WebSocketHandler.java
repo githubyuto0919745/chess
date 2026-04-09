@@ -114,6 +114,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             GameData game = gameDAO.getGame(gameID);
             ChessGame chessGame = game.game();
 
+            if(chessGame.getGameOver()){
+                sendError(session,"Game is already over");
+                return;
+            }
             String role;
             if (username.equals(game.whiteUsername())) {
                 role = "WHITE";
@@ -131,7 +135,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ChessGame.TeamColor currentTurn = chessGame.getTeamTurn();
             if((currentTurn == ChessGame.TeamColor.WHITE && !role.equals("WHITE")) ||
                     (currentTurn == ChessGame.TeamColor.BLACK && !role.equals("BLACK"))){
-                sendError(session,"It is a wrong turn");
                 return;
             }
 
@@ -142,48 +145,42 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     break;
                 }
             }if(!found){
-                sendError(session,"Invalid move");
                 return;
             }
+
             try{
                 chessGame.makeMove(move);
             }catch(InvalidMoveException ex) {
-                sendError(session, "Invalid move");
                 return;
             }
 
-            if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
-                    chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) ||
-                    chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
-                    chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
-
-                sendNotificationAll(gameID, "Game Over!");
-            }
             gameDAO.updateGame(game);
             sendLoadGame(gameID,chessGame);
             sendNotificationExcept(gameID, username + " made move from " + move.getStartPosition() + " to " + move.getEndPosition(), session);
 
+
+            if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                sendNotificationAll(gameID,"White is in CheckMate!");
+                return;
+            }
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
+                sendNotificationAll(gameID,"Black is in CheckMate!");
+                return;
+            }
+            if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
+                sendNotificationAll(gameID,"White is in StaleMate!");
+                return;
+            }
+           if(chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
+               sendNotificationAll(gameID,"Black is in StaleMate!");
+               return;
+            }
             if(chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
                 sendNotificationAll(gameID,"White is in Check!");
             }
             if(chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
                 sendNotificationAll(gameID,"Black is in Check!");
             }
-            if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
-                sendNotificationAll(gameID,"White is in CheckMate!");
-            }
-            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-                sendNotificationAll(gameID,"Black is in CheckMate!");
-            }
-            if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
-                sendNotificationAll(gameID,"White is in StaleMate!");
-            }
-           if(chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-               sendNotificationAll(gameID,"Black is in StaleMate!");
-            }
-
-
-
     }
     private void returnLeave (Session session, Integer gameID) throws IOException{
         sendNotificationExcept(gameID, "You left the game", session);
@@ -208,13 +205,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             role = "OBSERVER";
         }
         if(role.equals("OBSERVER")){
-            sendError(session, "Observers cannot make moves");
+            sendError(session, "Observers cannot resign the game");
             return;
         }
         chessGame.resign();
         gameDAO.updateGame(game);
-        sendLoadGame(gameID,chessGame);
-        sendNotificationAll(gameID,"You resigned the game");
+        sendNotificationAll(gameID,username + "You resigned the game");
     }
 
     public void sendNotificationExcept(Integer gameID, String message, Session exclude) throws IOException {

@@ -18,6 +18,14 @@ public class ChessGame {
         board.resetBoard();
     }
 
+    public Boolean getGameOver() {
+        return
+            resigned ||
+            isInCheckmate(TeamColor.WHITE) ||
+            isInCheckmate(TeamColor.BLACK) ||
+            isInStalemate(TeamColor.WHITE) ||
+            isInStalemate(TeamColor.BLACK);
+    }
     public void resign(){
         resigned = true;
     }
