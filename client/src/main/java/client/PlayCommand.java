@@ -100,7 +100,14 @@ public class PlayCommand {
                         break;
                     }
                     System.out.print("From row:  (1-8) ");
-                    int fr = Integer.parseInt(scanner.nextLine());
+                    String fromRowInput = scanner.nextLine();
+                    int fr;
+                    try{
+                        fr =  Integer.parseInt(fromRowInput);
+                    }catch (NumberFormatException e){
+                        System.out.println("Invalid row: must be a number(1-8)");
+                        break;
+                    }
                     if(fr < 1 || fr > 8){
                         System.out.println("Row must be between 1 - 8");
                         break;
@@ -108,13 +115,17 @@ public class PlayCommand {
 
                     System.out.print("From col:  (a-h) ");
                     String fromCol = scanner.nextLine().trim().toLowerCase();
+                    if(fromCol.length() !=1 || fromCol.charAt(0) < 'a' || fromCol.charAt(0) > 'h'){
+                        System.out.println("Invalid column: must be a letter (a-h)");
+                    }
+
                     int fc = fromCol.charAt(0) - 'a' + 1;
 
 
                     System.out.print("To row:  (1-8) ");
                     int tr = Integer.parseInt(scanner.nextLine());
                     if(tr < 1 || tr > 8){
-                        System.out.println("Row must be between 1 - 8");
+                        System.out.println("Invalid input: Row must be between (1-8)");
                         break;
                     }
                     System.out.print("To col:  (a-h) ");
@@ -138,7 +149,8 @@ public class PlayCommand {
                         break;
                     }
                     wsFacade.resign(authToken, gameID);
-
+                    boardDesign.updateGame(game);
+                    boardDesign.printBoard(null);
                 }
                 case "highlight" ->{
                     if (parts.length != 1){
@@ -163,7 +175,7 @@ public class PlayCommand {
                         break;
                     }
                     if(colInput.length() != 1|| colInput.charAt(0) < 'a' || colInput.charAt(0) > 'h'){
-                        System.out.println("Invalid column: must be a letter (a-h");
+                        System.out.println("Invalid column: must be a letter (a-h)");
                         break;
                     }
                     int col = convertColumn(colInput);
