@@ -9,13 +9,12 @@ import java.util.Set;
 public class BoardDesign {
     private final String[][] board;
     private final int size = 8;
-    private final boolean blackView;
+    public final boolean blackView;
 
     public BoardDesign(String color){
         board = new String[size][size];
         this.blackView = color.equalsIgnoreCase("BLACK");
         setEmptyBoard();
-        setBoard();
 
     }
     private void setEmptyBoard(){
@@ -24,35 +23,12 @@ public class BoardDesign {
             board[row][col] = EscapeSequences.EMPTY;
         }
     }}
-    private void setBoard(){
-        board[0][0] = EscapeSequences.BLACK_ROOK;
-        board[0][1] = EscapeSequences.BLACK_KNIGHT;
-        board[0][2] = EscapeSequences.BLACK_BISHOP;
-        board[0][3] = EscapeSequences.BLACK_QUEEN;
-        board[0][4] = EscapeSequences.BLACK_KING;
-        board[0][5] = EscapeSequences.BLACK_BISHOP;
-        board[0][6] = EscapeSequences.BLACK_KNIGHT;
-        board[0][7] = EscapeSequences.BLACK_ROOK;
-        for (int col = 0; col< size; col++){
-            board[1][col] = EscapeSequences.BLACK_PAWN;
-        }
-        board[7][0] = EscapeSequences.WHITE_ROOK;
-        board[7][1] = EscapeSequences.WHITE_KNIGHT;
-        board[7][2] = EscapeSequences.WHITE_BISHOP;
-        board[7][3] = EscapeSequences.WHITE_QUEEN;
-        board[7][4] = EscapeSequences.WHITE_KING;
-        board[7][5] = EscapeSequences.WHITE_BISHOP;
-        board[7][6] = EscapeSequences.WHITE_KNIGHT;
-        board[7][7] = EscapeSequences.WHITE_ROOK;
-        for (int col = 0; col< size; col++){
-            board[6][col] = EscapeSequences.WHITE_PAWN;
-        }
-    }
+
 
     public void updateGame(ChessGame game){
         for(int row = 0; row < 8; row ++){
             for ( int col = 0; col<8; col ++){
-                ChessPosition pos = new ChessPosition(row + 1, col+1);
+                ChessPosition pos = new ChessPosition(row +1, col+1);
                 ChessPiece piece = game.getBoard().getPiece(pos);
                 if(piece != null){
                     board[row][col] = convertPiece(piece);
@@ -82,24 +58,16 @@ public class BoardDesign {
     }
 
     public void printBoard(Set<ChessPosition> highlights){
-        String[][] displayBoard = new String[size][size];
 
-            for (int row = 0; row < size; row++){
-                for (int col = 0; col < size; col++){
-                    if(this.blackView) {
-                        displayBoard[row][col] = board[7 - row][col];
-                    } else {
-                        displayBoard[row][col] = board[row][col];
-                }
-            }
-        }
         for (int row = 0; row < size; row++){
             for (int col = 0; col < size; col++){
+                int boardRow = blackView ? row : 7 - row;
+                int boardCol = blackView ? 7 - col :col;
+                String piece = board[boardRow][boardCol];
 
-                ChessPosition pos = blackView
-                ? new ChessPosition(8 - row, col + 1)
-                : new ChessPosition(row + 1, col + 1);
-
+                int gameRow = blackView ? (row + 1) : (8 - row);
+                int gameCol = blackView ? (8 - col) : (col + 1);
+                ChessPosition pos = new ChessPosition(gameRow, gameCol);
                 boolean highlight = highlights != null && highlights.contains(pos);
                 String bgColor = highlight
                     ?EscapeSequences.SET_BG_COLOR_YELLOW
@@ -107,19 +75,15 @@ public class BoardDesign {
                         ? EscapeSequences.SET_BG_COLOR_BLUE
                         : EscapeSequences.SET_BG_COLOR_BLACK;
 
-                String piece = displayBoard[row][col];
                 System.out.print(
                         bgColor +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE +
-                        String.format("%-3s",piece) +
+                        piece +
                         EscapeSequences.RESET_BG_COLOR
                 );
             }
-            System.out.print(" " + (row+1));
+            System.out.print(" " + (blackView ? (row + 1) : (8 -row)));
             System.out.println();
         }
-        System.out.println("   a   b   c   d   e   f   g    h  ");
+        System.out.println(" a  b  c   d   e  f   g   h  ");
     }
-
-
 }

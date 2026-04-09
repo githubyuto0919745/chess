@@ -282,7 +282,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 chessGame
         ));
         sendNotificationAll(gameID,username + " resigned the game");
-        sendLoadGame(gameID,chessGame);
     }
 
     public void sendNotificationExcept(Integer gameID, String message, Session exclude) throws IOException {

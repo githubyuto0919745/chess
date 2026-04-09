@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import ui.BoardDesign;
 
@@ -37,14 +38,14 @@ public class PlayCommand {
     }
     private int convertColumn(String col){
     return switch (col.toLowerCase()) {
-        case "a" -> 0;
-        case "b" -> 1;
-        case "c" -> 2;
-        case "d" -> 3;
-        case "e" -> 4;
-        case "f" -> 5;
-        case "g" -> 6;
-        case "h" -> 7;
+        case "a" -> 1;
+        case "b" -> 2;
+        case "c" -> 3;
+        case "d" -> 4;
+        case "e" -> 5;
+        case "f" -> 6;
+        case "g" -> 7;
+        case "h" -> 8;
         default -> throw new IllegalArgumentException("Invalid column: " + col);
     };
     }
@@ -62,6 +63,10 @@ public class PlayCommand {
             String command = parts[0].toLowerCase();
             switch (command) {
                 case "help" -> {
+                    if (parts.length != 1){
+                        System.out.println("You need to fill the information!");
+                        break;
+                    }
                     System.out.println("redraw");
                     System.out.println("leave");
                     System.out.println("resign");
@@ -69,14 +74,27 @@ public class PlayCommand {
                     System.out.println("highlight");
                 }
                 case "redraw" -> {
-                   boardDesign.printBoard(null);
+                    if (parts.length != 1){
+                        System.out.println("You need to fill the information!");
+                        break;
+                    }
+                    boardDesign.updateGame(game);
+                    boardDesign.printBoard(null);
                 }
                 case "leave" -> {
+                    if (parts.length != 1){
+                        System.out.println("You need to fill the information!");
+                        break;
+                    }
                     wsFacade.leave(authToken, gameID);
                     isJoined = false;
                     continue;
                 }
                 case "move" -> {
+                    if (parts.length != 1){
+                        System.out.println("You need to fill the information!");
+                        break;
+                    }
                     if(isObserver){
                         System.out.println("Observers cannot make moves ");
                         break;
@@ -90,7 +108,7 @@ public class PlayCommand {
 
                     System.out.print("From col:  (a-h) ");
                     String fromCol = scanner.nextLine().trim().toLowerCase();
-                    int fc = fromCol.charAt(0) - 'a';
+                    int fc = fromCol.charAt(0) - 'a' + 1;
 
 
                     System.out.print("To row:  (1-8) ");
@@ -101,17 +119,20 @@ public class PlayCommand {
                     }
                     System.out.print("To col:  (a-h) ");
                     String toCol = scanner.nextLine().trim().toLowerCase();
-                    int tc = toCol.charAt(0) - 'a';
+                    int tc = toCol.charAt(0) - 'a' + 1;
+
                     ChessMove move = new ChessMove(
                             new ChessPosition(fr,fc),
                             new ChessPosition(tr,tc),
                             null
                     );
-
-
                     wsFacade.move(authToken, gameID, move);
                 }
                 case "resign" -> {
+                    if (parts.length != 1){
+                        System.out.println("You need to fill the information!");
+                        break;
+                    }
                     if(isObserver){
                         System.out.println("Observers cannot resign ");
                         break;
@@ -120,21 +141,47 @@ public class PlayCommand {
 
                 }
                 case "highlight" ->{
-                    System.out.print("Row: ");
-                    String r = scanner.nextLine();
+                    if (parts.length != 1){
+                        System.out.println("You need to fill the information!");
+                        break;
+                    }
+                    System.out.print("Row (1-8):    ");
+                    String rowInput = scanner.nextLine().trim();
 
-                    System.out.print("Col: ");
-                    String c = scanner.nextLine();
+                    System.out.print("Col (a-h):    ");
+                    String colInput = scanner.nextLine().trim().toLowerCase();
 
-                    int row = Integer.parseInt(r) -1;
-                    int col = convertColumn(c);
+                    int row;
+                    try{
+                        row =  Integer.parseInt(rowInput);
+                    }catch (NumberFormatException e){
+                        System.out.println("Invalid row: must be a number(1-8)");
+                        break;
+                    }
+                    if(row <1 || row > 8){
+                        System.out.println("Row must be 1-8");
+                        break;
+                    }
+                    if(colInput.length() != 1|| colInput.charAt(0) < 'a' || colInput.charAt(0) > 'h'){
+                        System.out.println("Invalid column: must be a letter (a-h");
+                        break;
+                    }
+                    int col = convertColumn(colInput);
+                    int gameRow = boardDesign.blackView ? (9 - row) : row;
+                    int gameCol = boardDesign.blackView ? (9 - col) : col;
 
-                    ChessPosition pos = new ChessPosition(row,col);
-                    Collection<ChessMove> moves = game.validMoves(pos);
+                    ChessPosition pos = new ChessPosition(gameRow,gameCol);
+                    ChessPiece piece = game.getBoard().getPiece(pos);
+                    if(piece == null){
+                        System.out.println("Empty square selected");
+                        break;
+                    }
+                    Collection<ChessMove> moved = game.validMoves(pos);
                     Set<ChessPosition> highlights = new HashSet<>();
-                    for(ChessMove move: moves){
+                    for(ChessMove move: moved){
                         highlights.add(move.getEndPosition());
                     }
+                    boardDesign.updateGame(game);
                     boardDesign.printBoard(highlights);
 
                 }
