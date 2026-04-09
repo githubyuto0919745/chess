@@ -135,8 +135,9 @@ public class AccountCommand {
                     GameData selectedGame = lastGame.get(choice);
                     int gameID = selectedGame.gameID();
                     ChessGame game = new ChessGame();
-                    WebSocketFacade wsFacade = new WebSocketFacade(board);
-                    PlayCommand playCommand = new PlayCommand(wsFacade,board,authToken,gameID,game);
+                    BoardDesign boardDesign = new BoardDesign(color);
+                    WebSocketFacade wsFacade = new WebSocketFacade(boardDesign);
+                    PlayCommand playCommand = new PlayCommand(wsFacade,boardDesign,authToken,gameID,game);
                     if (actions.equals("join")) {
                         if ((user.equalsIgnoreCase(selectedGame.blackUsername())) || user.equalsIgnoreCase(selectedGame.whiteUsername())) {
                             System.out.println("You are already in the game!");
@@ -156,6 +157,8 @@ public class AccountCommand {
                             board = new BoardDesign(color);
                             System.out.println();
                             playCommand.wsCommand();
+                            System.out.println();
+
                         } catch (ResponseException ex) {
                             System.out.println(ex.getMessage());}
                     } else {
@@ -164,8 +167,10 @@ public class AccountCommand {
                         System.out.println("Game WhiteUser: " + selectedGame.whiteUsername());
                         System.out.println("Game BlackUser: " + selectedGame.blackUsername());
                         board = new BoardDesign(color);
+                        System.out.println();
                         playCommand.wsCommand();
                         System.out.println();
+
                     }
                 }
                 case "logout" -> {

@@ -34,6 +34,7 @@ public class PlayCommand {
             System.out.println("JOINED_IN >>>");
             String line = scanner.nextLine().trim();
             String[] parts = line.split("\\s+");
+            if(parts.length == 0) continue;
             String command = parts[0].toLowerCase();
             switch (command) {
                 case "help" -> {
@@ -49,6 +50,7 @@ public class PlayCommand {
                 case "leave" -> {
                     wsFacade.leave(authToken, gameID);
                     isJoined = false;
+                    return;
                 }
                 case "move" -> {
                     System.out.print("From row: ");
@@ -71,6 +73,7 @@ public class PlayCommand {
                 }
                 case "resign" -> {
                     wsFacade.resign(authToken, gameID);
+
                 }
                 case "highlight" ->{
                     System.out.print("Row: ");
