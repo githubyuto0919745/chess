@@ -22,7 +22,7 @@ public class Server {
     private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
 
-    public Server() throws DataAccessException {
+    public Server() {
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));

@@ -17,7 +17,6 @@ public class PlayCommand {
     private final BoardDesign boardDesign;
     private final ChessGame game;
     public PlayCommand(WebSocketFacade wsFacade, BoardDesign boardDesign, String authToken, Integer gameID, ChessGame game) {
-
         this.wsFacade = wsFacade;
         this.boardDesign = boardDesign;
         this.authToken = authToken;

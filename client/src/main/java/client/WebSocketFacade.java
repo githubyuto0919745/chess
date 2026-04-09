@@ -17,7 +17,8 @@ public class WebSocketFacade extends Endpoint {
     private BoardDesign boardDesign;
 
     public static void main(String[] args) throws Exception{
-        WebSocketFacade client = new WebSocketFacade("WHITE");
+        BoardDesign boardDesign = new BoardDesign("WHITE");
+        WebSocketFacade client = new WebSocketFacade(boardDesign);
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter a message you want to echo:");
@@ -26,8 +27,8 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public WebSocketFacade(String color) throws Exception{
-        this.boardDesign = new BoardDesign(color);
+    public WebSocketFacade(BoardDesign boardDesign) throws Exception{
+        this.boardDesign = boardDesign;
             URI uri = new URI("ws://localhost:8080/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             session = container.connectToServer(this, uri);

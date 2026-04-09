@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import record.AuthData;
 import record.GameData;
 import record.JoinGameRequest;
@@ -14,9 +15,9 @@ public class AccountCommand {
     private List<GameData> lastGame = new ArrayList<>();
     private BoardDesign board;
     private static String authUsername;
-    private static PlayCommand playCommand;
+
     public AccountCommand(String serverUrl){
-        httpFacade = new HttpFacade(serverUrl);
+        this.httpFacade = new HttpFacade(serverUrl);
     }
 
     public void commands (){
@@ -46,7 +47,7 @@ public class AccountCommand {
                         System.out.println("Registered as  " + username);
                         loggedinCommand(httpFacade, authToken, lastGame,board);
 
-                    } catch (ResponseException ex) {
+                    } catch (Exception ex) {
                         System.out.println(ex.getMessage());
                     }
                 }
@@ -67,7 +68,7 @@ public class AccountCommand {
                         System.out.println("Type help to get started!!!");
                         loggedinCommand(httpFacade, authToken, lastGame,board);
 
-                    } catch (ResponseException ex) {
+                    } catch (Exception ex) {
                         System.out.println(ex.getMessage());
 
                     }
@@ -88,7 +89,7 @@ public class AccountCommand {
             }
         }
     }
-    private static void loggedinCommand(HttpFacade httpFacade, String authToken, List<GameData> lastGame, BoardDesign board){
+    private static void loggedinCommand(HttpFacade httpFacade, String authToken, List<GameData> lastGame, BoardDesign board) throws Exception {
         boolean loggedIn = true;
         Scanner scanner = new Scanner(System.in);
         while (loggedIn) {
@@ -132,6 +133,10 @@ public class AccountCommand {
                     String color = (String) array[1];
                     String user = authUsername.trim();
                     GameData selectedGame = lastGame.get(choice);
+                    int gameID = selectedGame.gameID();
+                    ChessGame game = new ChessGame();
+                    WebSocketFacade wsFacade = new WebSocketFacade(board);
+                    PlayCommand playCommand = new PlayCommand(wsFacade,board,authToken,gameID,game);
                     if (actions.equals("join")) {
                         if ((user.equalsIgnoreCase(selectedGame.blackUsername())) || user.equalsIgnoreCase(selectedGame.whiteUsername())) {
                             System.out.println("You are already in the game!");
@@ -193,11 +198,11 @@ public class AccountCommand {
         int choice;
         try{
             choice = Integer.parseInt(parts[1]);
-        }catch(ResponseException ex){
+        }catch(NumberFormatException ex){
             System.out.println(ex.getMessage());
             return null;
         }
-        if(choice <1 || choice > lastGame.size()){
+        if(choice < 1 || choice > lastGame.size()){
             System.out.println("No exist! ");
             return null;
         }
