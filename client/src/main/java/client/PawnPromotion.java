@@ -1,7 +1,6 @@
 package client;
 
 import chess.ChessPiece;
-import io.javalin.websocket.WsCloseContext;
 
 import java.util.Scanner;
 
