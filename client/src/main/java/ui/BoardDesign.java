@@ -61,7 +61,6 @@ public class BoardDesign {
 
         for (int row = 0; row < size; row++){
             for (int col = 0; col < size; col++){
-
                 int boardRow = blackView ? row : 7 - row;
                 int boardCol = blackView ? 7 -col :col;
 
