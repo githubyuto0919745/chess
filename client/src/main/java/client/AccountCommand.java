@@ -1,25 +1,20 @@
 package client;
-
 import chess.ChessGame;
 import record.AuthData;
 import record.GameData;
 import record.JoinGameRequest;
 import record.UserData;
 import ui.BoardDesign;
-
 import java.util.*;
-
 public class AccountCommand {
     private final HttpFacade httpFacade;
     private String authToken = null;
     private List<GameData> lastGame = new ArrayList<>();
     private BoardDesign board;
     private static String authUsername;
-
     public AccountCommand(String serverUrl){
         this.httpFacade = new HttpFacade(serverUrl);
     }
-
     public void commands (){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to 240 chess. Type help to get started!!!");
@@ -28,10 +23,8 @@ public class AccountCommand {
             String line = scanner.nextLine().trim();
             String[] parts = line.split("\\s+");
             String command = parts[0];
-
             switch (command.toLowerCase()) {
                 case "register" -> {
-
                     if (parts.length != 4){
                         System.out.println("You need to fill the information!");
                         break;
@@ -39,14 +32,12 @@ public class AccountCommand {
                     String username = parts[1];
                     String password =  parts[2];
                     String email =  parts[3];
-
                     try {
                         AuthData auth = httpFacade.register(new UserData(username, password, email));
                         authToken = auth.authToken();
                         authUsername = username.trim();
                         System.out.println("Registered as  " + username);
                         loggedinCommand(httpFacade, authToken, lastGame,board);
-
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
                     }
@@ -58,21 +49,16 @@ public class AccountCommand {
                     }
                     String user = parts[1];
                     String pass =  parts[2];
-
                     try {
                         AuthData auth = httpFacade.login(new UserData(user, pass, null));
                         authToken = auth.authToken();
                         authUsername = user.trim();
-
                         System.out.println("Logged in as  " + user);
                         System.out.println("Type help to get started!!!");
                         loggedinCommand(httpFacade, authToken, lastGame,board);
-
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
-
                     }
-
                 }case "quit" -> {
                     System.out.println("Thank you!");
                     return;
@@ -85,10 +71,7 @@ public class AccountCommand {
                 }
                 default ->{
                     System.out.println("[LOGGED_OUT]>>> ");
-                }
-            }
-        }
-    }
+                }}}}
     private static void loggedinCommand(HttpFacade httpFacade, String authToken, List<GameData> lastGame, BoardDesign board) throws Exception {
         boolean loggedIn = true;
         Scanner scanner = new Scanner(System.in);
@@ -100,32 +83,23 @@ public class AccountCommand {
             switch (actions.toLowerCase()) {
                 case "create" -> {
                     if (parts.length != 2){
-                        System.out.println("You need to fill the information!");
-                        break;}
+                        System.out.println("You need to fill the information!"); break;}
                     String name = parts[1];
                     try{
                         var game = httpFacade.createGame(new GameData(0,null,null,name,null), authToken);
                         lastGame.add(game);
                         System.out.println("Created game:  " + game.gameName());
                     }catch(ResponseException ex){
-                        System.out.println(ex.getMessage());
-                    }}
+                        System.out.println(ex.getMessage());}}
                 case "list" -> {
-                    try {
-                        lastGame = httpFacade.listGame(authToken);
+                    try {lastGame = httpFacade.listGame(authToken);
                         if(lastGame == null || lastGame.isEmpty()){
-                            System.out.println("No games available to join");
-                            break;
-                        }
+                            System.out.println("No games available to join");break;}
                         int displayIndex = 1;
                         for(GameData game: lastGame){
-                            System.out.println(displayIndex + ". " +
-                                    "GameName:"+game.gameName()
-                                    + "  WhitePlayer:" + game.whiteUsername() +
-                                    " BlackPlayer:" + game.blackUsername());
+                            System.out.println(displayIndex + ". " + "GameName:"+game.gameName() + "  WhitePlayer:" + game.whiteUsername() + " BlackPlayer:" + game.blackUsername());
                             displayIndex ++;}}catch(ResponseException ex){
-                        System.out.println(ex.getMessage());
-                    }}
+                        System.out.println(ex.getMessage());}}
                 case "join", "observe" -> {
                     Object[] array = helperChoiceColor(parts, lastGame);
                     if (array == null) break;
@@ -138,28 +112,19 @@ public class AccountCommand {
                     BoardDesign boardDesign = new BoardDesign(color);
                     boolean isObserver = !actions.equals("join");
                     PlayCommand playCommand = new PlayCommand(
-                            null,
-                            boardDesign,
-                            authToken,
-                            gameID,
-                            game,
-                            isObserver);
+                            null, boardDesign, authToken, gameID, game, isObserver);
                     WebSocketFacade wsFacade = new WebSocketFacade(playCommand);
                     playCommand.setWebSocketFacade(wsFacade);
                     if(actions.equals("join")){
-                        isObserver = false;
-                    }else{
-                        isObserver = true;
-                    }
+                        isObserver = false;}else{
+                        isObserver = true;}
                     if (actions.equals("join")) {
                         if ((user.equalsIgnoreCase(selectedGame.blackUsername())) || user.equalsIgnoreCase(selectedGame.whiteUsername())) {
                             System.out.println("You are already in the game! Rejoin the game!!");
-
                             board = new BoardDesign(color);
                             playCommand = new PlayCommand(wsFacade,board,authToken,gameID,game,false);
                             playCommand.wsCommand();
-                            return;
-                        }
+                            return;}
                         if ((selectedGame.whiteUsername() != null && !selectedGame.whiteUsername().isEmpty()) &&
                                 (selectedGame.blackUsername() != null && !selectedGame.blackUsername().isEmpty())) {
                             System.out.println("This game already has two players.");
@@ -175,7 +140,6 @@ public class AccountCommand {
                             System.out.println();
                             playCommand.wsCommand();
                             System.out.println();
-
                         } catch (ResponseException ex) {
                             System.out.println(ex.getMessage());}
                     } else {
@@ -186,10 +150,7 @@ public class AccountCommand {
                         board = new BoardDesign(color);
                         System.out.println();
                         playCommand.wsCommand();
-                        System.out.println();
-
-                    }
-                }
+                        System.out.println();}}
                 case "logout" -> {
                     try {
                         httpFacade.logout(authToken);
@@ -201,8 +162,7 @@ public class AccountCommand {
                     }catch(ResponseException ex){
                         System.out.println(ex.getMessage());}}
                 case "quit" -> {
-                    System.out.println("Thank you for playing!");
-                    return;}
+                    System.out.println("Thank you for playing!");return;}
                 case "help" -> {
                     System.out.println("create <NAME>");
                     System.out.println("list");
@@ -212,7 +172,6 @@ public class AccountCommand {
                     System.out.println("quit");
                     System.out.println("help");
                 }}}}
-
     private static Object[] helperChoiceColor(String[] parts, List<GameData> lastGame){
         if (parts.length != 3){
             System.out.println("You need to fill the information!");
@@ -234,8 +193,4 @@ public class AccountCommand {
             return null;
         }
         return new Object[]{choice -1, color};
-
-    }
-
-
-}
+    }}
