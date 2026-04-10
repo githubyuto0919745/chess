@@ -1,4 +1,4 @@
-package server.WebSocket;
+package server.websocket;
 
 
 import chess.ChessGame;
@@ -15,7 +15,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import record.AuthData;
 import record.GameData;
-import record.JoinGameRequest;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -36,9 +35,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }catch(DataAccessException ex){
             throw new RuntimeException("Error");
         }
-
     }
-
     public static void main( String[] args){
         Javalin.create()
                 .get("/echo/{msg}",ctx->ctx.result("HTTP response: " + ctx.pathParam("msg")))
@@ -52,12 +49,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 })
                 .start(8080);
     }
-
     public void handleConnect (@NotNull WsConnectContext ctx){
         ctx.enableAutomaticPings();
         System.out.println("Websocket Connected");
     }
-
     @Override
     public void handleMessage(@NotNull WsMessageContext ctx) throws Exception {
         try{
@@ -149,7 +144,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 sendError(session, "You cannot move the opponent's piece");
                 return;
             }
-
             Collection<ChessMove> validMoves = chessGame.validMoves(move.getStartPosition());
             if(validMoves == null){
                 sendError(session, "No valid moves for this piece");
@@ -182,29 +176,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ));
             sendLoadGame(gameID,chessGame);
             sendNotificationExcept(gameID, username + " made move from " + move.getStartPosition() + " to " + move.getEndPosition(), session);
-
-
             if(chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
-                sendNotificationAll(gameID,"White is in CheckMate!");
+                sendNotificationAll(gameID,username + " is in CheckMate!");
                 return;
             }
             if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-                sendNotificationAll(gameID,"Black is in CheckMate!");
+                sendNotificationAll(gameID,username + " is in CheckMate!");
                 return;
             }
             if(chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
-                sendNotificationAll(gameID,"White is in StaleMate!");
+                sendNotificationAll(gameID,username + " is in StaleMate!");
                 return;
             }
            if(chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-               sendNotificationAll(gameID,"Black is in StaleMate!");
+               sendNotificationAll(gameID,username + " is in StaleMate!");
                return;
             }
             if(chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
-                sendNotificationAll(gameID,"White is in Check!");
+                sendNotificationAll(gameID,username + " is in Check!");
             }
             if(chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
-                sendNotificationAll(gameID,"Black is in Check!");
+                sendNotificationAll(gameID,username + " is in Check!");
             }
     }
     private void returnLeave (String authToken,Session session, Integer gameID) throws IOException, DataAccessException {
@@ -213,7 +205,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session,"bad auth token");
             return;
         }
-
         GameData game = gameDAO.getGame(gameID);
         if(game == null){
             sendError(session, "bad game id");
@@ -246,7 +237,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         connections.remove(gameID, session);
         sendNotificationExcept(gameID, username + " left the game", session);
-
     }
     private void returnResign (String authToken, Session session, Integer gameID) throws IOException, DataAccessException {
         AuthData auth = authDAO.getAuth(authToken);

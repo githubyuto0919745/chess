@@ -1,8 +1,7 @@
-package server.WebSocket;
+package server.websocket;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 

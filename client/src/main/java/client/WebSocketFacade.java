@@ -1,10 +1,8 @@
 package client;
 
-import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
-import ui.BoardDesign;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -14,17 +12,6 @@ import java.net.URI;
 public class WebSocketFacade extends Endpoint {
     public Session session;
     private final PlayCommand playCommand;
-
-//    public static void main(String[] args) throws Exception{
-//        BoardDesign boardDesign = new BoardDesign("WHITE");
-//        WebSocketFacade client = new WebSocketFacade(boardDesign);
-//        Scanner scanner = new Scanner(System.in);
-//
-//        System.out.println("Enter a message you want to echo:");
-//        while (true){
-//            client.send(scanner.nextLine());
-//        }
-//    }
 
     public WebSocketFacade(PlayCommand playCommand) throws Exception{
         this.playCommand = playCommand;

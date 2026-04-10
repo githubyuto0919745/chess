@@ -1,19 +1,16 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
-import dataaccess.mysql.MySqlAuthDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
 import record.*;
-import server.WebSocket.WebSocketHandler;
+import server.websocket.WebSocketHandler;
 import server.exceptions.AlreadyTakenException;
 import server.exceptions.BadRequestException;
 import server.exceptions.UnauthorizedException;
 
 import java.io.IOException;
-import java.net.http.WebSocket;
 import java.util.HashMap;
 
 public class Server {

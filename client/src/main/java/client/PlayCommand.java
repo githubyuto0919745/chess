@@ -166,7 +166,14 @@ public class PlayCommand {
                         System.out.println("Observers cannot resign ");
                         break;
                     }
-                    wsFacade.resign(authToken, gameID);
+                    System.out.print("Are you sure to resign? (yes/no) ");
+                    String response = scanner.nextLine().trim().toLowerCase();
+                    if(response.equals("yes")){
+                        wsFacade.resign(authToken, gameID);
+                    }else{
+                        continue;
+                    }
+
                 }
                 case "highlight" ->{
                     if (parts.length != 1){
