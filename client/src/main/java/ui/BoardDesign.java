@@ -82,7 +82,7 @@ public class BoardDesign {
                 );
             }
             if(blackView){
-                System.out.print(" " + (8 - row));
+                System.out.print(" " + (row + 1));
             } else{
                 System.out.print(" " + ( 8 - row));
             }

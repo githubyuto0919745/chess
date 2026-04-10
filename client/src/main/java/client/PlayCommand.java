@@ -32,44 +32,6 @@ public class PlayCommand {
         this.game = newGame;
         boardDesign.updateGame(newGame);
         boardDesign.printBoard(null);
-
-        checkPromotion();
-        promote = false;
-    }
-
-    private void checkPromotion(){
-        for(int col = 0; col < 8; col ++){
-            ChessPosition whitePos = new ChessPosition(8, col + 1);
-            ChessPiece whitePiece = game.getBoard().getPiece(whitePos);
-
-            if(isPawn(whitePiece, ChessGame.TeamColor.WHITE)){
-                handlePromotion(whitePos, whitePiece);
-                return;
-            }
-
-            ChessPosition blackPos = new ChessPosition(1, col + 1);
-            ChessPiece blackPiece = game.getBoard().getPiece(blackPos);
-
-            if(isPawn(blackPiece, ChessGame.TeamColor.BLACK)){
-                handlePromotion(blackPos, blackPiece);
-                return;
-            }
-        }
-    }
-    private boolean isPawn(ChessPiece piece, ChessGame.TeamColor color){
-        return piece != null
-                && piece.getPieceType() == ChessPiece.PieceType.PAWN
-                && piece.getTeamColor() == color;
-    }
-
-    private boolean promote = false;
-    private void handlePromotion(ChessPosition pos, ChessPiece pawn ){
-        if(promote) return;
-        promote = true;
-        PawnPromotion promotion = new PawnPromotion();
-        ChessPiece.PieceType choice = promotion.askPromotion();
-        ChessMove promotionMove = new ChessMove(pos,pos,choice);
-        wsFacade.move(authToken,gameID,promotionMove);
     }
     public void setWebSocketFacade(WebSocketFacade wsFacade) {
         this.wsFacade = wsFacade;
@@ -153,13 +115,13 @@ public class PlayCommand {
                     }
 
                     System.out.print("From col:  (a-h) ");
-                    String fromCol = scanner.nextLine().trim().toLowerCase();
-                    if(fromCol.length() !=1 || fromCol.charAt(0) < 'a' || fromCol.charAt(0) > 'h'){
+                    String fromColInput = scanner.nextLine().trim().toLowerCase();
+                    if(fromColInput.length() !=1 || fromColInput.charAt(0) < 'a' || fromColInput.charAt(0) > 'h'){
                         System.out.println("Invalid column: must be a letter (a-h)");
                         break;
                     }
 
-                    int fc = fromCol.charAt(0) - 'a' + 1;
+                    int fc = fromColInput.charAt(0) - 'a' + 1;
 
 
                     System.out.print("To row:  (1-8) ");
@@ -169,18 +131,30 @@ public class PlayCommand {
                         break;
                     }
                     System.out.print("To col:  (a-h) ");
-                    String toCol = scanner.nextLine().trim().toLowerCase();
-                    if(toCol.length() !=1 || toCol.charAt(0) < 'a' || toCol.charAt(0) > 'h'){
+                    String toColInput = scanner.nextLine().trim().toLowerCase();
+                    if(toColInput.length() !=1 || toColInput.charAt(0) < 'a' || toColInput.charAt(0) > 'h'){
                         System.out.println("Invalid column: must be a letter (a-h)");
                         break;
                     }
-                    int tc = toCol.charAt(0) - 'a' + 1;
+                    int tc = toColInput.charAt(0) - 'a' + 1;
 
-                    ChessMove move = new ChessMove(
-                            new ChessPosition(fr,fc),
-                            new ChessPosition(tr,tc),
-                            null
-                    );
+                    ChessPosition from = new ChessPosition(fr,fc);
+                    ChessPosition to = new ChessPosition(tr,tc);
+
+                    ChessPiece piece = game.getBoard().getPiece(from);
+                    ChessPiece.PieceType promotion = null;
+
+                    if(piece != null &&
+                        piece.getPieceType() == ChessPiece.PieceType.PAWN){
+                        boolean whitePromote = piece.getTeamColor() == ChessGame.TeamColor.WHITE && tr == 8;
+                        boolean blackPromote = piece.getTeamColor() == ChessGame.TeamColor.BLACK && tr == 8;
+
+                        if(whitePromote || blackPromote){
+                            PawnPromotion pro = new PawnPromotion();
+                            promotion = pro.askPromotion();
+                        }
+                    }
+                    ChessMove move = new ChessMove(from, to, promotion);
                     wsFacade.move(authToken, gameID, move);
                 }
                 case "resign" -> {
